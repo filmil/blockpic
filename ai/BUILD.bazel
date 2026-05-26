@@ -11,7 +11,8 @@ markdown_lib(
     name = "md",
     srcs = [
         "spec.md",
-    ],
+        "datasheet.md",
+    ] + glob(["tasks/*.md"]),
     additional_inputs = ["head.html"],
 )
 
