@@ -10,6 +10,7 @@ go_library(
         "//pkg/parser",
         "//pkg/renderer",
         "//pkg/scanner",
+        "//pkg/validation",
         "@com_github_llgcode_draw2d//draw2dimg",
     ],
 )
