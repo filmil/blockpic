@@ -101,3 +101,12 @@
 - The task is complete once the `gh` command finishes successfully.
 - When fixing a specific Github issue, put a line "Fixes: URL", where URL
   is the link to the Github isssue being fixed.
+
+
+
+# Fragment for documentation
+
+* Whenever you create a new file, add a SPDX license annotation to it.
+* Whenever you add a new tasks, or other markdown file, tie it into the
+  book at `//ai/tasks/BUILD.bazel`
+
