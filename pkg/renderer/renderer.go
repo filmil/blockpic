@@ -2,11 +2,13 @@
 package renderer
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"strings"
 	"github.com/filmil/hodos/pkg/ast"
 	"github.com/filmil/hodos/pkg/shapes"
+	"github.com/filmil/hodos/pkg/router"
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
@@ -83,6 +85,11 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			continue
 		}
 
+		x1, y1 := srcL.X+60, srcL.Y+20
+		x2, y2 := dstL.X, dstL.Y+20
+
+		points := router.Route(x1, y1, x2, y2, w.Hint)
+
 		gc.SetStrokeColor(ColorOutline)
 		gc.SetLineWidth(float64(w.Thickness))
 		if w.Thickness == 0 {
@@ -90,9 +97,29 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		}
 		
 		gc.BeginPath()
-		gc.MoveTo(srcL.X+30, srcL.Y+20)
-		gc.LineTo(dstL.X+30, dstL.Y+20)
+		if len(points) > 0 {
+			gc.MoveTo(points[0].X, points[0].Y)
+			for i := 1; i < len(points); i++ {
+				gc.LineTo(points[i].X, points[i].Y)
+			}
+		}
 		gc.Stroke()
+
+		if w.Crossline > 0 && len(points) > 1 {
+			midIdx := len(points) / 2
+			p1 := points[midIdx-1]
+			p2 := points[midIdx]
+			mx, my := (p1.X+p2.X)/2, (p1.Y+p2.Y)/2
+			
+			gc.SetLineWidth(1)
+			gc.BeginPath()
+			gc.MoveTo(mx-4, my+4)
+			gc.LineTo(mx+4, my-4)
+			gc.Stroke()
+			
+			gc.SetFillColor(ColorText)
+			gc.FillStringAt(fmt.Sprintf("%d", w.Crossline), mx+2, my-2)
+		}
 	}
 
 	return dest, nil

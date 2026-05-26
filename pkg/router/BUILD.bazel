@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "router",
+    srcs = ["router.go"],
+    importpath = "github.com/filmil/hodos/pkg/router",
+    visibility = ["//visibility:public"],
+)
