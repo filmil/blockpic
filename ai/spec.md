@@ -31,8 +31,9 @@ Pins are the connection points on blocks.
 Wires connect an output pin of a source block to an input pin of a destination block.
 - **Source**: `(block_name, pin_name)`.
 - **Destination**: `(block_name, pin_name)`.
-- **Routing Hints**: Hints for the router (e.g., `straight`, `L-shape`, `Z-shape`).
+- **Routing Hints**: Hints for the router (e.g., `straight`, `L-shape`, `Z-shape`, `feedback`).
 - **Signal Directionality**: Wires must render an arrowhead at the destination pin to clearly indicate the flow of the signal.
+- **Feedback Routing**: Support for backward-flowing signals (e.g., in Mealy/Moore state machines), routing wires around blocks to return to an earlier stage in the data path.
 - **Bus Attributes**:
     - **Thickness**: Specifies if the wire is a bus and its relative thickness.
     - **Crossline**: Supports a crossline indicator (often used with a number to indicate bus width).
@@ -66,10 +67,12 @@ For MSI components like Registers and Counters, Hodos supports IEEE dependency n
 - **`M` (Mode)**: Mode dependency.
 - **`V` (OR)**: OR dependency.
 
-#### 2.5.3 Functional Indicators
+#### 2.5.3 Functional Indicators and Text Decorations
 - **Bubble (`(o)`)**: External negation.
 - **Wedge (`>`)**: Dynamic indicator for edge-triggered inputs.
 - **Triangle (`(v)`)**: Three-state (Hi-Z) output indicator.
+- **Overbar (`~text~`)**: Indicates an active-low signal (renders a line over the text).
+- **Underbar (`_text_`)**: Text formatting indicator (renders a line under the text).
 
 ## 3. Syntax (Draft)
 
