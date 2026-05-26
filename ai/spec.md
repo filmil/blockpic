@@ -32,6 +32,7 @@ Wires connect an output pin of a source block to an input pin of a destination b
 - **Source**: `(block_name, pin_name)`.
 - **Destination**: `(block_name, pin_name)`.
 - **Routing Hints**: Hints for the router (e.g., `straight`, `L-shape`, `Z-shape`).
+- **Signal Directionality**: Wires must render an arrowhead at the destination pin to clearly indicate the flow of the signal.
 - **Bus Attributes**:
     - **Thickness**: Specifies if the wire is a bus and its relative thickness.
     - **Crossline**: Supports a crossline indicator (often used with a number to indicate bus width).
