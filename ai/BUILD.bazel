@@ -84,6 +84,8 @@ write_source_files(
         "msi_blocks.png": ":gen_msi_blocks_example",
         "pin_aware.png": ":gen_pin_aware_example",
         "complex_layout.png": ":gen_complex_layout_example",
+        "text_rendering.png": ":gen_text_rendering_example",
+        "arrow_rendering.png": ":gen_arrow_rendering_example",
     },
 )
 
@@ -98,3 +100,8 @@ render_diagram(
 )
 
 # Need to update write_source_files to include complex_layout
+
+render_diagram(
+    name = "arrow_rendering",
+    src = "examples/arrow_rendering.hodos",
+)

@@ -140,6 +140,38 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		}
 		gc.Stroke()
 
+		if len(points) > 1 {
+			last := points[len(points)-1]
+			prev := points[len(points)-2]
+			
+			aw := 6.0
+			ah := 4.0
+			
+			gc.BeginPath()
+			gc.SetFillColor(ColorOutline)
+			
+			if last.X > prev.X { // pointing right
+				gc.MoveTo(last.X, last.Y)
+				gc.LineTo(last.X-aw, last.Y-ah/2)
+				gc.LineTo(last.X-aw, last.Y+ah/2)
+			} else if last.X < prev.X { // pointing left
+				gc.MoveTo(last.X, last.Y)
+				gc.LineTo(last.X+aw, last.Y-ah/2)
+				gc.LineTo(last.X+aw, last.Y+ah/2)
+			} else if last.Y > prev.Y { // pointing down
+				gc.MoveTo(last.X, last.Y)
+				gc.LineTo(last.X-ah/2, last.Y-aw)
+				gc.LineTo(last.X+ah/2, last.Y-aw)
+			} else if last.Y < prev.Y { // pointing up
+				gc.MoveTo(last.X, last.Y)
+				gc.LineTo(last.X-ah/2, last.Y+aw)
+				gc.LineTo(last.X+ah/2, last.Y+aw)
+			}
+			
+			gc.Close()
+			gc.Fill()
+		}
+
 		if w.Crossline > 0 && len(points) > 1 {
 			midIdx := len(points) / 2
 			p1 := points[midIdx-1]
