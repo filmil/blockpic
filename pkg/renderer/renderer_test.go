@@ -108,3 +108,62 @@ func TestRenderer_TextCollisionShift(t *testing.T) {
 		t.Fatalf("Rendered image is nil")
 	}
 }
+
+func TestRenderer_PortVisibilityHints(t *testing.T) {
+	r := New(100, 100)
+
+	// Case 1: AND gate (small element) - should not show ports by default
+	andBlock := ast.Block{Kind: "AND"}
+	if r.shouldShowPins(andBlock) {
+		t.Errorf("expected AND block to hide ports by default")
+	}
+
+	// Case 2: DFF (not small element) - should show ports by default
+	dffBlock := ast.Block{Kind: "DFF"}
+	if !r.shouldShowPins(dffBlock) {
+		t.Errorf("expected DFF block to show ports by default")
+	}
+
+	// Case 3: AND gate with hint: "show-ports" - should show ports
+	andShowBlock := ast.Block{Kind: "AND", Hint: ast.HintShowPorts}
+	if !r.shouldShowPins(andShowBlock) {
+		t.Errorf("expected AND block with HintShowPorts to show ports")
+	}
+
+	// Case 4: DFF with hint: "hide-ports" - should hide ports
+	dffHideBlock := ast.Block{Kind: "DFF", Hint: ast.HintHidePorts}
+	if r.shouldShowPins(dffHideBlock) {
+		t.Errorf("expected DFF block with HintHidePorts to hide ports")
+	}
+
+	// Case 5: AND gate (small element) - should not show name by default
+	if r.shouldShowName(andBlock) {
+		t.Errorf("expected AND block to hide name by default")
+	}
+
+	// Case 6: DFF (not small element) - should show name by default
+	if !r.shouldShowName(dffBlock) {
+		t.Errorf("expected DFF block to show name by default")
+	}
+
+	// Case 7: AND gate with hint: "show-name" - should show name
+	andShowNameBlock := ast.Block{Kind: "AND", Hint: ast.HintShowName}
+	if !r.shouldShowName(andShowNameBlock) {
+		t.Errorf("expected AND block with HintShowName to show name")
+	}
+
+	// Case 8: DFF with hint: "hide-name" - should hide name
+	dffHideNameBlock := ast.Block{Kind: "DFF", Hint: ast.HintHideName}
+	if r.shouldShowName(dffHideNameBlock) {
+		t.Errorf("expected DFF block with HintHideName to hide name")
+	}
+
+	// Case 9: AND gate with multi-hint: "show-ports,show-name" - should show both
+	andMultiBlock := ast.Block{Kind: "AND", Hint: "show-ports,show-name"}
+	if !r.shouldShowPins(andMultiBlock) {
+		t.Errorf("expected AND block with multi-hint to show ports")
+	}
+	if !r.shouldShowName(andMultiBlock) {
+		t.Errorf("expected AND block with multi-hint to show name")
+	}
+}

@@ -25,9 +25,15 @@ A **Block** is the primary logical element. Each block has:
 - **Output Pins**: Named output ports.
 - **Parameters**: Key-value pairs for configuration (e.g., `init: 0x1234`).
   Supported parameters include:
-  - `show_port_names`: Controls pin/port name visibility. For basic elements
-    (e.g., standard logic gates, flip-flops, multiplexers, clocks), port names
-    are hidden by default. Set `show_port_names: "true"` to force rendering.
+  - `show_port_names`: Controls pin/port name visibility (fallback check). Set
+    `show_port_names: "true"` to force rendering.
+  - `show_name`: Controls block name visibility (fallback check). Set
+    `show_name: "true"` to force rendering.
+- **Hint**: An optional block display hint. Multiple hints can be separated by commas (e.g. `hint: "show-ports,show-name";`). Supported values include:
+  - `show-ports`: Forces rendering of input and output port names.
+  - `hide-ports`: Forces hiding of input and output port names.
+  - `show-name`: Forces rendering of the block's display name or label.
+  - `hide-name`: Forces hiding of the block's display name or label.
 - **Dimensions**: Optional width and height.
 - **Custom Rendering**: Support for custom rendering functions (Phase 2).
 

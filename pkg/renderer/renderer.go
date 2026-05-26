@@ -404,49 +404,52 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 		kind := strings.ToUpper(b.Kind)
 		isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
 
-		displayName := b.Name
-		if displayName == "" {
-			displayName = b.Label
-		}
-
-		nameInside := false
-		if !isMSI {
-			switch kind {
-			case "AND", "OR", "NOT", "XOR", "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF", "MUX", "DEMUX", "VCC", "GND", "CLOCK":
-				// keep outside
-			default:
-				nameInside = true
-			}
-		}
-
-		// 1. Block name label
-		nameW, nameH := measureText(gc, displayName)
 		blockRef := b
 		layoutRef := l
-		if nameInside {
-			labels = append(labels, textLabel{
-				text:       displayName,
-				itemType:   "name_inside",
-				ownerLabel: b.Label,
-				block:      &blockRef,
-				layout:     &layoutRef,
-				bw:         w,
-				bh:         h,
-				defaultX:   l.X + w/2 - nameW/2,
-				defaultY:   l.Y + h/2 + nameH/2 - 2,
-			})
-		} else {
-			labels = append(labels, textLabel{
-				text:       displayName,
-				itemType:   "name_outside",
-				ownerLabel: b.Label,
-				block:      &blockRef,
-				layout:     &layoutRef,
-				bw:         w,
-				bh:         h,
-				defaultX:   l.X + 2,
-				defaultY:   l.Y - 5,
-			})
+
+		if r.shouldShowName(b) {
+			displayName := b.Name
+			if displayName == "" {
+				displayName = b.Label
+			}
+
+			nameInside := false
+			if !isMSI {
+				switch kind {
+				case "AND", "OR", "NOT", "XOR", "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF", "MUX", "DEMUX", "VCC", "GND", "CLOCK":
+					// keep outside
+				default:
+					nameInside = true
+				}
+			}
+
+			// 1. Block name label
+			nameW, nameH := measureText(gc, displayName)
+			if nameInside {
+				labels = append(labels, textLabel{
+					text:       displayName,
+					itemType:   "name_inside",
+					ownerLabel: b.Label,
+					block:      &blockRef,
+					layout:     &layoutRef,
+					bw:         w,
+					bh:         h,
+					defaultX:   l.X + w/2 - nameW/2,
+					defaultY:   l.Y + h/2 + nameH/2 - 2,
+				})
+			} else {
+				labels = append(labels, textLabel{
+					text:       displayName,
+					itemType:   "name_outside",
+					ownerLabel: b.Label,
+					block:      &blockRef,
+					layout:     &layoutRef,
+					bw:         w,
+					bh:         h,
+					defaultX:   l.X + 2,
+					defaultY:   l.Y - 5,
+				})
+			}
 		}
 
 		// 2. MSI kind label
@@ -473,10 +476,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 			usableH = h * 0.7
 		}
 
-		showPins := true
-		if isBasicElement(b.Kind) {
-			showPins = b.Params["show_port_names"] == "true"
-		}
+		showPins := r.shouldShowPins(b)
 
 		if showPins {
 			for i, p := range b.Inputs {
@@ -827,17 +827,17 @@ func (r *Renderer) CalculateSize(gc draw2d.GraphicContext, b ast.Block) (float64
 		return b.Size.W, b.Size.H
 	}
 	
-	displayName := b.Name
-	if displayName == "" {
-		displayName = b.Label
+	nameW := 0.0
+	if r.shouldShowName(b) {
+		displayName := b.Name
+		if displayName == "" {
+			displayName = b.Label
+		}
+		nameW, _ = measureText(gc, displayName)
 	}
-	nameW, _ := measureText(gc, displayName)
 	
 	maxInW, maxOutW := 0.0, 0.0
-	showPins := true
-	if isBasicElement(b.Kind) {
-		showPins = b.Params["show_port_names"] == "true"
-	}
+	showPins := r.shouldShowPins(b)
 	if showPins {
 		for _, p := range b.Inputs {
 			w, _ := measureText(gc, p.Name)
@@ -1123,4 +1123,59 @@ func isBasicElement(kind string) bool {
 	default:
 		return false
 	}
+}
+
+func isSmallElement(kind string) bool {
+	switch strings.ToUpper(kind) {
+	case "AND", "OR", "NOT", "XOR":
+		return true
+	default:
+		return false
+	}
+}
+
+func (r *Renderer) shouldShowPins(b ast.Block) bool {
+	// Default visibility: hidden for small elements (AND, OR, NOT, XOR), shown for others.
+	showPins := true
+	if isSmallElement(b.Kind) {
+		showPins = false
+	}
+
+	// Explicit overrides: Block Hint attribute
+	if strings.Contains(string(b.Hint), string(ast.HintShowPorts)) {
+		showPins = true
+	} else if strings.Contains(string(b.Hint), string(ast.HintHidePorts)) {
+		showPins = false
+	} else {
+		// Fallback check for parameters for backwards compatibility
+		if b.Params["show_port_names"] == "true" {
+			showPins = true
+		} else if b.Params["show_port_names"] == "false" {
+			showPins = false
+		}
+	}
+	return showPins
+}
+
+func (r *Renderer) shouldShowName(b ast.Block) bool {
+	// Default visibility: hidden for small elements (AND, OR, NOT, XOR), shown for others.
+	showName := true
+	if isSmallElement(b.Kind) {
+		showName = false
+	}
+
+	// Explicit overrides: Block Hint attribute
+	if strings.Contains(string(b.Hint), string(ast.HintShowName)) {
+		showName = true
+	} else if strings.Contains(string(b.Hint), string(ast.HintHideName)) {
+		showName = false
+	} else {
+		// Fallback check for parameters
+		if b.Params["show_name"] == "true" {
+			showName = true
+		} else if b.Params["show_name"] == "false" {
+			showName = false
+		}
+	}
+	return showName
 }
