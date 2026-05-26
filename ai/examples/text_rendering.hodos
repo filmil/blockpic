@@ -1,0 +1,31 @@
+diagram TextRendering {
+    block A {
+        kind: "AND";
+        inputs: I0 [left], I1 [left];
+        outputs: O [right];
+        params: { init: "0x8000", mode: "fast" };
+    }
+
+    block B {
+        kind: "REGISTER";
+        inputs: D [left], CLK [bottom], CE [left];
+        outputs: Q [right];
+        params: { rst_val: "0x0000" };
+    }
+
+    block C {
+        kind: "NOT";
+        inputs: ~EN~ [left];
+        outputs: ~OUT~ [right];
+        params: { delay: "5ns" };
+    }
+
+    wire A.O -> B.D { hint: "straight" }
+    wire B.Q -> C.~EN~ { hint: "Z-shape" }
+
+    layout {
+        A at (10, 10);
+        B at (150, 10);
+        C at (300, 10);
+    }
+}
