@@ -13,7 +13,7 @@ markdown_lib(
         "spec.md",
         "datasheet.md",
     ] + glob(["tasks/*.md"]),
-    additional_inputs = ["head.html"],
+    additional_inputs = ["head.html", ":shapes.png"],
 )
 
 ebook_pdf(
@@ -28,4 +28,12 @@ pandoc_chunked_html(
     args = ["--include-in-header=ai/head.html"],
     toc = True,
     deps = [":md"],
+)
+
+genrule(
+    name = "gen_shapes_example",
+    srcs = ["examples/shapes.hodos"],
+    outs = ["shapes.png"],
+    cmd = "$(location //cmd/hodos) render $(location examples/shapes.hodos) -o $@",
+    tools = ["//cmd/hodos"],
 )

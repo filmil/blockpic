@@ -33,3 +33,15 @@ This document provides a hierarchical overview of the features implemented in th
 ## 5. Continuous Delivery
 *   **Automated Releases**: GitHub Workflow for multi-arch binary releases (Linux, macOS).
 *   **Versioning**: Automatic semantic version tagging.
+
+## 6. IEEE Standard Shape Library
+Hodos provides a comprehensive library of digital logic blocks based on IEEE standards.
+
+### 6.1 Supported Shapes
+*   **Logic Gates**: `AND`, `OR`, `NOT`, `XOR`.
+*   **Sequential Logic**: `DFF`, `JKFF`, `TFF`, `SRFF`.
+*   **Routing**: `MUX`, `DEMUX`.
+*   **Power/Signal**: `VCC`, `GND`, `CLOCK`.
+
+### 6.2 Visual Reference
+![IEEE Shapes](shapes.png)

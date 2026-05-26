@@ -1,0 +1,25 @@
+diagram Shapes {
+    block AND1 { kind: "AND"; inputs: A, B; outputs: O; }
+    block OR1 { kind: "OR"; inputs: A, B; outputs: O; }
+    block NOT1 { kind: "NOT"; inputs: I; outputs: O; }
+    block XOR1 { kind: "XOR"; inputs: A, B; outputs: O; }
+    block DFF1 { kind: "DFF"; inputs: D, CLK; outputs: Q; }
+    block MUX1 { kind: "MUX"; inputs: I0, I1, S; outputs: O; }
+    block DEMUX1 { kind: "DEMUX"; inputs: I, S; outputs: O0, O1; }
+    block VCC1 { kind: "VCC"; outputs: V; }
+    block GND1 { kind: "GND"; outputs: G; }
+    block CLK1 { kind: "CLOCK"; outputs: C; }
+
+    layout {
+        AND1 at (20, 20)
+        OR1 at (120, 20)
+        NOT1 at (220, 20)
+        XOR1 at (320, 20)
+        DFF1 at (20, 100)
+        MUX1 at (120, 100)
+        DEMUX1 at (220, 100)
+        VCC1 at (320, 100)
+        GND1 at (20, 180)
+        CLK1 at (120, 180)
+    }
+}

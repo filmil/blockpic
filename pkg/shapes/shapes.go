@@ -43,8 +43,24 @@ func DrawNOT(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.Stroke()
 }
 
+func DrawXOR(gc draw2d.GraphicContext, x, y, w, h float64) {
+	// First curve
+	gc.BeginPath()
+	gc.MoveTo(x-4, y)
+	gc.QuadCurveTo(x+w/4-4, y+h/2, x-4, y+h)
+	gc.Stroke()
+
+	// Body same as OR
+	gc.BeginPath()
+	gc.MoveTo(x, y)
+	gc.QuadCurveTo(x+w/4, y+h/2, x, y+h)
+	gc.QuadCurveTo(x+w*0.8, y+h, x+w, y+h/2)
+	gc.QuadCurveTo(x+w*0.8, y, x, y)
+	gc.Close()
+	gc.FillStroke()
+}
+
 func DrawDFF(gc draw2d.GraphicContext, x, y, w, h float64) {
-	// Standard rectangle for flip-flop
 	gc.BeginPath()
 	gc.MoveTo(x, y)
 	gc.LineTo(x+w, y)
@@ -53,7 +69,7 @@ func DrawDFF(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.Close()
 	gc.FillStroke()
 
-	// Triangle for clock input if it exists (simplified for now)
+	// Clock triangle
 	gc.BeginPath()
 	gc.MoveTo(x, y+h*0.8)
 	gc.LineTo(x+5, y+h*0.75)
@@ -62,7 +78,6 @@ func DrawDFF(gc draw2d.GraphicContext, x, y, w, h float64) {
 }
 
 func DrawMUX(gc draw2d.GraphicContext, x, y, w, h float64) {
-	// Trapezoid for MUX
 	gc.BeginPath()
 	gc.MoveTo(x, y)
 	gc.LineTo(x+w, y+h*0.2)
@@ -70,4 +85,47 @@ func DrawMUX(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.LineTo(x, y+h)
 	gc.Close()
 	gc.FillStroke()
+}
+
+func DrawDEMUX(gc draw2d.GraphicContext, x, y, w, h float64) {
+	gc.BeginPath()
+	gc.MoveTo(x, y+h*0.2)
+	gc.LineTo(x+w, y)
+	gc.LineTo(x+w, y+h)
+	gc.LineTo(x, y+h*0.8)
+	gc.Close()
+	gc.FillStroke()
+}
+
+func DrawVCC(gc draw2d.GraphicContext, x, y, w, h float64) {
+	gc.BeginPath()
+	gc.MoveTo(x+w/2, y+h)
+	gc.LineTo(x+w/2, y+h/2)
+	gc.MoveTo(x, y+h/2)
+	gc.LineTo(x+w, y+h/2)
+	gc.Stroke()
+}
+
+func DrawGND(gc draw2d.GraphicContext, x, y, w, h float64) {
+	gc.BeginPath()
+	gc.MoveTo(x+w/2, y)
+	gc.LineTo(x+w/2, y+h/2)
+	gc.MoveTo(x, y+h/2)
+	gc.LineTo(x+w, y+h/2)
+	gc.MoveTo(x+w/4, y+h*0.75)
+	gc.LineTo(x+w*0.75, y+h*0.75)
+	gc.MoveTo(x+w*0.4, y+h)
+	gc.LineTo(x+w*0.6, y+h)
+	gc.Stroke()
+}
+
+func DrawClock(gc draw2d.GraphicContext, x, y, w, h float64) {
+	gc.BeginPath()
+	gc.MoveTo(x, y+h)
+	gc.LineTo(x+w/4, y+h)
+	gc.LineTo(x+w/4, y)
+	gc.LineTo(x+w*0.75, y)
+	gc.LineTo(x+w*0.75, y+h)
+	gc.LineTo(x+w, y+h)
+	gc.Stroke()
 }
