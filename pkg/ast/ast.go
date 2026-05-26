@@ -8,6 +8,14 @@ type Diagram struct {
 	Layout []LayoutEntry
 }
 
+type BlockHint string
+
+const (
+	HintShowPorts BlockHint = "show-ports"
+	HintHidePorts BlockHint = "hide-ports"
+	HintNone      BlockHint = ""
+)
+
 type Block struct {
 	Label   string
 	Name    string
@@ -16,6 +24,7 @@ type Block struct {
 	Inputs  []Pin
 	Outputs []Pin
 	Size    *Size
+	Hint    BlockHint
 }
 
 type Pin struct {
