@@ -26,6 +26,8 @@ ug474
   * Source pin (block name, pin name)
   * Destination pin (block name, pin name)
   * Routing hints (e.g., "straight", "L-shape", "Z-shape") - maybe.
+  * Bus thickness.
+  * Bus crossline.
 
 * The rendering engine should:
   * Take a block diagram description as input.
@@ -36,6 +38,27 @@ ug474
 * The language should be simple and easy to read/write.
   * Potentially a YAML or JSON-based format.
   * Or a custom DSL.
+
+* Add shape library that consists of digital blocks, IEEE standards based
+  shaping:
+  - AND
+  - OR
+  - NOT
+  - XOR
+  - FLIPFLOP (D, JK, T, SR)
+  - MUX (2-to-1, 4-to-1, etc.)
+  - DEMUX
+  - REGISTER
+  - COUNTER
+  - SHIFT REGISTER
+  - CLOCK
+  - CONSTANT (HIGH, LOW)
+  - INPUT PIN
+  - OUTPUT PIN
+  - TRI-STATE BUFFER
+  - PULL-UP/PULL-DOWN RESISTOR
+  - VCC/GND symbols
+  - Custom block (user-defined shape and pins)
 
 ## Goals
 

@@ -32,6 +32,9 @@ Wires connect an output pin of a source block to an input pin of a destination b
 - **Source**: `(block_name, pin_name)`.
 - **Destination**: `(block_name, pin_name)`.
 - **Routing Hints**: Hints for the router (e.g., `straight`, `L-shape`, `Z-shape`).
+- **Bus Attributes**:
+    - **Thickness**: Specifies if the wire is a bus and its relative thickness.
+    - **Crossline**: Supports a crossline indicator (often used with a number to indicate bus width).
 
 ### 2.4 Aesthetics (UG474 Style)
 - **Colors**:
@@ -70,6 +73,11 @@ diagram MyLogic {
     // Wire declarations
     wire LUT6_A.O -> DFF_1.D {
         hint: "Z-shape";
+    }
+
+    wire BUS_IN.O -> LUT6_A.I0 {
+        thickness: 2;
+        crossline: 8; // Indicates an 8-bit bus
     }
 
     // Optional Layout
