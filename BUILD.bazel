@@ -1,5 +1,5 @@
-load("@gazelle//:def.bzl", "gazelle")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/filmil/hodos
 gazelle(name = "gazelle")
@@ -13,4 +13,3 @@ exports_files([
 buildifier(
     name = "buildifier",
 )
-
