@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "layout",
+    srcs = ["layout.go"],
+    importpath = "github.com/filmil/hodos/pkg/layout",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/ast"],
+)
+
+go_test(
+    name = "layout_test",
+    srcs = ["layout_test.go"],
+    embed = [":layout"],
+    deps = ["//pkg/ast"],
+)
