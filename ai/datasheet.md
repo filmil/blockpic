@@ -52,6 +52,15 @@ Hodos includes a validation layer to ensure logical correctness before rendering
 *   **Connectivity**: Wire source and destination blocks must exist.
 *   **Pin Verification**: Referenced pins must exist on their respective blocks.
 
+## 8. Pins and Buses
+Hodos supports explicit pin rendering and multi-bit bus visualization.
+*   **Pin Rendering**: Named inputs and outputs are rendered on block boundaries.
+*   **Bus Thickness**: Wires can have custom thickness to represent buses.
+*   **Crossline Indicator**: Standard bus width indicators with labels.
+
+### 8.1 Visual Reference
+![Pins and Buses](pins_buses.png)
+
 ## 9. Dynamic Gate Sizing
 Hodos automatically calculates block dimensions based on the number of input and output pins.
 *   **Automatic Height**: Blocks expand vertically to accommodate multiple pins while maintaining even distribution.

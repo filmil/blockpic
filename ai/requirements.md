@@ -60,6 +60,8 @@ ug474
   - VCC/GND symbols
   - Custom block (user-defined shape and pins)
 
+* See standards document for how to render blocks: https://wakerly.org/DDPP/DDPP3_pdf/IEEEsyms.pdf
+
 ## Goals
 
 * **Phase 1: Core Language and Renderer**
