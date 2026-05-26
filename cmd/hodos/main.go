@@ -131,7 +131,7 @@ func renderCmd() {
 	}
 
 	for _, b := range diag.Blocks {
-		l, ok := layoutMap[b.Name]
+		l, ok := layoutMap[b.Label]
 		if !ok {
 			continue
 		}

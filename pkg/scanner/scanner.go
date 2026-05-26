@@ -32,6 +32,7 @@ const (
 	WIRE
 	LAYOUT
 	KIND
+	NAME
 	INPUTS
 	OUTPUTS
 	PARAMS
@@ -48,6 +49,7 @@ var keywords = map[string]TokenType{
 	"wire":      WIRE,
 	"layout":    LAYOUT,
 	"kind":      KIND,
+	"name":      NAME,
 	"inputs":    INPUTS,
 	"outputs":   OUTPUTS,
 	"params":    PARAMS,

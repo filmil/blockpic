@@ -18,9 +18,9 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 	blocksToLayout := make(map[string]bool)
 
 	for _, b := range diag.Blocks {
-		if !layoutMap[b.Name] {
-			blocksToLayout[b.Name] = true
-			inDegree[b.Name] = 0
+		if !layoutMap[b.Label] {
+			blocksToLayout[b.Label] = true
+			inDegree[b.Label] = 0
 		}
 	}
 
@@ -96,7 +96,7 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 	vars := make(map[string]BlockVars)
 
 	for _, b := range diag.Blocks {
-		if !blocksToLayout[b.Name] {
+		if !blocksToLayout[b.Label] {
 			continue
 		}
 		w, h := sizeFunc(b)
@@ -106,7 +106,7 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 			Right:  cassowary.NewParam(0),
 			Bottom: cassowary.NewParam(0),
 		}
-		vars[b.Name] = v
+		vars[b.Label] = v
 
 		// Right = Left + w
 		solver.AddConstraint(v.Right.Equals(v.Left.Add(cassowary.CM(w))))
@@ -166,12 +166,12 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 	solver.FlushUpdates()
 
 	for _, b := range diag.Blocks {
-		if !blocksToLayout[b.Name] {
+		if !blocksToLayout[b.Label] {
 			continue
 		}
-		v := vars[b.Name]
+		v := vars[b.Label]
 		diag.Layout = append(diag.Layout, ast.LayoutEntry{
-			Block: b.Name,
+			Block: b.Label,
 			X:     v.Left.Value(),
 			Y:     v.Top.Value(),
 		})

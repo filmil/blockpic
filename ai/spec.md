@@ -14,11 +14,20 @@ palette for hardware logic primitives.
 
 ### 2.1 Blocks and Primitives
 A **Block** is the primary logical element. Each block has:
-- **Name**: A unique identifier.
-- **Kind**: The type of block (e.g., `AND`, `OR`, `FLIPFLOP`, `MUX`, `LUT`, `CUSTOM`).
+- **Label**: A unique logical designation identifier (e.g. `AND1`) used for
+  defining wire connections and layout references.
+- **Name**: An optional display name attribute (e.g. `name: "My Gate";`) shown
+  inside the block shape on the diagram. If omitted, the block's **Label** is
+  used for rendering.
+- **Kind**: The type of block (e.g., `AND`, `OR`, `FLIPFLOP`, `MUX`, `LUT`,
+  `CUSTOM`).
 - **Input Pins**: Named input ports.
 - **Output Pins**: Named output ports.
 - **Parameters**: Key-value pairs for configuration (e.g., `init: 0x1234`).
+  Supported parameters include:
+  - `show_port_names`: Controls pin/port name visibility. For basic elements
+    (e.g., standard logic gates, flip-flops, multiplexers, clocks), port names
+    are hidden by default. Set `show_port_names: "true"` to force rendering.
 - **Dimensions**: Optional width and height.
 - **Custom Rendering**: Support for custom rendering functions (Phase 2).
 
@@ -159,14 +168,3 @@ diagram MyLogic {
 - **Specification**: Stored in `//ai/spec.md`.
 - **Tasks**: Stored in `//ai/tasks/`.
 - **Naming Convention**: All task files must start with a `NNN` prefix (e.g., `000_initial_lexer.md`), where `NNN` is a sequence number starting from `000`.
-
-lementary libraries.
-- **Routing**: Automatic orthogonal routing with minimal crossings.
-- **Precision**: LaTeX-like precision for text placement and port alignment.
-
-## 6. Project Structure and Task Management
-
-- **Specification**: Stored in `//ai/spec.md`.
-- **Tasks**: Stored in `//ai/tasks/`.
-- **Naming Convention**: All task files must start with a `NNN` prefix (e.g., `000_initial_lexer.md`), where `NNN` is a sequence number starting from `000`.
-

@@ -9,6 +9,7 @@ type Diagram struct {
 }
 
 type Block struct {
+	Label   string
 	Name    string
 	Kind    string
 	Params  map[string]string
