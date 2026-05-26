@@ -86,3 +86,13 @@ Hodos routes wires orthoganally, considering the physical side of the block wher
 
 ### 11.1 Visual Reference
 ![Pin-Aware Routing](ai/pin_aware.png)
+
+
+## 12. Advanced Auto-Layout
+Hodos features a robust layer-based automatic layout engine.
+*   **Dependency Grouping**: Blocks are grouped into columns (layers) based on their logical depth from inputs to outputs.
+*   **Topological Sorting**: Longest-path layer assignment ensures clear left-to-right flow without manual coordinate mapping.
+*   **Cycle Handling**: The algorithm gracefully handles feedback loops by assigning arbitrary starting layers to cyclic components.
+
+### 12.1 Visual Reference
+![Complex Auto Layout](ai/complex_layout.png)
