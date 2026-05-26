@@ -1,0 +1,19 @@
+diagram ComplexLayout {
+    block IN1 { kind: "INPUT_PIN"; outputs: O; }
+    block IN2 { kind: "INPUT_PIN"; outputs: O; }
+    
+    block AND1 { kind: "AND"; inputs: I1, I2; outputs: O; }
+    block OR1 { kind: "OR"; inputs: I1, I2; outputs: O; }
+    block NOT1 { kind: "NOT"; inputs: I; outputs: O; }
+    
+    block OUT1 { kind: "OUTPUT_PIN"; inputs: I; }
+
+    wire IN1.O -> AND1.I1
+    wire IN2.O -> AND1.I2
+    wire IN2.O -> OR1.I1
+    wire AND1.O -> OR1.I2
+    wire OR1.O -> NOT1.I
+    wire NOT1.O -> OUT1.I
+
+    // No layout block provided, forcing AutoLayout to run
+}

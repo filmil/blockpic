@@ -16,6 +16,7 @@ exports_files([
     "dynamic_sizing.png",
     "msi_blocks.png",
     "pin_aware.png",
+    "complex_layout.png",
 ])
 
 markdown_lib(
@@ -31,6 +32,7 @@ markdown_lib(
         "dynamic_sizing.png",
         "msi_blocks.png",
         "pin_aware.png",
+        "complex_layout.png",
     ],
 )
 
@@ -81,5 +83,10 @@ write_source_files(
         "dynamic_sizing.png": ":gen_dynamic_sizing_example",
         "msi_blocks.png": ":gen_msi_blocks_example",
         "pin_aware.png": ":gen_pin_aware_example",
+        "complex_layout.png": ":gen_complex_layout_example",
     },
 )
+
+render_diagram(name = "complex_layout", src = "examples/complex_layout.hodos")
+
+# Need to update write_source_files to include complex_layout

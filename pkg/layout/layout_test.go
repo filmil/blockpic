@@ -11,20 +11,30 @@ func TestAutoLayout(t *testing.T) {
 		Blocks: []ast.Block{
 			{Name: "B1"},
 			{Name: "B2"},
+			{Name: "B3"},
+		},
+		Wires: []ast.Wire{
+			{Source: ast.PinRef{Block: "B1"}, Destination: ast.PinRef{Block: "B2"}},
+			{Source: ast.PinRef{Block: "B2"}, Destination: ast.PinRef{Block: "B3"}},
 		},
 	}
 
 	AutoLayout(diag)
 
-	if len(diag.Layout) != 2 {
-		t.Errorf("expected 2 layout entries, got %d", len(diag.Layout))
+	if len(diag.Layout) != 3 {
+		t.Errorf("expected 3 layout entries, got %d", len(diag.Layout))
 	}
 
-	if diag.Layout[0].Block != "B1" || diag.Layout[0].X != 20 {
-		t.Errorf("unexpected layout for B1: %+v", diag.Layout[0])
+	layoutMap := make(map[string]ast.LayoutEntry)
+	for _, l := range diag.Layout {
+		layoutMap[l.Block] = l
 	}
 
-	if diag.Layout[1].Block != "B2" || diag.Layout[1].X != 140 {
-		t.Errorf("unexpected layout for B2: %+v", diag.Layout[1])
+	if layoutMap["B1"].X >= layoutMap["B2"].X {
+		t.Errorf("expected B1 to be to the left of B2")
+	}
+
+	if layoutMap["B2"].X >= layoutMap["B3"].X {
+		t.Errorf("expected B2 to be to the left of B3")
 	}
 }
