@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Release
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Monthly on the 1st
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_action.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bump version and push tag
+        id: tag_action
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: minor
+
+  build:
+    needs: tag
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: linux-amd64
+            platform: "@rules_go//go/toolchain:linux_amd64"
+          - os: macos-latest
+            arch: darwin-amd64
+            platform: "@rules_go//go/toolchain:darwin_amd64"
+          - os: macos-latest
+            arch: darwin-arm64
+            platform: "@rules_go//go/toolchain:darwin_arm64"
+    runs-on: ${{ matrix.os }}
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Bazel
+        uses: abhinavsingh/setup-bazel@v3
+        with:
+          version: 9.0.1
+      - name: Set up Bazel cache key
+        id: cache-key
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - name: Mount Bazel cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}-bazel-${{ matrix.arch }}-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-${{ matrix.arch }}-${{ steps.cache-key.outputs.date }}-
+      - name: Build Binary
+        run: |
+          bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache             --platforms=${{ matrix.platform }} //cmd/hodos:hodos
+          cp bazel-bin/cmd/hodos/hodos_/hodos hodos-${{ matrix.arch }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hodos-${{ matrix.arch }}
+          path: hodos-${{ matrix.arch }}
+
+  release:
+    needs: [tag, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.tag.outputs.new_tag }}
+          name: Release ${{ needs.tag.outputs.new_tag }}
+          files: artifacts/*
+          generate_release_notes: true

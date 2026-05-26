@@ -29,3 +29,7 @@ This document provides a hierarchical overview of the features implemented in th
 *   **CLI Application**: `hodos` binary.
     *   `hodos compile <file>`: Validates DSL syntax.
     *   `hodos render <file> [-format png] [-o output]`: Generates diagram images.
+
+## 5. Continuous Delivery
+*   **Automated Releases**: GitHub Workflow for multi-arch binary releases (Linux, macOS).
+*   **Versioning**: Automatic semantic version tagging.
