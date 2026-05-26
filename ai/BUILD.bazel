@@ -10,8 +10,8 @@ package(default_visibility = ["//visibility:public"])
 markdown_lib(
     name = "md",
     srcs = [
-        "spec.md",
         "datasheet.md",
+        "spec.md",
     ] + glob(["tasks/*.md"]),
     additional_inputs = ["head.html", ":shapes.png"],
 )

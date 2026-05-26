@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "validation",
+    srcs = ["validation.go"],
+    importpath = "github.com/filmil/hodos/pkg/validation",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/ast"],
+)
+
+go_test(
+    name = "validation_test",
+    srcs = ["validation_test.go"],
+    embed = [":validation"],
+    deps = ["//pkg/ast"],
+)

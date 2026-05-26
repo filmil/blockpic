@@ -11,6 +11,7 @@ import (
 	"github.com/filmil/hodos/pkg/parser"
 	"github.com/filmil/hodos/pkg/renderer"
 	"github.com/filmil/hodos/pkg/scanner"
+	"github.com/filmil/hodos/pkg/validation"
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
@@ -57,6 +58,11 @@ func compileCmd() {
 		os.Exit(1)
 	}
 
+	if err := validation.Validate(diag); err != nil {
+		fmt.Printf("Validation error: %v\n", err)
+		os.Exit(1)
+	}
+
 	fmt.Printf("Successfully compiled diagram: %s\n", diag.Name)
 }
 
@@ -88,6 +94,11 @@ func renderCmd() {
 		for _, err := range p.Errors() {
 			fmt.Printf(" - %s\n", err)
 		}
+		os.Exit(1)
+	}
+
+	if err := validation.Validate(diag); err != nil {
+		fmt.Printf("Validation error: %v\n", err)
 		os.Exit(1)
 	}
 

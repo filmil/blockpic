@@ -45,3 +45,9 @@ Hodos provides a comprehensive library of digital logic blocks based on IEEE sta
 
 ### 6.2 Visual Reference
 ![IEEE Shapes](shapes.png)
+
+## 7. AST Validation
+Hodos includes a validation layer to ensure logical correctness before rendering.
+*   **Unique Names**: Blocks must have unique identifiers.
+*   **Connectivity**: Wire source and destination blocks must exist.
+*   **Pin Verification**: Referenced pins must exist on their respective blocks.
