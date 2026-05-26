@@ -9,5 +9,7 @@ bazel_dep(name = "gazelle", version = "0.51.0")
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.from_file(go_mod = "//:go.mod")
 
+bazel_dep(name = "bazel_ebook", version = "2.0.15")
+
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")

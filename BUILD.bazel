@@ -2,3 +2,8 @@ load("@gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/filmil/hodos
 gazelle(name = "gazelle")
+
+exports_files([
+    "README.md",
+    "LICENSE",
+])

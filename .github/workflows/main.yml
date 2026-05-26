@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: abhinavsingh/setup-bazel@v3
+        with:
+          version: 9.0.1
+
+      - name: Set up Bazel cache key
+        id: cache-key
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Mount Bazel cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/bazel
+          # Using the date in the key to ensure the cache "expires" (is not used) every 24 hours.
+          key: bazel-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: |
+            bazel-${{ steps.cache-key.outputs.date }}-
+
+      - name: Test
+        run: bazel test --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //...
+
+  deploy-docs:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/deploy_docs.yml
+    secrets:
+      HDLFACTORY_DEPLOY_KEY: ${{ secrets.HDLFACTORY_DEPLOY_KEY }}

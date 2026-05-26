@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Deploy Docs
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      HDLFACTORY_DEPLOY_KEY:
+        required: true
+
+concurrency:
+  group: deploy-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bazel cache key
+        id: cache-key
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Mount Bazel cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/bazel
+          key: bazel-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: |
+            bazel-${{ steps.cache-key.outputs.date }}-
+
+      - name: Build PDF and HTML docs
+        run: bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //ai:book_pdf //ai:html_chunked
+
+      - name: Deploy Docs
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          external_repository: filmil/hdlfactory.com.template
+          publish_dir: ./bazel-bin/ai
+          destination_dir: static/hodos
+          publish_branch: main
+          deploy_key: "${{ secrets.HDLFACTORY_DEPLOY_KEY }}"
+
+      - name: Kill ssh-agent
+        run: killall ssh-agent || true
