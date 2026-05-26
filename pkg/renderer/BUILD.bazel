@@ -9,6 +9,7 @@ go_library(
         "//pkg/ast",
         "//pkg/router",
         "//pkg/shapes",
+        "@com_github_llgcode_draw2d//:draw2d",
         "@com_github_llgcode_draw2d//draw2dimg",
     ],
 )

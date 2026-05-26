@@ -87,6 +87,9 @@ write_source_files(
     },
 )
 
-render_diagram(name = "complex_layout", src = "examples/complex_layout.hodos")
+render_diagram(
+    name = "complex_layout",
+    src = "examples/complex_layout.hodos",
+)
 
 # Need to update write_source_files to include complex_layout
