@@ -1,3 +1,12 @@
+# Use the official Bazel Central Registry
+common --registry=https://bcr.bazel.build
+
+# Use a custom secondary registry for specific modules
+common --registry=https://raw.githubusercontent.com/filmil/bazel-registry/main
+
+# Increase the limit for stdout/stderr in the UI for better debugging
+common --experimental_ui_max_stdouterr_bytes=9000000
+
 # Load user-specific configurations if they exist.
 try-import %workspace%/user.bazelrc
 

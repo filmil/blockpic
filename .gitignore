@@ -2,5 +2,3 @@ bazel-*
 user.bazelrc
 .vscode
 local
-.antigravitycli
-
