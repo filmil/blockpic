@@ -45,7 +45,7 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 			continue
 		}
 
-		w, h := r.calculateSize(b)
+		w, h := r.CalculateSize(gc, b)
 
 		gc.SetFillColor(ColorPrimitive)
 		gc.SetStrokeColor(ColorOutline)
@@ -90,11 +90,11 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		}
 
 		gc.SetFillColor(ColorText)
-		gc.FillStringAt(b.Name, l.X+2, l.Y-5)
+		renderText(gc, b.Name, l.X+2, l.Y-5)
 
 		if isMSI {
 			// Center the MSI kind label in the common control block
-			gc.FillStringAt(kind, l.X+w/2-float64(len(kind)*3), l.Y+h*0.15+4)
+			renderText(gc, kind, l.X+w/2-float64(len(kind)*3), l.Y+h*0.15+4)
 		}
 
 		r.renderPins(gc, b, l, w, h, isMSI)
@@ -116,8 +116,8 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 				dstB = b
 			}
 		}
-		sw, sh := r.calculateSize(srcB)
-		dw, dh := r.calculateSize(dstB)
+		sw, sh := r.CalculateSize(gc, srcB)
+		dw, dh := r.CalculateSize(gc, dstB)
 
 		x1, y1, d1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
 		x2, y2, d2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
@@ -153,7 +153,7 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 			gc.Stroke()
 			
 			gc.SetFillColor(ColorText)
-			gc.FillStringAt(fmt.Sprintf("%d", w.Crossline), mx+2, my-2)
+			renderText(gc, fmt.Sprintf("%d", w.Crossline), mx+2, my-2)
 		}
 	}
 
@@ -167,10 +167,44 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 	return dest, err
 }
 
-func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
+func (r *Renderer) CalculateSize(gc draw2d.GraphicContext, b ast.Block) (float64, float64) {
 	if b.Size != nil {
 		return b.Size.W, b.Size.H
 	}
+	
+	nameW, _ := measureText(gc, b.Name)
+	
+	maxInW, maxOutW := 0.0, 0.0
+	for _, p := range b.Inputs {
+		w, _ := measureText(gc, p.Name)
+		if w > maxInW {
+			maxInW = w
+		}
+	}
+	for _, p := range b.Outputs {
+		w, _ := measureText(gc, p.Name)
+		if w > maxOutW {
+			maxOutW = w
+		}
+	}
+
+	minW := 60.0
+	kind := strings.ToUpper(b.Kind)
+	isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
+	if isMSI {
+		minW = 80.0
+	}
+	
+	contentW := maxInW + maxOutW + 20.0
+	if nameW+10 > contentW {
+		contentW = nameW + 10
+	}
+	
+	w := minW
+	if contentW > w {
+		w = contentW
+	}
+	
 	numPins := len(b.Inputs)
 	if len(b.Outputs) > numPins {
 		numPins = len(b.Outputs)
@@ -178,12 +212,19 @@ func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
 	if numPins < 2 {
 		numPins = 2
 	}
-	// Give MSI blocks a bit more width for labels
-	kind := strings.ToUpper(b.Kind)
-	if kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG" {
-		return 80.0, float64(numPins)*25.0 + 30.0 // Add space for common control block
+	
+	h := float64(numPins) * 20.0
+	if isMSI {
+		h = float64(numPins)*25.0 + 30.0
 	}
-	return 60.0, float64(numPins) * 20.0
+	
+	// Add space for params if they exist
+	if len(b.Params) > 0 {
+	    // just rough estimate, we render it below name
+	    h += float64(len(b.Params)) * 12.0
+	}
+	
+	return w, h
 }
 
 func (r *Renderer) renderPins(gc draw2d.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) {
@@ -242,22 +283,22 @@ func (r *Renderer) renderPins(gc draw2d.GraphicContext, b ast.Block, l ast.Layou
 
 		if pos == router.DirLeft {
 			if isMSI {
-				gc.FillStringAt(label, px+8, py+4)
+				renderText(gc, label, px+8, py+4)
 			} else {
-				gc.FillStringAt(label, px+2, py+4)
+				renderText(gc, label, px+2, py+4)
 			}
 			gc.BeginPath()
 			gc.MoveTo(px-2, py)
 			gc.LineTo(px, py)
 			gc.Stroke()
 		} else if pos == router.DirTop {
-			gc.FillStringAt(label, px-4, py+12)
+			renderText(gc, label, px-4, py+12)
 			gc.BeginPath()
 			gc.MoveTo(px, py-2)
 			gc.LineTo(px, py)
 			gc.Stroke()
 		} else if pos == router.DirBottom {
-			gc.FillStringAt(label, px-4, py-6)
+			renderText(gc, label, px-4, py-6)
 			gc.BeginPath()
 			gc.MoveTo(px, py+2)
 			gc.LineTo(px, py)
@@ -288,22 +329,22 @@ func (r *Renderer) renderPins(gc draw2d.GraphicContext, b ast.Block, l ast.Layou
 		
 		if pos == router.DirRight {
 			if isMSI {
-				gc.FillStringAt(label, px-20, py+4)
+				renderText(gc, label, px-20, py+4)
 			} else {
-				gc.FillStringAt(label, px-15, py+4)
+				renderText(gc, label, px-15, py+4)
 			}
 			gc.BeginPath()
 			gc.MoveTo(px, py)
 			gc.LineTo(px+2, py)
 			gc.Stroke()
 		} else if pos == router.DirTop {
-			gc.FillStringAt(label, px-4, py+12)
+			renderText(gc, label, px-4, py+12)
 			gc.BeginPath()
 			gc.MoveTo(px, py-2)
 			gc.LineTo(px, py)
 			gc.Stroke()
 		} else if pos == router.DirBottom {
-			gc.FillStringAt(label, px-4, py-6)
+			renderText(gc, label, px-4, py-6)
 			gc.BeginPath()
 			gc.MoveTo(px, py+2)
 			gc.LineTo(px, py)
@@ -379,4 +420,79 @@ func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, 
 		return l.X, l.Y + h/2, router.DirLeft
 	}
 	return l.X + w, l.Y + h/2, router.DirRight
+}
+
+func measureText(gc draw2d.GraphicContext, text string) (float64, float64) {
+	lines := strings.Split(strings.ReplaceAll(text, "\\n", "\n"), "\n")
+	lineHeight := 12.0
+	maxWidth := 0.0
+	
+	for _, line := range lines {
+		cleanLine := strings.ReplaceAll(line, "~", "")
+		cleanLine = strings.ReplaceAll(cleanLine, "_", "")
+		l, _, r, _ := gc.GetStringBounds(cleanLine)
+		w := r - l
+		if w > maxWidth {
+			maxWidth = w
+		}
+	}
+	return maxWidth, float64(len(lines)) * lineHeight
+}
+
+func renderText(gc draw2d.GraphicContext, text string, x, y float64) float64 {
+	lines := strings.Split(strings.ReplaceAll(text, "\\n", "\n"), "\n")
+	lineHeight := 12.0
+	maxWidth := 0.0
+
+	for i, line := range lines {
+		ly := y + float64(i)*lineHeight
+		cx := x
+		
+		inOver := false
+		inUnder := false
+		
+		runes := []rune(line)
+		buf := ""
+		
+		flush := func() {
+			if len(buf) > 0 {
+				gc.FillStringAt(buf, cx, ly)
+				l, t, r, b := gc.GetStringBounds(buf)
+				_, _ = t, b
+				w := r - l
+				
+				if inOver {
+					gc.BeginPath()
+					gc.MoveTo(cx, ly-10)
+					gc.LineTo(cx+w, ly-10)
+					gc.Stroke()
+				}
+				if inUnder {
+					gc.BeginPath()
+					gc.MoveTo(cx, ly+2)
+					gc.LineTo(cx+w, ly+2)
+					gc.Stroke()
+				}
+				cx += w
+				buf = ""
+			}
+		}
+		
+		for _, r := range runes {
+			if r == '~' {
+				flush()
+				inOver = !inOver
+			} else if r == '_' {
+				flush()
+				inUnder = !inUnder
+			} else {
+				buf += string(r)
+			}
+		}
+		flush()
+		if cx - x > maxWidth {
+			maxWidth = cx - x
+		}
+	}
+	return maxWidth
 }

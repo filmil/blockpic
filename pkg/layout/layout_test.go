@@ -19,7 +19,9 @@ func TestAutoLayout(t *testing.T) {
 		},
 	}
 
-	AutoLayout(diag)
+	AutoLayout(diag, func(b ast.Block) (float64, float64) {
+		return 60.0, 40.0
+	})
 
 	if len(diag.Layout) != 3 {
 		t.Errorf("expected 3 layout entries, got %d", len(diag.Layout))
