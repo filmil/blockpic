@@ -1,0 +1,30 @@
+diagram ArrowRendering {
+    block CENTER {
+        kind: "CUSTOM";
+        inputs: I1 [left], I2 [right], I3 [top], I4 [bottom];
+        outputs: O1 [left], O2 [right], O3 [top], O4 [bottom];
+    }
+    
+    block L { kind: "NOT"; outputs: O [right]; inputs: I [right]; }
+    block R { kind: "NOT"; outputs: O [left]; inputs: I [left]; }
+    block T { kind: "NOT"; outputs: O [bottom]; inputs: I [bottom]; }
+    block B { kind: "NOT"; outputs: O [top]; inputs: I [top]; }
+
+    wire L.O -> CENTER.I1 { hint: "straight" }
+    wire R.O -> CENTER.I2 { hint: "straight" }
+    wire T.O -> CENTER.I3 { hint: "straight" }
+    wire B.O -> CENTER.I4 { hint: "straight" }
+    
+    wire CENTER.O1 -> L.I { hint: "L-shape" }
+    wire CENTER.O2 -> R.I { hint: "L-shape" }
+    wire CENTER.O3 -> T.I { hint: "L-shape" }
+    wire CENTER.O4 -> B.I { hint: "L-shape" }
+
+    layout {
+        CENTER at (200, 200);
+        L at (50, 200);
+        R at (350, 200);
+        T at (200, 50);
+        B at (200, 350);
+    }
+}
