@@ -44,10 +44,7 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			continue
 		}
 
-		w, h := 60.0, 40.0
-		if b.Size != nil {
-			w, h = b.Size.W, b.Size.H
-		}
+		w, h := r.calculateSize(b)
 
 		gc.SetFillColor(ColorPrimitive)
 		gc.SetStrokeColor(ColorOutline)
@@ -76,7 +73,6 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		case "CLOCK":
 			shapes.DrawClock(gc, l.X, l.Y, w, h)
 		default:
-			// Default rectangle for REGISTER, COUNTER, etc.
 			gc.BeginPath()
 			gc.MoveTo(l.X, l.Y)
 			gc.LineTo(l.X+w, l.Y)
@@ -88,11 +84,12 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 
 		gc.SetFillColor(ColorText)
 		gc.FillStringAt(b.Name, l.X+2, l.Y-5)
-		
-		// Internal label if kind is special but use standard rect
+
 		if kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" {
 			gc.FillStringAt(kind, l.X+5, l.Y+h/2+4)
 		}
+
+		r.renderPins(gc, b, l, w, h)
 	}
 
 	for _, w := range diag.Wires {
@@ -102,16 +99,30 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			continue
 		}
 
-		x1, y1 := srcL.X+60, srcL.Y+20
-		x2, y2 := dstL.X, dstL.Y+20
+		// Find block sizes for pin calculation
+		var srcB, dstB ast.Block
+		for _, b := range diag.Blocks {
+			if b.Name == w.Source.Block {
+				srcB = b
+			}
+			if b.Name == w.Destination.Block {
+				dstB = b
+			}
+		}
+		sw, sh := r.calculateSize(srcB)
+		dw, dh := r.calculateSize(dstB)
+
+		x1, y1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
+		x2, y2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
 
 		points := router.Route(x1, y1, x2, y2, w.Hint)
 
 		gc.SetStrokeColor(ColorOutline)
-		gc.SetLineWidth(float64(w.Thickness))
-		if w.Thickness == 0 {
-			gc.SetLineWidth(1)
+		thickness := float64(w.Thickness)
+		if thickness <= 0 {
+			thickness = 1
 		}
+		gc.SetLineWidth(thickness)
 		
 		gc.BeginPath()
 		if len(points) > 0 {
@@ -140,4 +151,61 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 	}
 
 	return dest, nil
+}
+
+func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
+	if b.Size != nil {
+		return b.Size.W, b.Size.H
+	}
+	// Default size based on pin count
+	numPins := len(b.Inputs)
+	if len(b.Outputs) > numPins {
+		numPins = len(b.Outputs)
+	}
+	if numPins < 2 {
+		numPins = 2
+	}
+	return 60.0, float64(numPins) * 20.0
+}
+
+func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64) {
+	gc.SetFillColor(ColorText)
+	for i, p := range b.Inputs {
+		py := l.Y + (float64(i)+1)*h/(float64(len(b.Inputs))+1)
+		gc.FillStringAt(p.Name, l.X+2, py+4)
+		gc.BeginPath()
+		gc.MoveTo(l.X-2, py)
+		gc.LineTo(l.X, py)
+		gc.Stroke()
+	}
+	for i, p := range b.Outputs {
+		py := l.Y + (float64(i)+1)*h/(float64(len(b.Outputs))+1)
+		gc.FillStringAt(p.Name, l.X+w-15, py+4)
+		gc.BeginPath()
+		gc.MoveTo(l.X+w, py)
+		gc.LineTo(l.X+w+2, py)
+		gc.Stroke()
+	}
+}
+
+func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, h float64, isDest bool) (float64, float64) {
+	if pinName == "" {
+		if isDest {
+			return l.X, l.Y + h/2
+		}
+		return l.X + w, l.Y + h/2
+	}
+
+	for i, p := range b.Inputs {
+		if p.Name == pinName {
+			return l.X, l.Y + (float64(i)+1)*h/(float64(len(b.Inputs))+1)
+		}
+	}
+	for i, p := range b.Outputs {
+		if p.Name == pinName {
+			return l.X + w, l.Y + (float64(i)+1)*h/(float64(len(b.Outputs))+1)
+		}
+	}
+
+	return l.X + w/2, l.Y + h/2
 }

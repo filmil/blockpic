@@ -4,6 +4,7 @@ load(
     "markdown_lib",
     "pandoc_chunked_html",
 )
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,7 +14,12 @@ markdown_lib(
         "datasheet.md",
         "spec.md",
     ] + glob(["tasks/*.md"]),
-    additional_inputs = ["head.html", ":shapes.png"],
+    additional_inputs = [
+        "head.html",
+        "shapes.png",
+        "pins_buses.png",
+        "dynamic_sizing.png",
+    ],
 )
 
 ebook_pdf(
@@ -33,7 +39,32 @@ pandoc_chunked_html(
 genrule(
     name = "gen_shapes_example",
     srcs = ["examples/shapes.hodos"],
-    outs = ["shapes.png"],
+    outs = ["shapes_gen.png"],
     cmd = "$(location //cmd/hodos) render $(location examples/shapes.hodos) -o $@",
     tools = ["//cmd/hodos"],
+)
+
+genrule(
+    name = "gen_pins_buses_example",
+    srcs = ["examples/pins_buses.hodos"],
+    outs = ["pins_buses_gen.png"],
+    cmd = "$(location //cmd/hodos) render $(location examples/pins_buses.hodos) -o $@",
+    tools = ["//cmd/hodos"],
+)
+
+genrule(
+    name = "gen_dynamic_sizing_example",
+    srcs = ["examples/dynamic_sizing.hodos"],
+    outs = ["dynamic_sizing_gen.png"],
+    cmd = "$(location //cmd/hodos) render $(location examples/dynamic_sizing.hodos) -o $@",
+    tools = ["//cmd/hodos"],
+)
+
+write_source_files(
+    name = "update_diagrams",
+    files = {
+        "shapes.png": ":gen_shapes_example",
+        "pins_buses.png": ":gen_pins_buses_example",
+        "dynamic_sizing.png": ":gen_dynamic_sizing_example",
+    },
 )
