@@ -7,11 +7,16 @@ import (
 )
 
 func DrawAND(gc draw2d.GraphicContext, x, y, w, h float64) {
-	r := w / 2
+	r := h / 2
+	straightW := w - r
+	if straightW < 0 {
+		straightW = 0
+		r = w
+	}
 	gc.BeginPath()
 	gc.MoveTo(x, y)
-	gc.LineTo(x+r, y)
-	gc.ArcTo(x+r, y+r, r, r, -math.Pi/2, math.Pi)
+	gc.LineTo(x+straightW, y)
+	gc.ArcTo(x+straightW, y+r, r, r, -math.Pi/2, math.Pi)
 	gc.LineTo(x, y+h)
 	gc.Close()
 	gc.FillStroke()
@@ -20,25 +25,30 @@ func DrawAND(gc draw2d.GraphicContext, x, y, w, h float64) {
 func DrawOR(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.BeginPath()
 	gc.MoveTo(x, y)
-	gc.QuadCurveTo(x+w/4, y+h/2, x, y+h)
-	gc.QuadCurveTo(x+w*0.8, y+h, x+w, y+h/2)
-	gc.QuadCurveTo(x+w*0.8, y, x, y)
+	// Top curve
+	gc.QuadCurveTo(x+w*0.6, y, x+w, y+h/2)
+	// Bottom curve
+	gc.QuadCurveTo(x+w*0.6, y+h, x, y+h)
+	// Left curve
+	gc.QuadCurveTo(x+w*0.25, y+h/2, x, y)
 	gc.Close()
 	gc.FillStroke()
 }
 
 func DrawNOT(gc draw2d.GraphicContext, x, y, w, h float64) {
-	// Triangle
+	// Standard NOT gate is a triangle
 	gc.BeginPath()
 	gc.MoveTo(x, y)
-	gc.LineTo(x+w-8, y+h/2)
+	gc.LineTo(x+w, y+h/2)
 	gc.LineTo(x, y+h)
 	gc.Close()
 	gc.FillStroke()
-
-	// Inversion bubble
+	// Note: Bubble is drawn as a functional indicator on the pin in renderer.go, 
+	// but currently the renderer doesn't draw the bubble for NOT gates.
+	// To keep it simple and backwards compatible, we'll draw the bubble here.
+	bubbleR := 4.0
 	gc.BeginPath()
-	gc.ArcTo(x+w-4, y+h/2, 4, 4, 0, 2*math.Pi)
+	gc.ArcTo(x+w+bubbleR, y+h/2, bubbleR, bubbleR, 0, 2*math.Pi)
 	gc.Close()
 	gc.Stroke()
 }
@@ -46,16 +56,16 @@ func DrawNOT(gc draw2d.GraphicContext, x, y, w, h float64) {
 func DrawXOR(gc draw2d.GraphicContext, x, y, w, h float64) {
 	// First curve
 	gc.BeginPath()
-	gc.MoveTo(x-4, y)
-	gc.QuadCurveTo(x+w/4-4, y+h/2, x-4, y+h)
+	gc.MoveTo(x-5, y)
+	gc.QuadCurveTo(x+w*0.25-5, y+h/2, x-5, y+h)
 	gc.Stroke()
 
 	// Body same as OR
 	gc.BeginPath()
 	gc.MoveTo(x, y)
-	gc.QuadCurveTo(x+w/4, y+h/2, x, y+h)
-	gc.QuadCurveTo(x+w*0.8, y+h, x+w, y+h/2)
-	gc.QuadCurveTo(x+w*0.8, y, x, y)
+	gc.QuadCurveTo(x+w*0.6, y, x+w, y+h/2)
+	gc.QuadCurveTo(x+w*0.6, y+h, x, y+h)
+	gc.QuadCurveTo(x+w*0.25, y+h/2, x, y)
 	gc.Close()
 	gc.FillStroke()
 }
@@ -68,13 +78,6 @@ func DrawDFF(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.LineTo(x, y+h)
 	gc.Close()
 	gc.FillStroke()
-
-	// Clock triangle
-	gc.BeginPath()
-	gc.MoveTo(x, y+h*0.8)
-	gc.LineTo(x+5, y+h*0.75)
-	gc.LineTo(x, y+h*0.7)
-	gc.Stroke()
 }
 
 func DrawMUX(gc draw2d.GraphicContext, x, y, w, h float64) {
@@ -131,17 +134,23 @@ func DrawClock(gc draw2d.GraphicContext, x, y, w, h float64) {
 }
 
 func DrawMSIBlock(gc draw2d.GraphicContext, x, y, w, h float64) {
-	// Main rectangular body
+	controlHeight := h * 0.3
+	notch := 10.0
+
+	// Draw the IEEE Common Control Block (wider top, narrower bottom)
 	gc.BeginPath()
-	gc.MoveTo(x, y)
-	gc.LineTo(x+w, y)
+	gc.MoveTo(x-notch, y)
+	gc.LineTo(x+w+notch, y)
+	gc.LineTo(x+w+notch, y+controlHeight-notch)
+	gc.LineTo(x+w, y+controlHeight-notch)
 	gc.LineTo(x+w, y+h)
 	gc.LineTo(x, y+h)
+	gc.LineTo(x, y+controlHeight-notch)
+	gc.LineTo(x-notch, y+controlHeight-notch)
 	gc.Close()
 	gc.FillStroke()
 
-	// Draw the Common Control Block separator (top 30% of the block)
-	controlHeight := h * 0.3
+	// Separator line
 	gc.BeginPath()
 	gc.MoveTo(x, y+controlHeight)
 	gc.LineTo(x+w, y+controlHeight)

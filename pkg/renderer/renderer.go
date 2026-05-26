@@ -31,6 +31,9 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 	gc.SetFillColor(color.White)
 	gc.Clear()
 
+	gc.SetFontData(draw2d.FontData{Name: "luxisr", Family: draw2d.FontFamilySans, Style: draw2d.FontStyleNormal})
+	gc.SetFontSize(10)
+
 	layoutMap := make(map[string]ast.LayoutEntry)
 	for _, l := range diag.Layout {
 		layoutMap[l.Block] = l
