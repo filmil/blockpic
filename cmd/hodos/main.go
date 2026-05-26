@@ -12,6 +12,7 @@ import (
 	"github.com/filmil/hodos/pkg/renderer"
 	"github.com/filmil/hodos/pkg/scanner"
 	"github.com/filmil/hodos/pkg/validation"
+	_ "github.com/filmil/hodos/third_party/draw2dfont"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dsvg"
 	"github.com/llgcode/draw2d/draw2dpdf"

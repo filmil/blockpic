@@ -11,6 +11,7 @@ go_library(
         "//pkg/renderer",
         "//pkg/scanner",
         "//pkg/validation",
+        "//third_party/draw2dfont",
         "@com_github_llgcode_draw2d//draw2dimg",
         "@com_github_llgcode_draw2d//draw2dpdf",
         "@com_github_llgcode_draw2d//draw2dsvg",

@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "draw2dfont",
+    srcs = ["font.go"],
+    embedsrcs = ["luxisr.ttf"],
+    importpath = "github.com/filmil/hodos/third_party/draw2dfont",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_golang_freetype//truetype",
+        "@com_github_llgcode_draw2d//:draw2d",
+    ],
+)
