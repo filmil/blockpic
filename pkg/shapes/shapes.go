@@ -129,3 +129,21 @@ func DrawClock(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.LineTo(x+w, y+h)
 	gc.Stroke()
 }
+
+func DrawMSIBlock(gc draw2d.GraphicContext, x, y, w, h float64) {
+	// Main rectangular body
+	gc.BeginPath()
+	gc.MoveTo(x, y)
+	gc.LineTo(x+w, y)
+	gc.LineTo(x+w, y+h)
+	gc.LineTo(x, y+h)
+	gc.Close()
+	gc.FillStroke()
+
+	// Draw the Common Control Block separator (top 30% of the block)
+	controlHeight := h * 0.3
+	gc.BeginPath()
+	gc.MoveTo(x, y+controlHeight)
+	gc.LineTo(x+w, y+controlHeight)
+	gc.Stroke()
+}

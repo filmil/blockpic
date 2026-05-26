@@ -1,0 +1,20 @@
+diagram MSIBlocks {
+    block REG8 {
+        kind: "REGISTER";
+        inputs: D [left], CLK [left], EN [left], R [left];
+        outputs: Q [right];
+        params: { width: "8" };
+    }
+
+    block CTR4 {
+        kind: "COUNTER";
+        inputs: CLK [left], EN [left], R [left];
+        outputs: Q [right], TC [right];
+        params: { width: "4" };
+    }
+
+    layout {
+        REG8 at (20, 20)
+        CTR4 at (200, 20)
+    }
+}

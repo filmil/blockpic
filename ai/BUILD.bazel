@@ -8,6 +8,14 @@ load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "head.html",
+    "shapes.png",
+    "pins_buses.png",
+    "dynamic_sizing.png",
+    "msi_blocks.png",
+])
+
 markdown_lib(
     name = "md",
     srcs = [
@@ -15,10 +23,11 @@ markdown_lib(
         "spec.md",
     ] + glob(["tasks/*.md"]),
     additional_inputs = [
-        "head.html",
+        "//ai:head.html",
         "shapes.png",
         "pins_buses.png",
         "dynamic_sizing.png",
+        "msi_blocks.png",
     ],
 )
 
@@ -60,11 +69,20 @@ genrule(
     tools = ["//cmd/hodos"],
 )
 
+genrule(
+    name = "gen_msi_blocks_example",
+    srcs = ["examples/msi_blocks.hodos"],
+    outs = ["msi_blocks_gen.png"],
+    cmd = "$(location //cmd/hodos) render $(location examples/msi_blocks.hodos) -o $@",
+    tools = ["//cmd/hodos"],
+)
+
 write_source_files(
     name = "update_diagrams",
     files = {
         "shapes.png": ":gen_shapes_example",
         "pins_buses.png": ":gen_pins_buses_example",
         "dynamic_sizing.png": ":gen_dynamic_sizing_example",
+        "msi_blocks.png": ":gen_msi_blocks_example",
     },
 )
