@@ -44,6 +44,32 @@ Wires connect an output pin of a source block to an input pin of a destination b
 - **Typography**: Sans-serif (Helvetica or Arial), 8pt to 10pt.
 - **Line Weights**: 0.5pt for wires, 1.5pt for buses.
 
+### 2.5 Shape Library and IEEE Standards
+Hodos strictly adheres to **ANSI/IEEE Std 91-1984** for logic symbols. It supports both distinctive-shape and rectangular-shape symbols.
+
+#### 2.5.1 Basic Logic Gates
+- **Distinctive Shapes**: Standard semi-circular (AND), pointed (OR), and triangle (NOT) shapes.
+- **Rectangular Shapes**: Uniform rectangles using internal qualifying symbols:
+    - `&` : AND
+    - `≥1`: OR
+    - `1` : Buffer/Inverter
+    - `=1`: XOR
+    - `X/Y`: Specialized functions.
+
+#### 2.5.2 Dependency Notation (for Complex Blocks)
+For MSI components like Registers and Counters, Hodos supports IEEE dependency notation to represent internal logic relationships:
+- **`G` (AND)**: Gate dependency.
+- **`C` (Control)**: Timing/Clock dependency (often used with the `>` dynamic indicator for edge-triggering).
+- **`S` (Set) / `R` (Reset)**: Asynchronous set and reset.
+- **`EN` (Enable)**: Output enable.
+- **`M` (Mode)**: Mode dependency.
+- **`V` (OR)**: OR dependency.
+
+#### 2.5.3 Functional Indicators
+- **Bubble (`○`)**: External negation.
+- **Wedge (`>`)**: Dynamic indicator for edge-triggered inputs.
+- **Triangle (`▽`)**: Three-state (Hi-Z) output indicator.
+
 ## 3. Syntax (Draft)
 
 Hodos uses a custom DSL designed for readability.
@@ -104,7 +130,9 @@ diagram MyLogic {
 - Basic parameter and pin specification.
 
 ### Phase 2: Advanced Features
-- Implementation of the full IEEE shape library (`FLIPFLOP`, `MUX`, `VCC/GND`, etc.).
+- Implementation of the full IEEE 91-1984 shape library.
+- Functional Dependency Notation support (`G`, `C`, `S`, `R`, `EN`).
+- Complex MSI blocks (`REG`, `CTR`, `ALU`).
 - Custom rendering functions for `CUSTOM` blocks.
 - Basic auto-layout (grid layout).
 - Improved wire routing (orthogonal).
