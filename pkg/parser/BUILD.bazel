@@ -15,8 +15,5 @@ go_test(
     name = "parser_test",
     srcs = ["parser_test.go"],
     embed = [":parser"],
-    deps = [
-        "//pkg/ast",
-        "//pkg/scanner",
-    ],
+    deps = ["//pkg/scanner"],
 )
