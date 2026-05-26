@@ -1,4 +1,5 @@
-load("@bazel_ebook//build:rules.bzl",
+load(
+    "@bazel_ebook//build:rules.bzl",
     "ebook_pdf",
     "markdown_lib",
     "pandoc_chunked_html",
@@ -9,7 +10,6 @@ package(default_visibility = ["//visibility:public"])
 markdown_lib(
     name = "md",
     srcs = [
-        "//:README.md",
         "spec.md",
     ],
     additional_inputs = ["head.html"],
@@ -17,14 +17,14 @@ markdown_lib(
 
 ebook_pdf(
     name = "book_pdf",
-    deps = [":md"],
     metadata_xml = "epub-metadata.xml",
     title_yaml = "title.yaml",
+    deps = [":md"],
 )
 
 pandoc_chunked_html(
     name = "html_chunked",
-    deps = [":md"],
-    toc = True,
     args = ["--include-in-header=ai/head.html"],
+    toc = True,
+    deps = [":md"],
 )
