@@ -131,7 +131,7 @@ func (p *Parser) parsePins() []ast.Pin {
 			if p.peekTokenIs(scanner.LBRACKET) {
 				p.nextToken() // move to LBRACKET
 				p.nextToken() // move to IDENT inside bracket
-				pin.Position = p.curToken.Literal
+				pin.Position = ast.PinPosition(p.curToken.Literal)
 				p.expectPeek(scanner.RBRACKET) // move to RBRACKET
 			}
 			pins = append(pins, pin)
@@ -204,7 +204,7 @@ func (p *Parser) parseWire() *ast.Wire {
 			case scanner.HINT:
 				if p.expectPeek(scanner.COLON) {
 					if p.expectPeek(scanner.STRING) {
-						wire.Hint = p.curToken.Literal
+						wire.Hint = ast.RoutingHint(p.curToken.Literal)
 					}
 				}
 			case scanner.THICKNESS:

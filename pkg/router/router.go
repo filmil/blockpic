@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"sort"
+	"github.com/filmil/hodos/pkg/ast"
 )
 
 type Point struct {
@@ -32,11 +33,11 @@ type Segment struct {
 }
 
 // Route calculates orthogonal paths between two points, avoiding obstacles.
-func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint string, obstacles []Obstacle, routedSegments []Segment) []Point {
+func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint ast.RoutingHint, obstacles []Obstacle, routedSegments []Segment) []Point {
 	p1 := Point{x1, y1}
 	p2 := Point{x2, y2}
 
-	if hint == "straight" {
+	if hint == ast.HintStraight {
 		return []Point{p1, p2}
 	}
 
@@ -84,7 +85,7 @@ func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint stri
 	// Fallback to Z-shape default
 	var fallbackPath []Point
 	fallbackPath = append(fallbackPath, p1, exitP)
-	if hint == "L-shape" {
+	if hint == ast.HintLShape {
 		fallbackPath = append(fallbackPath, Point{exitP.X, enterP.Y})
 	} else {
 		midX := (exitP.X + enterP.X) / 2

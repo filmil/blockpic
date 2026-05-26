@@ -5,6 +5,7 @@ go_library(
     srcs = ["router.go"],
     importpath = "github.com/filmil/hodos/pkg/router",
     visibility = ["//visibility:public"],
+    deps = ["//pkg/ast"],
 )
 
 go_test(
