@@ -1,0 +1,34 @@
+diagram PinAware {
+    block SRC {
+        kind: "CUSTOM";
+        inputs: I_T [top], I_B [bottom], I_L [left];
+        outputs: O_R [right], O_T [top], O_B [bottom];
+        size: (60, 60);
+    }
+
+    block DST_TOP {
+        kind: "CUSTOM";
+        inputs: I_B [bottom];
+    }
+    
+    block DST_BOT {
+        kind: "CUSTOM";
+        inputs: I_T [top];
+    }
+
+    block DST_RIGHT {
+        kind: "CUSTOM";
+        inputs: I_L [left];
+    }
+
+    wire SRC.O_T -> DST_TOP.I_B { hint: "L-shape" }
+    wire SRC.O_B -> DST_BOT.I_T { hint: "L-shape" }
+    wire SRC.O_R -> DST_RIGHT.I_L { hint: "straight" }
+
+    layout {
+        SRC at (100, 100)
+        DST_TOP at (100, 20)
+        DST_BOT at (100, 200)
+        DST_RIGHT at (200, 100)
+    }
+}
