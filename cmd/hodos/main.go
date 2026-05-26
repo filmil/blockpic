@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"os"
 	"io/ioutil"
+	"image"
 
+	"github.com/filmil/hodos/pkg/ast"
 	"github.com/filmil/hodos/pkg/layout"
 	"github.com/filmil/hodos/pkg/parser"
 	"github.com/filmil/hodos/pkg/renderer"
 	"github.com/filmil/hodos/pkg/scanner"
 	"github.com/filmil/hodos/pkg/validation"
 	_ "github.com/filmil/hodos/third_party/draw2dfont"
+	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
 	"github.com/llgcode/draw2d/draw2dsvg"
 	"github.com/llgcode/draw2d/draw2dpdf"
@@ -106,10 +109,18 @@ func renderCmd() {
 	}
 
 
-	// Apply layout if missing
-	layout.AutoLayout(diag)
-
 	r := renderer.New(800, 600)
+
+	// Create a dummy image and graphic context for measuring text sizes during layout
+	dummyImg := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	dummyGc := draw2dimg.NewGraphicContext(dummyImg)
+	dummyGc.SetFontData(draw2d.FontData{Name: "luxisr", Family: draw2d.FontFamilySans, Style: draw2d.FontStyleNormal})
+	dummyGc.SetFontSize(10)
+
+	// Apply layout if missing
+	layout.AutoLayout(diag, func(b ast.Block) (float64, float64) {
+		return r.CalculateSize(dummyGc, b)
+	})
 
 	if *format == "png" {
 		img, err := r.Render(diag)

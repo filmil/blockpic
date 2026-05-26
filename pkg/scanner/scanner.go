@@ -166,7 +166,7 @@ func (s *Scanner) skipComment() {
 
 func (s *Scanner) readIdentifier() string {
 	start := s.pos
-	for s.pos < len(s.input) && (isLetter(s.input[s.pos]) || isDigit(s.input[s.pos]) || s.input[s.pos] == '_') {
+	for s.pos < len(s.input) && (isLetter(s.input[s.pos]) || isDigit(s.input[s.pos]) || s.input[s.pos] == '_' || s.input[s.pos] == '~') {
 		s.pos++
 	}
 	return string(s.input[start:s.pos])
@@ -194,7 +194,7 @@ func (s *Scanner) readString() string {
 }
 
 func isLetter(ch rune) bool {
-	return unicode.IsLetter(ch) || ch == '_'
+	return unicode.IsLetter(ch) || ch == '_' || ch == '~'
 }
 
 func isDigit(ch rune) bool {

@@ -92,4 +92,9 @@ render_diagram(
     src = "examples/complex_layout.hodos",
 )
 
+render_diagram(
+    name = "text_rendering",
+    src = "examples/text_rendering.hodos",
+)
+
 # Need to update write_source_files to include complex_layout

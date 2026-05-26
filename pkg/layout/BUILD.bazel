@@ -5,7 +5,10 @@ go_library(
     srcs = ["layout.go"],
     importpath = "github.com/filmil/hodos/pkg/layout",
     visibility = ["//visibility:public"],
-    deps = ["//pkg/ast"],
+    deps = [
+        "//pkg/ast",
+        "@com_github_monkey_works_cassowary//:cassowary",
+    ],
 )
 
 go_test(
