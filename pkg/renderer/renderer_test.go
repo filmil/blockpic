@@ -76,3 +76,35 @@ func TestRenderer_AllShapes(t *testing.T) {
 		t.Fatalf("Rendered image is nil")
 	}
 }
+
+func TestRenderer_TextCollisionShift(t *testing.T) {
+	diag := &ast.Diagram{
+		Name: "CollisionShift",
+		Blocks: []ast.Block{
+			{Label: "A", Kind: "LUT", Size: &ast.Size{W: 20, H: 20}},
+			{Label: "B1", Name: "B1_Collision_Test_Gate", Kind: "AND", Size: &ast.Size{W: 50, H: 50}},
+			{Label: "C", Kind: "LUT", Size: &ast.Size{W: 20, H: 20}},
+		},
+		Wires: []ast.Wire{
+			{
+				Source:      ast.PinRef{Block: "A", Pin: "O"},
+				Destination: ast.PinRef{Block: "C", Pin: "I"},
+				Hint:        "straight",
+			},
+		},
+		Layout: []ast.LayoutEntry{
+			{Block: "A", X: 10, Y: 80},
+			{Block: "B1", X: 100, Y: 100},
+			{Block: "C", X: 300, Y: 80},
+		},
+	}
+
+	r := New(400, 300)
+	img, err := r.Render(diag)
+	if err != nil {
+		t.Fatalf("Render failed: %v", err)
+	}
+	if img == nil {
+		t.Fatalf("Rendered image is nil")
+	}
+}

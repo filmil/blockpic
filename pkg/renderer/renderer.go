@@ -45,6 +45,8 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		layoutMap[l.Block] = l
 	}
 
+	// Stage 1: Draw all block shapes and pin indicators only, omitting text
+	var blockObstacles []router.Obstacle
 	for _, b := range diag.Blocks {
 		l, ok := layoutMap[b.Label]
 		if !ok {
@@ -52,6 +54,13 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		}
 
 		w, h := r.CalculateSize(gc, b)
+		blockObstacles = append(blockObstacles, router.Obstacle{
+			Name: b.Label,
+			X:    l.X,
+			Y:    l.Y,
+			W:    w,
+			H:    h,
+		})
 
 		gc.SetFillColor(ColorPrimitive)
 		gc.SetStrokeColor(ColorOutline)
@@ -95,89 +104,12 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 			}
 		}
 
-		displayName := b.Name
-		if displayName == "" {
-			displayName = b.Label
-		}
-
-		nameInside := false
-		if !isMSI {
-			switch kind {
-			case "AND", "OR", "NOT", "XOR", "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF", "MUX", "DEMUX", "VCC", "GND", "CLOCK":
-				// keep outside
-			default:
-				nameInside = true
-			}
-		}
-
-		gc.SetFillColor(ColorText)
-		if nameInside {
-			nameW, nameH := measureText(gc, displayName)
-			if err := r.drawText(gc, displayName, l.X+w/2-nameW/2, l.Y+h/2+nameH/2-2, &b, &l, w, h); err != nil {
-				return err
-			}
-		} else {
-			if err := r.drawText(gc, displayName, l.X+2, l.Y-5, nil, nil, 0, 0); err != nil {
-				return err
-			}
-		}
-
-		if isMSI {
-			// Center the MSI kind label in the common control block
-			kindW, _ := measureText(gc, kind)
-			if err := r.drawText(gc, kind, l.X+w/2-kindW/2, l.Y+h*0.15+4, &b, &l, w, h); err != nil {
-				return err
-			}
-		}
-
-		if err := r.renderPins(gc, b, l, w, h, isMSI); err != nil {
+		if err := r.renderPinGraphics(gc, b, l, w, h, isMSI); err != nil {
 			return err
 		}
 	}
-	var obstacles []router.Obstacle
-	for _, b := range diag.Blocks {
-		l, ok := layoutMap[b.Label]
-		if !ok {
-			continue
-		}
-		bw, bh := r.CalculateSize(gc, b)
-		obstacles = append(obstacles, router.Obstacle{
-			Name: b.Label,
-			X:    l.X,
-			Y:    l.Y,
-			W:    bw,
-			H:    bh,
-		})
 
-		kind := strings.ToUpper(b.Kind)
-		isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
-		nameInside := false
-		if !isMSI {
-			switch kind {
-			case "AND", "OR", "NOT", "XOR", "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF", "MUX", "DEMUX", "VCC", "GND", "CLOCK":
-				// keep outside
-			default:
-				nameInside = true
-			}
-		}
-
-		if !nameInside {
-			// Add block name text as obstacle
-			displayName := b.Name
-			if displayName == "" {
-				displayName = b.Label
-			}
-			nameW, nameH := measureText(gc, displayName)
-			obstacles = append(obstacles, router.Obstacle{
-				Name: b.Label + "_label",
-				X:    l.X + 2,
-				Y:    l.Y - 5 - nameH,
-				W:    nameW,
-				H:    nameH,
-			})
-		}
-	}
-
+	// Stage 2: Route and draw wire lines and arrowheads
 	var routedWires []routedWire
 
 	for _, w := range diag.Wires {
@@ -202,7 +134,8 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		x1, y1, d1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
 		x2, y2, d2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
 
-		points := router.Route(x1, y1, d1, x2, y2, d2, w.Hint, obstacles)
+		// Route wire using blockObstacles only
+		points := router.Route(x1, y1, d1, x2, y2, d2, w.Hint, blockObstacles)
 		routedWires = append(routedWires, routedWire{Wire: w, Path: points})
 
 		gc.SetStrokeColor(ColorOutline)
@@ -264,65 +197,154 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 			gc.MoveTo(mx-4, my+4)
 			gc.LineTo(mx+4, my-4)
 			gc.Stroke()
-			
-			gc.SetFillColor(ColorText)
-			if err := r.drawText(gc, fmt.Sprintf("%d", w.Crossline), mx+2, my-2, nil, nil, 0, 0); err != nil {
-				return err
-			}
 		}
 	}
 
-	if err := r.verifyNoWireTextIntersections(gc, diag, layoutMap, routedWires); err != nil {
+	// Stage 3: Collect, layout, and draw text labels
+	labels := r.collectTextLabels(gc, diag, layoutMap, routedWires)
+	placedRects, err := r.layoutAndDrawText(gc, labels, blockObstacles, routedWires)
+	if err != nil {
+		return err
+	}
+
+	if err := r.verifyNoWireTextIntersections(placedRects, routedWires); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-type textRect struct {
-	Text string
-	X, Y, W, H float64
+type textLabel struct {
+	text       string
+	itemType   string // "name_inside", "name_outside", "msi_kind", "pin", "crossline"
+	ownerLabel string // block label
+	block      *ast.Block
+	layout     *ast.LayoutEntry
+	bw, bh     float64
+	defaultX   float64
+	defaultY   float64
+	// For crosslines
+	isHoriz    bool
+	midPoint   router.Point
 }
 
-func intersectsRect(x1, y1, x2, y2 float64, r textRect) bool {
-	minX := math.Min(x1, x2)
-	maxX := math.Max(x1, x2)
-	minY := math.Min(y1, y2)
-	maxY := math.Max(y1, y2)
+func (r *Renderer) renderPinGraphics(gc draw2d.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) error {
+	offsetY := 0.0
+	usableH := h
+	if isMSI {
+		offsetY = h * 0.3
+		usableH = h * 0.7
+	}
 
-	if x1 == x2 { // Vertical segment
-		if x1 > r.X && x1 < r.X+r.W {
-			// Check if the Y interval overlaps
-			return !(maxY <= r.Y || minY >= r.Y+r.H)
+	for i, p := range b.Inputs {
+		pos := r.getPinPositionHint(p.Position, false)
+		
+		var px, py float64
+		if pos == router.DirLeft {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+			px = l.X
+		} else if pos == router.DirTop {
+			py = l.Y
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
+		} else if pos == router.DirBottom {
+			py = l.Y + h
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
+		} else {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+			px = l.X
 		}
-	} else if y1 == y2 { // Horizontal segment
-		if y1 > r.Y && y1 < r.Y+r.H {
-			// Check if the X interval overlaps
-			return !(maxX <= r.X || minX >= r.X+r.W)
+
+		if strings.HasPrefix(p.Name, "C") || strings.HasPrefix(p.Name, "CLK") {
+			gc.BeginPath()
+			if pos == router.DirLeft {
+				gc.MoveTo(px, py-4)
+				gc.LineTo(px+6, py)
+				gc.LineTo(px, py+4)
+			} else if pos == router.DirBottom {
+				gc.MoveTo(px-4, py)
+				gc.LineTo(px, py-6)
+				gc.LineTo(px+4, py)
+			} else if pos == router.DirTop {
+				gc.MoveTo(px-4, py)
+				gc.LineTo(px, py+6)
+				gc.LineTo(px+4, py)
+			}
+			gc.Stroke()
+		}
+
+		if pos == router.DirLeft {
+			gc.BeginPath()
+			gc.MoveTo(px-2, py)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirTop {
+			gc.BeginPath()
+			gc.MoveTo(px, py-2)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirBottom {
+			gc.BeginPath()
+			gc.MoveTo(px, py+2)
+			gc.LineTo(px, py)
+			gc.Stroke()
 		}
 	}
-	return false
+
+	for i, p := range b.Outputs {
+		pos := r.getPinPositionHint(p.Position, true)
+
+		var px, py float64
+		if pos == router.DirRight {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+			px = l.X + w
+		} else if pos == router.DirTop {
+			py = l.Y
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
+		} else if pos == router.DirBottom {
+			py = l.Y + h
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
+		} else {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+			px = l.X + w
+		}
+
+		if pos == router.DirRight {
+			gc.BeginPath()
+			gc.MoveTo(px, py)
+			gc.LineTo(px+2, py)
+			gc.Stroke()
+		} else if pos == router.DirTop {
+			gc.BeginPath()
+			gc.MoveTo(px, py-2)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirBottom {
+			gc.BeginPath()
+			gc.MoveTo(px, py+2)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		}
+	}
+	return nil
 }
 
-func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag *ast.Diagram, layoutMap map[string]ast.LayoutEntry, routedWires []routedWire) error {
-	var rects []textRect
+func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram, layoutMap map[string]ast.LayoutEntry, routedWires []routedWire) []textLabel {
+	var labels []textLabel
 
 	for _, b := range diag.Blocks {
 		l, ok := layoutMap[b.Label]
 		if !ok {
 			continue
 		}
-
 		w, h := r.CalculateSize(gc, b)
 		kind := strings.ToUpper(b.Kind)
 		isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
 
-		// 1. Block name label
 		displayName := b.Name
 		if displayName == "" {
 			displayName = b.Label
 		}
-		nameW, nameH := measureText(gc, displayName)
+
 		nameInside := false
 		if !isMSI {
 			switch kind {
@@ -333,33 +355,49 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 			}
 		}
 
+		// 1. Block name label
+		nameW, nameH := measureText(gc, displayName)
+		blockRef := b
+		layoutRef := l
 		if nameInside {
-			rects = append(rects, textRect{
-				Text: displayName,
-				X:    l.X + w/2 - nameW/2,
-				Y:    l.Y + h/2 - nameH/2 - 2,
-				W:    nameW,
-				H:    nameH,
+			labels = append(labels, textLabel{
+				text:       displayName,
+				itemType:   "name_inside",
+				ownerLabel: b.Label,
+				block:      &blockRef,
+				layout:     &layoutRef,
+				bw:         w,
+				bh:         h,
+				defaultX:   l.X + w/2 - nameW/2,
+				defaultY:   l.Y + h/2 + nameH/2 - 2,
 			})
 		} else {
-			rects = append(rects, textRect{
-				Text: displayName,
-				X:    l.X + 2,
-				Y:    l.Y - 5 - nameH,
-				W:    nameW,
-				H:    nameH,
+			labels = append(labels, textLabel{
+				text:       displayName,
+				itemType:   "name_outside",
+				ownerLabel: b.Label,
+				block:      &blockRef,
+				layout:     &layoutRef,
+				bw:         w,
+				bh:         h,
+				defaultX:   l.X + 2,
+				defaultY:   l.Y - 5,
 			})
 		}
 
 		// 2. MSI kind label
 		if isMSI {
-			kindW, kindH := measureText(gc, kind)
-			rects = append(rects, textRect{
-				Text: kind,
-				X:    l.X + w/2 - kindW/2,
-				Y:    l.Y + h*0.15 + 4 - kindH,
-				W:    kindW,
-				H:    kindH,
+			kindW, _ := measureText(gc, kind)
+			labels = append(labels, textLabel{
+				text:       kind,
+				itemType:   "msi_kind",
+				ownerLabel: b.Label,
+				block:      &blockRef,
+				layout:     &layoutRef,
+				bw:         w,
+				bh:         h,
+				defaultX:   l.X + w/2 - kindW/2,
+				defaultY:   l.Y + h*0.15 + 4,
 			})
 		}
 
@@ -394,16 +432,15 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 					px = l.X
 				}
 
-				label := p.Name
+				pinLabel := p.Name
 				if strings.HasPrefix(p.Name, "C") || strings.HasPrefix(p.Name, "CLK") {
-					label = "C"
+					pinLabel = "C"
 				} else if strings.HasPrefix(p.Name, "R") {
-					label = "R"
+					pinLabel = "R"
 				} else if strings.HasPrefix(p.Name, "EN") {
-					label = "EN"
+					pinLabel = "EN"
 				}
 
-				tw, th := measureText(gc, label)
 				var tx, ty float64
 				if pos == router.DirLeft {
 					if isMSI {
@@ -420,17 +457,19 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 					ty = py - 6
 				}
 
-				rects = append(rects, textRect{
-					Text: label,
-					X:    tx,
-					Y:    ty - th,
-					W:    tw,
-					H:    th,
+				labels = append(labels, textLabel{
+					text:       pinLabel,
+					itemType:   "pin",
+					ownerLabel: b.Label,
+					block:      &blockRef,
+					layout:     &layoutRef,
+					bw:         w,
+					bh:         h,
+					defaultX:   tx,
+					defaultY:   ty,
 				})
 			}
-		}
 
-		if showPins {
 			for i, p := range b.Outputs {
 				pos := r.getPinPositionHint(p.Position, true)
 				var px, py float64
@@ -448,8 +487,8 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 					px = l.X + w
 				}
 
-				label := p.Name
-				tw, th := measureText(gc, label)
+				pinLabel := p.Name
+				tw, _ := measureText(gc, pinLabel)
 				var tx, ty float64
 				if pos == router.DirRight {
 					if isMSI {
@@ -466,14 +505,185 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 					ty = py - 6
 				}
 
-				rects = append(rects, textRect{
-					Text: label,
-					X:    tx,
-					Y:    ty - th,
-					W:    tw,
-					H:    th,
+				labels = append(labels, textLabel{
+					text:       pinLabel,
+					itemType:   "pin",
+					ownerLabel: b.Label,
+					block:      &blockRef,
+					layout:     &layoutRef,
+					bw:         w,
+					bh:         h,
+					defaultX:   tx,
+					defaultY:   ty,
 				})
 			}
+		}
+	}
+
+	// 4. Wire crossline labels
+	for _, rw := range routedWires {
+		w := rw.Wire
+		points := rw.Path
+		if w.Crossline > 0 && len(points) > 1 {
+			midIdx := len(points) / 2
+			p1 := points[midIdx-1]
+			p2 := points[midIdx]
+			mx, my := (p1.X+p2.X)/2, (p1.Y+p2.Y)/2
+			isHoriz := math.Abs(p1.Y-p2.Y) < 0.1
+
+			labels = append(labels, textLabel{
+				text:     fmt.Sprintf("%d", w.Crossline),
+				itemType: "crossline",
+				defaultX: mx + 2,
+				defaultY: my - 2,
+				isHoriz:  isHoriz,
+				midPoint: router.Point{X: mx, Y: my},
+			})
+		}
+	}
+
+	return labels
+}
+
+func (r *Renderer) layoutAndDrawText(gc draw2d.GraphicContext, labels []textLabel, blockObstacles []router.Obstacle, routedWires []routedWire) ([]textRect, error) {
+	var placedRects []textRect
+
+	for _, item := range labels {
+		tw, th := measureText(gc, item.text)
+		
+		// Generate candidate positions
+		var candidates []struct{ x, y float64 }
+
+		if item.itemType == "name_outside" {
+			l := item.layout
+			bw, bh := item.bw, item.bh
+			candidates = []struct{ x, y float64 }{
+				{l.X + 2, l.Y - 5},                     // Top (Default)
+				{l.X + 2, l.Y + bh + 5 + th},           // Bottom
+				{l.X - tw - 5, l.Y + bh/2 + th/2},      // Left
+				{l.X + bw + 5, l.Y + bh/2 + th/2},      // Right
+			}
+		} else if item.itemType == "crossline" {
+			mx, my := item.midPoint.X, item.midPoint.Y
+			if item.isHoriz {
+				candidates = []struct{ x, y float64 }{
+					{mx - tw/2, my - 4},             // Top-centered
+					{mx - tw/2, my + th + 4},         // Bottom-centered
+					{mx + 2, my - 2},                 // Top-Right (Default fallback)
+					{mx + 2, my + th + 2},             // Bottom-Right
+				}
+			} else {
+				candidates = []struct{ x, y float64 }{
+					{mx + 4, my + th/2},             // Right-centered
+					{mx - tw - 4, my + th/2},         // Left-centered
+					{mx + 2, my - 2},                 // Top-Right (Default fallback)
+					{mx - tw - 2, my - 2},             // Top-Left
+				}
+			}
+		} else {
+			candidates = []struct{ x, y float64 }{
+				{item.defaultX, item.defaultY},
+			}
+		}
+
+		found := false
+		var finalX, finalY float64
+
+		for _, cand := range candidates {
+			if !r.checkCollision(cand.x, cand.y, tw, th, item.itemType, item.ownerLabel, blockObstacles, routedWires, placedRects) {
+				finalX, finalY = cand.x, cand.y
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			finalX, finalY = candidates[0].x, candidates[0].y
+		}
+
+		if (item.itemType == "name_inside" || item.itemType == "msi_kind" || item.itemType == "pin") && item.block != nil && item.layout != nil {
+			bLeft := item.layout.X
+			bRight := item.layout.X + item.bw
+			bTop := item.layout.Y
+			bBottom := item.layout.Y + item.bh
+
+			if finalX < bLeft {
+				finalX = bLeft
+			}
+			if finalX+tw > bRight {
+				finalX = bRight - tw
+			}
+			if finalX < bLeft {
+				finalX = bLeft
+			}
+
+			if finalY-th < bTop {
+				finalY = bTop + th
+			}
+			if finalY > bBottom {
+				finalY = bBottom
+			}
+		}
+
+		if (item.itemType == "name_inside" || item.itemType == "msi_kind" || item.itemType == "pin") && item.block != nil && item.layout != nil {
+			bLeft := item.layout.X
+			bRight := item.layout.X + item.bw
+			bTop := item.layout.Y
+			bBottom := item.layout.Y + item.bh
+			tolerance := 0.001
+			if finalX < bLeft-tolerance || finalX+tw > bRight+tolerance || finalY-th < bTop-tolerance || finalY > bBottom+tolerance {
+				return nil, fmt.Errorf("text %q inside block %q renders outside its shape boundaries", item.text, item.ownerLabel)
+			}
+		}
+
+		if finalX < 0 || finalX+tw > float64(r.Width) || finalY-th < 0 || finalY > float64(r.Height) {
+			return nil, fmt.Errorf("text %q at (%.1f, %.1f) renders outside the image extents [0, 0, %d, %d]", item.text, finalX, finalY, r.Width, r.Height)
+		}
+
+		gc.SetFillColor(ColorText)
+		renderText(gc, item.text, finalX, finalY)
+
+		placedRects = append(placedRects, textRect{
+			Text: item.text,
+			X:    finalX,
+			Y:    finalY - th,
+			W:    tw,
+			H:    th,
+		})
+	}
+
+	return placedRects, nil
+}
+
+func (r *Renderer) checkCollision(x, y, tw, th float64, itemType string, ownerLabel string, blockObstacles []router.Obstacle, routedWires []routedWire, placedRects []textRect) bool {
+	rect := textRect{
+		X: x,
+		Y: y - th,
+		W: tw,
+		H: th,
+	}
+
+	if rect.X < 0 || rect.X+rect.W > float64(r.Width) || rect.Y < 0 || rect.Y+rect.H > float64(r.Height) {
+		return true
+	}
+
+	for _, obs := range blockObstacles {
+		if itemType == "name_inside" || itemType == "msi_kind" || itemType == "pin" {
+			if obs.Name == ownerLabel {
+				tolerance := 0.001
+				contained := rect.X >= obs.X-tolerance &&
+					rect.X+rect.W <= obs.X+obs.W+tolerance &&
+					rect.Y >= obs.Y-tolerance &&
+					rect.Y+rect.H <= obs.Y+obs.H+tolerance
+				if !contained {
+					return true
+				}
+				continue
+			}
+		}
+
+		if rect.X < obs.X+obs.W && rect.X+rect.W > obs.X && rect.Y < obs.Y+obs.H && rect.Y+rect.H > obs.Y {
+			return true
 		}
 	}
 
@@ -482,74 +692,62 @@ func (r *Renderer) verifyNoWireTextIntersections(gc draw2d.GraphicContext, diag 
 		for i := 0; i < len(path)-1; i++ {
 			p1 := path[i]
 			p2 := path[i+1]
-
-			for _, r := range rects {
-				if intersectsRect(p1.X, p1.Y, p2.X, p2.Y, r) {
-					src := fmt.Sprintf("%s.%s", rw.Wire.Source.Block, rw.Wire.Source.Pin)
-					dst := fmt.Sprintf("%s.%s", rw.Wire.Destination.Block, rw.Wire.Destination.Pin)
-					return fmt.Errorf("wire from %s to %s intersects block text %q (bounding box: X=%.1f, Y=%.1f, W=%.1f, H=%.1f)", src, dst, r.Text, r.X, r.Y, r.W, r.H)
-				}
+			if intersectsRect(p1.X, p1.Y, p2.X, p2.Y, rect) {
+				return true
 			}
 		}
 	}
 
-	return nil
+	for _, pr := range placedRects {
+		if rect.X < pr.X+pr.W && rect.X+rect.W > pr.X && rect.Y < pr.Y+pr.H && rect.Y+rect.H > pr.Y {
+			return true
+		}
+	}
+
+	return false
 }
 
-func (r *Renderer) drawText(gc draw2d.GraphicContext, text string, x, y float64, b *ast.Block, l *ast.LayoutEntry, bw, bh float64) error {
-	tw, th := measureText(gc, text)
+type textRect struct {
+	Text string
+	X, Y, W, H float64
+}
 
-	// If block is specified, clamp x and y to keep the text inside the block boundaries
-	if b != nil && l != nil {
-		bLeft := l.X
-		bRight := l.X + bw
-		bTop := l.Y
-		bBottom := l.Y + bh
+func intersectsRect(x1, y1, x2, y2 float64, r textRect) bool {
+	minX := math.Min(x1, x2)
+	maxX := math.Max(x1, x2)
+	minY := math.Min(y1, y2)
+	maxY := math.Max(y1, y2)
 
-		// Clamp X
-		if x < bLeft {
-			x = bLeft
+	if x1 == x2 { // Vertical segment
+		if x1 > r.X && x1 < r.X+r.W {
+			// Check if the Y interval overlaps
+			return !(maxY <= r.Y || minY >= r.Y+r.H)
 		}
-		if x+tw > bRight {
-			x = bRight - tw
-		}
-		if x < bLeft {
-			x = bLeft
-		}
-
-		// Clamp Y (y is the baseline, so the text goes from y-th to y)
-		if y-th < bTop {
-			y = bTop + th
-		}
-		if y > bBottom {
-			y = bBottom
+	} else if y1 == y2 { // Horizontal segment
+		if y1 > r.Y && y1 < r.Y+r.H {
+			// Check if the X interval overlaps
+			return !(maxX <= r.X || minX >= r.X+r.W)
 		}
 	}
+	return false
+}
 
-	xMin := x
-	xMax := x + tw
-	yMin := y - th
-	yMax := y
+func (r *Renderer) verifyNoWireTextIntersections(placedRects []textRect, routedWires []routedWire) error {
+	for _, rw := range routedWires {
+		path := rw.Path
+		for i := 0; i < len(path)-1; i++ {
+			p1 := path[i]
+			p2 := path[i+1]
 
-	// Check image bounds
-	if xMin < 0 || xMax > float64(r.Width) || yMin < 0 || yMax > float64(r.Height) {
-		return fmt.Errorf("text %q at (%.1f, %.1f) renders outside the image extents [0, 0, %d, %d]", text, x, y, r.Width, r.Height)
-	}
-
-	// Check block bounds if it is inside a block
-	if b != nil && l != nil {
-		bLeft := l.X
-		bRight := l.X + bw
-		bTop := l.Y
-		bBottom := l.Y + bh
-		tolerance := 0.001
-		if xMin < bLeft-tolerance || xMax > bRight+tolerance || yMin < bTop-tolerance || yMax > bBottom+tolerance {
-			fmt.Printf("FAIL TEXT BOUNDS: text=%q, xMin=%.2f, xMax=%.2f, yMin=%.2f, yMax=%.2f, bLeft=%.2f, bRight=%.2f, bTop=%.2f, bBottom=%.2f\n", text, xMin, xMax, yMin, yMax, bLeft, bRight, bTop, bBottom)
-			return fmt.Errorf("text %q inside block %q renders outside its shape boundaries", text, b.Label)
+			for _, rect := range placedRects {
+				if intersectsRect(p1.X, p1.Y, p2.X, p2.Y, rect) {
+					src := fmt.Sprintf("%s.%s", rw.Wire.Source.Block, rw.Wire.Source.Pin)
+					dst := fmt.Sprintf("%s.%s", rw.Wire.Destination.Block, rw.Wire.Destination.Pin)
+					return fmt.Errorf("wire from %s to %s intersects block text %q (bounding box: X=%.1f, Y=%.1f, W=%.1f, H=%.1f)", src, dst, rect.Text, rect.X, rect.Y, rect.W, rect.H)
+				}
+			}
 		}
 	}
-
-	renderText(gc, text, x, y)
 	return nil
 }
 
@@ -623,172 +821,10 @@ func (r *Renderer) CalculateSize(gc draw2d.GraphicContext, b ast.Block) (float64
 	
 	// Add space for params if they exist
 	if len(b.Params) > 0 {
-	    // just rough estimate, we render it below name
 	    h += float64(len(b.Params)) * 12.0
 	}
 	
 	return w, h
-}
-
-func (r *Renderer) renderPins(gc draw2d.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) error {
-	gc.SetFillColor(ColorText)
-	offsetY := 0.0
-	usableH := h
-	if isMSI {
-		offsetY = h * 0.3 // Push pins below the common control block
-		usableH = h * 0.7
-	}
-
-	showPins := true
-	if isBasicElement(b.Kind) {
-		showPins = b.Params["show_port_names"] == "true"
-	}
-
-	for i, p := range b.Inputs {
-		pos := r.getPinPositionHint(p.Position, false)
-		
-		var px, py float64
-		if pos == router.DirLeft {
-			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
-			px = l.X
-		} else if pos == router.DirTop {
-			py = l.Y
-			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
-		} else if pos == router.DirBottom {
-			py = l.Y + h
-			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
-		} else {
-			// fallback left
-			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
-			px = l.X
-		}
-
-		label := p.Name
-		
-		// Dependency Notation parsing
-		if strings.HasPrefix(p.Name, "C") || strings.HasPrefix(p.Name, "CLK") {
-			gc.BeginPath()
-			if pos == router.DirLeft {
-				gc.MoveTo(px, py-4)
-				gc.LineTo(px+6, py)
-				gc.LineTo(px, py+4)
-			} else if pos == router.DirBottom {
-				gc.MoveTo(px-4, py)
-				gc.LineTo(px, py-6)
-				gc.LineTo(px+4, py)
-			} else if pos == router.DirTop {
-				gc.MoveTo(px-4, py)
-				gc.LineTo(px, py+6)
-				gc.LineTo(px+4, py)
-			}
-			gc.Stroke()
-			label = "C"
-		} else if strings.HasPrefix(p.Name, "R") {
-			label = "R"
-		} else if strings.HasPrefix(p.Name, "EN") {
-			label = "EN"
-		}
-
-		if pos == router.DirLeft {
-			if showPins {
-				if isMSI {
-					if err := r.drawText(gc, label, px+8, py+4, &b, &l, w, h); err != nil {
-						return err
-					}
-				} else {
-					if err := r.drawText(gc, label, px+2, py+4, &b, &l, w, h); err != nil {
-						return err
-					}
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px-2, py)
-			gc.LineTo(px, py)
-			gc.Stroke()
-		} else if pos == router.DirTop {
-			if showPins {
-				if err := r.drawText(gc, label, px-4, py+12, &b, &l, w, h); err != nil {
-					return err
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px, py-2)
-			gc.LineTo(px, py)
-			gc.Stroke()
-		} else if pos == router.DirBottom {
-			if showPins {
-				if err := r.drawText(gc, label, px-4, py-6, &b, &l, w, h); err != nil {
-					return err
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px, py+2)
-			gc.LineTo(px, py)
-			gc.Stroke()
-		}
-	}
-
-	for i, p := range b.Outputs {
-		pos := r.getPinPositionHint(p.Position, true)
-
-		var px, py float64
-		if pos == router.DirRight {
-			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
-			px = l.X + w
-		} else if pos == router.DirTop {
-			py = l.Y
-			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
-		} else if pos == router.DirBottom {
-			py = l.Y + h
-			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
-		} else {
-			// fallback right
-			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
-			px = l.X + w
-		}
-
-		label := p.Name
-		
-		if pos == router.DirRight {
-			tw, _ := measureText(gc, label)
-			var startX float64
-			if isMSI {
-				startX = px - tw - 8
-			} else {
-				startX = px - tw - 4
-			}
-			if showPins {
-				if err := r.drawText(gc, label, startX, py+4, &b, &l, w, h); err != nil {
-					return err
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px, py)
-			gc.LineTo(px+2, py)
-			gc.Stroke()
-		} else if pos == router.DirTop {
-			if showPins {
-				if err := r.drawText(gc, label, px-4, py+12, &b, &l, w, h); err != nil {
-					return err
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px, py-2)
-			gc.LineTo(px, py)
-			gc.Stroke()
-		} else if pos == router.DirBottom {
-			if showPins {
-				if err := r.drawText(gc, label, px-4, py-6, &b, &l, w, h); err != nil {
-					return err
-				}
-			}
-			gc.BeginPath()
-			gc.MoveTo(px, py+2)
-			gc.LineTo(px, py)
-			gc.Stroke()
-		}
-	}
-	return nil
 }
 
 func (r *Renderer) getPinPositionHint(hint string, isDest bool) router.Direction {

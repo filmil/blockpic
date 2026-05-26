@@ -40,18 +40,22 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 	layers := make(map[string]int)
 	var queue []string
 
-	for node := range blocksToLayout {
-		if inDegree[node] == 0 {
+	for _, b := range diag.Blocks {
+		node := b.Label
+		if blocksToLayout[node] && inDegree[node] == 0 {
 			queue = append(queue, node)
 			layers[node] = 0
 		}
 	}
 
 	for len(queue) == 0 && len(blocksToLayout) > 0 {
-		for node := range blocksToLayout {
-			queue = append(queue, node)
-			layers[node] = 0
-			break
+		for _, b := range diag.Blocks {
+			node := b.Label
+			if blocksToLayout[node] {
+				queue = append(queue, node)
+				layers[node] = 0
+				break
+			}
 		}
 	}
 
@@ -69,11 +73,14 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 			}
 		}
 		if len(queue) == 0 {
-			for node := range blocksToLayout {
-				if _, visited := layers[node]; !visited {
-					queue = append(queue, node)
-					layers[node] = 0
-					break
+			for _, b := range diag.Blocks {
+				node := b.Label
+				if blocksToLayout[node] {
+					if _, visited := layers[node]; !visited {
+						queue = append(queue, node)
+						layers[node] = 0
+						break
+					}
 				}
 			}
 		}
@@ -81,10 +88,13 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 
 	layerGroups := make(map[int][]string)
 	maxLayer := 0
-	for node, layer := range layers {
-		layerGroups[layer] = append(layerGroups[layer], node)
-		if layer > maxLayer {
-			maxLayer = layer
+	for _, b := range diag.Blocks {
+		node := b.Label
+		if layer, visited := layers[node]; visited {
+			layerGroups[layer] = append(layerGroups[layer], node)
+			if layer > maxLayer {
+				maxLayer = layer
+			}
 		}
 	}
 
