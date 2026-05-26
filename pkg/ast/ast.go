@@ -18,9 +18,27 @@ type Block struct {
 	Size    *Size
 }
 
+type RoutingHint string
+
+const (
+	HintStraight RoutingHint = "straight"
+	HintLShape   RoutingHint = "L-shape"
+	HintZShape   RoutingHint = "Z-shape"
+)
+
+type PinPosition string
+
+const (
+	PositionLeft   PinPosition = "left"
+	PositionRight  PinPosition = "right"
+	PositionTop    PinPosition = "top"
+	PositionBottom PinPosition = "bottom"
+	PositionNone   PinPosition = ""
+)
+
 type Pin struct {
 	Name     string
-	Position string // left, right, top, bottom
+	Position PinPosition
 }
 
 type Wire struct {
@@ -28,7 +46,7 @@ type Wire struct {
 	Destination PinRef
 	Thickness   int
 	Crossline   int
-	Hint        string
+	Hint        RoutingHint
 }
 
 type PinRef struct {
