@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:s="https://github.com/nturley/netlistsvg" width="150" height="197">
+  <style>svg {
+    stroke:#000;
+    fill:none;
+  }
+  text {
+    fill:#000;
+    stroke:none;
+    font-size:10px;
+    font-weight: bold;
+    font-family: "Courier New", monospace;
+  }
+  .nodelabel {
+    text-anchor: middle;
+  }
+  .inputPortLabel {
+    text-anchor: end;
+  }
+  .splitjoinBody {
+    fill:#000;
+  }</style>
+  <g s:type="generic" transform="translate(25,22)" s:width="30" s:height="40" id="cell_LUT_MANY">
+    <text x="15" y="-4" class="nodelabel cell_LUT_MANY" s:attribute="ref">LUT</text>
+    <rect width="30" height="160" s:generic="body" class="cell_LUT_MANY"/>
+    <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I0">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I0</text>
+    </g>
+    <g transform="translate(0,30)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I1">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I1</text>
+    </g>
+    <g transform="translate(0,50)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I2">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I2</text>
+    </g>
+    <g transform="translate(0,70)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I3">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I3</text>
+    </g>
+    <g transform="translate(0,90)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I4">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I4</text>
+    </g>
+    <g transform="translate(0,110)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I5">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I5</text>
+    </g>
+    <g transform="translate(0,130)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I6">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I6</text>
+    </g>
+    <g transform="translate(0,150)" s:x="0" s:y="10" s:pid="in0" id="port_LUT_MANY~I7">
+      <text x="-3" y="-4" class="inputPortLabel cell_LUT_MANY">I7</text>
+    </g>
+    <g transform="translate(30,10)" s:x="30" s:y="10" s:pid="out0" id="port_LUT_MANY~O0">
+      <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_LUT_MANY">O0</text>
+    </g>
+    <g transform="translate(30,30)" s:x="30" s:y="10" s:pid="out0" id="port_LUT_MANY~O1">
+      <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_LUT_MANY">O1</text>
+    </g>
+  </g>
+  <g s:type="not" transform="translate(108,22.5)" s:width="30" s:height="20" id="cell_SMALL">
+    <s:alias val="$_NOT_"/>
+    <s:alias val="$not"/>
+    <s:alias val="$logic_not"/>
+    <path d="M0,0 L0,20 L20,10 Z" class="cell_SMALL"/>
+    <circle cx="23" cy="10" r="3" class="cell_SMALL"/>
+    <g s:x="0" s:y="10" s:pid="A"/>
+    <g s:x="25" s:y="10" s:pid="Y"/>
+  </g>
+  <line x1="56" x2="108" y1="32.5" y2="32.5" class="net_2"/>
+</svg>

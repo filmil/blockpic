@@ -1,0 +1,14 @@
+diagram Simple {
+  block and1 {
+    kind: "AND"
+    inputs: A, B
+    outputs: Y
+  }
+  block not1 {
+    kind: "NOT"
+    inputs: A
+    outputs: Y
+  }
+
+  wire and1.Y -> not1.A
+}

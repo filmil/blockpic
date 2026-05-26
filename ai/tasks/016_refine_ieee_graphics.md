@@ -11,4 +11,4 @@ Redo the element graphics to match the IEEE standard (ANSI/IEEE Std 91-1984) exa
 
 ## Deliverables
 - Updated `shapes` and `renderer` packages.
-- Regenerated `shapes.png`, `msi_blocks.png`, and `dynamic_sizing.png` demonstrating the refined, exact IEEE standards.
+- Regenerated `shapes.svg`, `msi_blocks.svg`, and `dynamic_sizing.svg` demonstrating the refined, exact IEEE standards.
