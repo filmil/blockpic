@@ -51,45 +51,52 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		gc.SetLineWidth(1)
 
 		kind := strings.ToUpper(b.Kind)
-		switch kind {
-		case "AND":
-			shapes.DrawAND(gc, l.X, l.Y, w, h)
-		case "OR":
-			shapes.DrawOR(gc, l.X, l.Y, w, h)
-		case "NOT":
-			shapes.DrawNOT(gc, l.X, l.Y, w, h)
-		case "XOR":
-			shapes.DrawXOR(gc, l.X, l.Y, w, h)
-		case "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF":
-			shapes.DrawDFF(gc, l.X, l.Y, w, h)
-		case "MUX":
-			shapes.DrawMUX(gc, l.X, l.Y, w, h)
-		case "DEMUX":
-			shapes.DrawDEMUX(gc, l.X, l.Y, w, h)
-		case "VCC":
-			shapes.DrawVCC(gc, l.X, l.Y, w, h)
-		case "GND":
-			shapes.DrawGND(gc, l.X, l.Y, w, h)
-		case "CLOCK":
-			shapes.DrawClock(gc, l.X, l.Y, w, h)
-		default:
-			gc.BeginPath()
-			gc.MoveTo(l.X, l.Y)
-			gc.LineTo(l.X+w, l.Y)
-			gc.LineTo(l.X+w, l.Y+h)
-			gc.LineTo(l.X, l.Y+h)
-			gc.Close()
-			gc.FillStroke()
+		isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
+
+		if isMSI {
+			shapes.DrawMSIBlock(gc, l.X, l.Y, w, h)
+		} else {
+			switch kind {
+			case "AND":
+				shapes.DrawAND(gc, l.X, l.Y, w, h)
+			case "OR":
+				shapes.DrawOR(gc, l.X, l.Y, w, h)
+			case "NOT":
+				shapes.DrawNOT(gc, l.X, l.Y, w, h)
+			case "XOR":
+				shapes.DrawXOR(gc, l.X, l.Y, w, h)
+			case "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF":
+				shapes.DrawDFF(gc, l.X, l.Y, w, h)
+			case "MUX":
+				shapes.DrawMUX(gc, l.X, l.Y, w, h)
+			case "DEMUX":
+				shapes.DrawDEMUX(gc, l.X, l.Y, w, h)
+			case "VCC":
+				shapes.DrawVCC(gc, l.X, l.Y, w, h)
+			case "GND":
+				shapes.DrawGND(gc, l.X, l.Y, w, h)
+			case "CLOCK":
+				shapes.DrawClock(gc, l.X, l.Y, w, h)
+			default:
+				gc.BeginPath()
+				gc.MoveTo(l.X, l.Y)
+				gc.LineTo(l.X+w, l.Y)
+				gc.LineTo(l.X+w, l.Y+h)
+				gc.LineTo(l.X, l.Y+h)
+				gc.Close()
+				gc.FillStroke()
+			}
 		}
 
 		gc.SetFillColor(ColorText)
 		gc.FillStringAt(b.Name, l.X+2, l.Y-5)
 
-		if kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" {
-			gc.FillStringAt(kind, l.X+5, l.Y+h/2+4)
+		if isMSI {
+			// Center the MSI kind label in the common control block
+			gc.FillStringAt(kind, l.X+w/2-float64(len(kind)*3), l.Y+h*0.15+4)
 		}
 
-		r.renderPins(gc, b, l, w, h)
+		r.renderPins(gc, b, l, w, h, isMSI)
 	}
 
 	for _, w := range diag.Wires {
@@ -99,7 +106,6 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			continue
 		}
 
-		// Find block sizes for pin calculation
 		var srcB, dstB ast.Block
 		for _, b := range diag.Blocks {
 			if b.Name == w.Source.Block {
@@ -157,7 +163,6 @@ func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
 	if b.Size != nil {
 		return b.Size.W, b.Size.H
 	}
-	// Default size based on pin count
 	numPins := len(b.Inputs)
 	if len(b.Outputs) > numPins {
 		numPins = len(b.Outputs)
@@ -165,22 +170,65 @@ func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
 	if numPins < 2 {
 		numPins = 2
 	}
+	// Give MSI blocks a bit more width for labels
+	kind := strings.ToUpper(b.Kind)
+	if kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG" {
+		return 80.0, float64(numPins)*25.0 + 30.0 // Add space for common control block
+	}
 	return 60.0, float64(numPins) * 20.0
 }
 
-func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64) {
+func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) {
 	gc.SetFillColor(ColorText)
+	offsetY := 0.0
+	usableH := h
+	if isMSI {
+		offsetY = h * 0.3 // Push pins below the common control block
+		usableH = h * 0.7
+	}
+
 	for i, p := range b.Inputs {
-		py := l.Y + (float64(i)+1)*h/(float64(len(b.Inputs))+1)
-		gc.FillStringAt(p.Name, l.X+2, py+4)
+		py := l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+		
+		label := p.Name
+		
+		// Dependency Notation parsing (simplified for visualization)
+		if strings.HasPrefix(p.Name, "C") || strings.HasPrefix(p.Name, "CLK") {
+			// Draw Wedge for dynamic inputs
+			gc.BeginPath()
+			gc.MoveTo(l.X, py-4)
+			gc.LineTo(l.X+6, py)
+			gc.LineTo(l.X, py+4)
+			gc.Stroke()
+			label = "C"
+		} else if strings.HasPrefix(p.Name, "R") {
+			label = "R"
+		} else if strings.HasPrefix(p.Name, "EN") {
+			label = "EN"
+		}
+
+		if isMSI {
+			gc.FillStringAt(label, l.X+8, py+4)
+		} else {
+			gc.FillStringAt(label, l.X+2, py+4)
+		}
+
 		gc.BeginPath()
 		gc.MoveTo(l.X-2, py)
 		gc.LineTo(l.X, py)
 		gc.Stroke()
 	}
+
 	for i, p := range b.Outputs {
-		py := l.Y + (float64(i)+1)*h/(float64(len(b.Outputs))+1)
-		gc.FillStringAt(p.Name, l.X+w-15, py+4)
+		py := l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+		label := p.Name
+		
+		if isMSI {
+			gc.FillStringAt(label, l.X+w-20, py+4)
+		} else {
+			gc.FillStringAt(label, l.X+w-15, py+4)
+		}
+		
 		gc.BeginPath()
 		gc.MoveTo(l.X+w, py)
 		gc.LineTo(l.X+w+2, py)
@@ -196,14 +244,24 @@ func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, 
 		return l.X + w, l.Y + h/2
 	}
 
+	kind := strings.ToUpper(b.Kind)
+	isMSI := kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" || kind == "REG" || kind == "CTR" || kind == "SRG"
+	
+	offsetY := 0.0
+	usableH := h
+	if isMSI {
+		offsetY = h * 0.3
+		usableH = h * 0.7
+	}
+
 	for i, p := range b.Inputs {
 		if p.Name == pinName {
-			return l.X, l.Y + (float64(i)+1)*h/(float64(len(b.Inputs))+1)
+			return l.X, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
 		}
 	}
 	for i, p := range b.Outputs {
 		if p.Name == pinName {
-			return l.X + w, l.Y + (float64(i)+1)*h/(float64(len(b.Outputs))+1)
+			return l.X + w, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
 		}
 	}
 

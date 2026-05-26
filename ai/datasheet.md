@@ -44,7 +44,7 @@ Hodos provides a comprehensive library of digital logic blocks based on IEEE sta
 *   **Power/Signal**: `VCC`, `GND`, `CLOCK`.
 
 ### 6.2 Visual Reference
-![IEEE Shapes](shapes.png)
+![IEEE Shapes](ai/shapes.png)
 
 ## 7. AST Validation
 Hodos includes a validation layer to ensure logical correctness before rendering.
@@ -59,7 +59,7 @@ Hodos supports explicit pin rendering and multi-bit bus visualization.
 *   **Crossline Indicator**: Standard bus width indicators with labels.
 
 ### 8.1 Visual Reference
-![Pins and Buses](pins_buses.png)
+![Pins and Buses](ai/pins_buses.png)
 
 ## 9. Dynamic Gate Sizing
 Hodos automatically calculates block dimensions based on the number of input and output pins.
@@ -67,7 +67,7 @@ Hodos automatically calculates block dimensions based on the number of input and
 *   **Precise Pin Positioning**: Pins are positioned exactly at the boundary intersection, ensuring clean orthogonal routing.
 
 ### 9.1 Visual Reference
-![Dynamic Sizing](dynamic_sizing.png)
+![Dynamic Sizing](ai/dynamic_sizing.png)
 
 ## 8. Pins and Buses
 Hodos supports explicit pin rendering and multi-bit bus visualization.
@@ -76,4 +76,14 @@ Hodos supports explicit pin rendering and multi-bit bus visualization.
 *   **Crossline Indicator**: Standard bus width indicators with labels.
 
 ### 8.1 Visual Reference
-![Pins and Buses](pins_buses.png)
+![Pins and Buses](ai/pins_buses.png)
+
+
+## 10. Registers, Counters, and Dependency Notation
+Hodos strictly adheres to IEEE Std 91-1984 for MSI components.
+*   **Common Control Block**: MSI blocks like `REGISTER` and `COUNTER` feature a separated top section for common controls.
+*   **Dependency Notation**: Pins are labeled using IEEE functional indicators (`C` for clock, `EN` for enable, `R` for reset, `S` for set).
+*   **Dynamic Indicators**: Clocks (`CLK`, `C`) are rendered with the standard `>` wedge indicator.
+
+### 10.1 Visual Reference
+![MSI Blocks](ai/msi_blocks.png)
