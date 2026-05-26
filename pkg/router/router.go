@@ -27,8 +27,12 @@ type Obstacle struct {
 	X, Y, W, H float64
 }
 
+type Segment struct {
+	P1, P2 Point
+}
+
 // Route calculates orthogonal paths between two points, avoiding obstacles.
-func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint string, obstacles []Obstacle) []Point {
+func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint string, obstacles []Obstacle, routedSegments []Segment) []Point {
 	p1 := Point{x1, y1}
 	p2 := Point{x2, y2}
 
@@ -69,7 +73,7 @@ func Route(x1, y1 float64, d1 Direction, x2, y2 float64, d2 Direction, hint stri
 	}
 
 	// Try A* routing first
-	path, err := routeAStar(exitP, enterP, obstacles)
+	path, err := routeAStar(exitP, enterP, obstacles, routedSegments)
 	if err == nil {
 		// Prepend start point and append end point
 		fullPath := append([]Point{p1}, path...)
@@ -101,7 +105,7 @@ func cleanConsecutiveDuplicates(path []Point) []Point {
 	return cleanPath
 }
 
-func routeAStar(start, end Point, obstacles []Obstacle) ([]Point, error) {
+func routeAStar(start, end Point, obstacles []Obstacle, routedSegments []Segment) ([]Point, error) {
 	margin := 12.0
 
 	// 1. Gather all coordinate candidates to build the routing grid
@@ -111,6 +115,14 @@ func routeAStar(start, end Point, obstacles []Obstacle) ([]Point, error) {
 	for _, obs := range obstacles {
 		xs = append(xs, obs.X-margin, obs.X+obs.W+margin)
 		ys = append(ys, obs.Y-margin, obs.Y+obs.H+margin)
+	}
+
+	for _, seg := range routedSegments {
+		if math.Abs(seg.P1.X-seg.P2.X) < 0.1 { // Vertical segment
+			xs = append(xs, seg.P1.X-8.0, seg.P1.X+8.0)
+		} else if math.Abs(seg.P1.Y-seg.P2.Y) < 0.1 { // Horizontal segment
+			ys = append(ys, seg.P1.Y-8.0, seg.P1.Y+8.0)
+		}
 	}
 
 	xs = uniqueSorted(xs)
@@ -228,6 +240,9 @@ func routeAStar(start, end Point, obstacles []Obstacle) ([]Point, error) {
 			if intersectsObstacles(cx, cy, nx, ny, obstacles, margin) {
 				continue
 			}
+			if intersectsSegments(cx, cy, nx, ny, routedSegments) {
+				continue
+			}
 
 			// Calculate cost
 			stepCost := manhattanDist(cx, cy, nx, ny)
@@ -307,6 +322,37 @@ func intersectsObstacles(x1, y1, x2, y2 float64, obstacles []Obstacle, margin fl
 			if y1 > obsTop && y1 < obsBottom {
 				// Check if the X interval overlaps
 				if !(maxX <= obsLeft || minX >= obsRight) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func intersectsSegments(x1, y1, x2, y2 float64, segments []Segment) bool {
+	minX := math.Min(x1, x2)
+	maxX := math.Max(x1, x2)
+	minY := math.Min(y1, y2)
+	maxY := math.Max(y1, y2)
+
+	for _, seg := range segments {
+		sMinX := math.Min(seg.P1.X, seg.P2.X)
+		sMaxX := math.Max(seg.P1.X, seg.P2.X)
+		sMinY := math.Min(seg.P1.Y, seg.P2.Y)
+		sMaxY := math.Max(seg.P1.Y, seg.P2.Y)
+
+		if math.Abs(x1-x2) < 0.1 && math.Abs(seg.P1.X-seg.P2.X) < 0.1 { // Both are vertical
+			if math.Abs(x1-seg.P1.X) < 0.1 { // On the same X coordinate
+				// Check if Y intervals overlap
+				if !(maxY <= sMinY || minY >= sMaxY) {
+					return true
+				}
+			}
+		} else if math.Abs(y1-y2) < 0.1 && math.Abs(seg.P1.Y-seg.P2.Y) < 0.1 { // Both are horizontal
+			if math.Abs(y1-seg.P1.Y) < 0.1 { // On the same Y coordinate
+				// Check if X intervals overlap
+				if !(maxX <= sMinX || minX >= sMaxX) {
 					return true
 				}
 			}
