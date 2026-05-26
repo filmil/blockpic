@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/filmil/hodos/actions/workflows/main.yml/badge.svg)](https://github.com/filmil/hodos/actions/workflows/main.yml)
 [![Deploy Docs](https://github.com/filmil/hodos/actions/workflows/deploy_docs.yml/badge.svg)](https://github.com/filmil/hodos/actions/workflows/deploy_docs.yml)
+[![Release](https://github.com/filmil/hodos/actions/workflows/release.yml/badge.svg)](https://github.com/filmil/hodos/actions/workflows/release.yml)
 
 Hodos is a language for engineering block diagram typesetting, designed to produce diagrams with the aesthetics of Xilinx UG474 technical documentation.
 
