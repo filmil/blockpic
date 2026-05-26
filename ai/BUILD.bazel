@@ -1,4 +1,3 @@
-load("//ai:diagram.bzl", "render_diagram")
 load(
     "@bazel_ebook//build:rules.bzl",
     "ebook_pdf",
@@ -6,6 +5,7 @@ load(
     "pandoc_chunked_html",
 )
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("//ai:diagram.bzl", "render_diagram")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -48,11 +48,30 @@ pandoc_chunked_html(
     deps = [":md"],
 )
 
-render_diagram(name = "shapes", src = "examples/shapes.hodos")
-render_diagram(name = "pins_buses", src = "examples/pins_buses.hodos")
-render_diagram(name = "dynamic_sizing", src = "examples/dynamic_sizing.hodos")
-render_diagram(name = "msi_blocks", src = "examples/msi_blocks.hodos")
-render_diagram(name = "pin_aware", src = "examples/pin_aware.hodos")
+render_diagram(
+    name = "shapes",
+    src = "examples/shapes.hodos",
+)
+
+render_diagram(
+    name = "pins_buses",
+    src = "examples/pins_buses.hodos",
+)
+
+render_diagram(
+    name = "dynamic_sizing",
+    src = "examples/dynamic_sizing.hodos",
+)
+
+render_diagram(
+    name = "msi_blocks",
+    src = "examples/msi_blocks.hodos",
+)
+
+render_diagram(
+    name = "pin_aware",
+    src = "examples/pin_aware.hodos",
+)
 
 write_source_files(
     name = "update_diagrams",
