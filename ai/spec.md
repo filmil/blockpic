@@ -92,12 +92,12 @@ diagram MyLogic {
 ### Phase 1: Core Language and Renderer
 - Define core DSL for blocks and wires.
 - Basic `draw2d` rendering engine (rectangles, lines, text).
-- Support for `AND`, `OR`, `NOT` primitives.
-- Basic parameter support.
+- Support for basic logic gates (`AND`, `OR`, `NOT`).
+- Basic parameter and pin specification.
 
 ### Phase 2: Advanced Features
-- Complex blocks (`FLIPFLOP`, `MUX`).
-- Custom rendering functions for blocks.
+- Implementation of the full IEEE shape library (`FLIPFLOP`, `MUX`, `VCC/GND`, etc.).
+- Custom rendering functions for `CUSTOM` blocks.
 - Basic auto-layout (grid layout).
 - Improved wire routing (orthogonal).
 
@@ -111,6 +111,16 @@ diagram MyLogic {
 - **Implementation Language**: Go (Golang).
 - **Rendering Library**: [draw2d](https://github.com/llgcode/draw2d) for 2D vector graphics.
 - **Output Formats**: Export to SVG, PDF, and PNG via `draw2d` or complementary libraries.
+- **Routing**: Automatic orthogonal routing with minimal crossings.
+- **Precision**: LaTeX-like precision for text placement and port alignment.
+
+## 6. Project Structure and Task Management
+
+- **Specification**: Stored in `//ai/spec.md`.
+- **Tasks**: Stored in `//ai/tasks/`.
+- **Naming Convention**: All task files must start with a `NNN` prefix (e.g., `000_initial_lexer.md`), where `NNN` is a sequence number starting from `000`.
+
+lementary libraries.
 - **Routing**: Automatic orthogonal routing with minimal crossings.
 - **Precision**: LaTeX-like precision for text placement and port alignment.
 
