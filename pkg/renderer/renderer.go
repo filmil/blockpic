@@ -4,7 +4,9 @@ package renderer
 import (
 	"image"
 	"image/color"
+	"strings"
 	"github.com/filmil/hodos/pkg/ast"
+	"github.com/filmil/hodos/pkg/shapes"
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
@@ -26,27 +28,18 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 	dest := image.NewRGBA(image.Rect(0, 0, r.Width, r.Height))
 	gc := draw2dimg.NewGraphicContext(dest)
 
-	// Set background
 	gc.SetFillColor(color.White)
 	gc.Clear()
 
-	// Build a map for easy block lookup
-	blockMap := make(map[string]ast.Block)
-	for _, b := range diag.Blocks {
-		blockMap[b.Name] = b
-	}
-
-	// Layout lookup
 	layoutMap := make(map[string]ast.LayoutEntry)
 	for _, l := range diag.Layout {
 		layoutMap[l.Block] = l
 	}
 
-	// Render Blocks
 	for _, b := range diag.Blocks {
 		l, ok := layoutMap[b.Name]
 		if !ok {
-			continue // Skip if no layout (auto-layout is Phase 2)
+			continue
 		}
 
 		w, h := 60.0, 40.0
@@ -54,24 +47,32 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			w, h = b.Size.W, b.Size.H
 		}
 
-		// Draw block rectangle
 		gc.SetFillColor(ColorPrimitive)
 		gc.SetStrokeColor(ColorOutline)
 		gc.SetLineWidth(1)
-		gc.BeginPath()
-		gc.MoveTo(l.X, l.Y)
-		gc.LineTo(l.X+w, l.Y)
-		gc.LineTo(l.X+w, l.Y+h)
-		gc.LineTo(l.X, l.Y+h)
-		gc.Close()
-		gc.FillStroke()
 
-		// Text: Name
+		switch strings.ToUpper(b.Kind) {
+		case "AND":
+			shapes.DrawAND(gc, l.X, l.Y, w, h)
+		case "OR":
+			shapes.DrawOR(gc, l.X, l.Y, w, h)
+		case "NOT":
+			shapes.DrawNOT(gc, l.X, l.Y, w, h)
+		default:
+			// Default rectangle
+			gc.BeginPath()
+			gc.MoveTo(l.X, l.Y)
+			gc.LineTo(l.X+w, l.Y)
+			gc.LineTo(l.X+w, l.Y+h)
+			gc.LineTo(l.X, l.Y+h)
+			gc.Close()
+			gc.FillStroke()
+		}
+
 		gc.SetFillColor(ColorText)
-		gc.FillStringAt(b.Name, l.X+2, l.Y+12)
+		gc.FillStringAt(b.Name, l.X+2, l.Y-5) // Move name above the gate
 	}
 
-	// Render Wires
 	for _, w := range diag.Wires {
 		srcL, ok1 := layoutMap[w.Source.Block]
 		dstL, ok2 := layoutMap[w.Destination.Block]
@@ -79,8 +80,6 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			continue
 		}
 
-		// Simplified: draw a straight line between centers for now
-		// (Orthogonal routing is Task 004)
 		gc.SetStrokeColor(ColorOutline)
 		gc.SetLineWidth(float64(w.Thickness))
 		if w.Thickness == 0 {
