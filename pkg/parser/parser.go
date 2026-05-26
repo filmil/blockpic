@@ -78,7 +78,7 @@ func (p *Parser) parseBlock() *ast.Block {
 	if !p.expectPeek(scanner.IDENT) {
 		return nil
 	}
-	block := &ast.Block{Name: p.curToken.Literal, Params: make(map[string]string)}
+	block := &ast.Block{Label: p.curToken.Literal, Params: make(map[string]string)}
 
 	if !p.expectPeek(scanner.LBRACE) {
 		return nil
@@ -91,6 +91,12 @@ func (p *Parser) parseBlock() *ast.Block {
 			if p.expectPeek(scanner.COLON) {
 				if p.expectPeek(scanner.STRING) {
 					block.Kind = p.curToken.Literal
+				}
+			}
+		case scanner.NAME:
+			if p.expectPeek(scanner.COLON) {
+				if p.expectPeek(scanner.STRING) {
+					block.Name = p.curToken.Literal
 				}
 			}
 		case scanner.INPUTS:

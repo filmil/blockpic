@@ -16,8 +16,8 @@ func TestValidate(t *testing.T) {
 			name: "valid diagram",
 			diag: &ast.Diagram{
 				Blocks: []ast.Block{
-					{Name: "B1", Outputs: []ast.Pin{{Name: "O"}}},
-					{Name: "B2", Inputs: []ast.Pin{{Name: "I"}}},
+					{Label: "B1", Name: "B1", Outputs: []ast.Pin{{Name: "O"}}},
+					{Label: "B2", Name: "B2", Inputs: []ast.Pin{{Name: "I"}}},
 				},
 				Wires: []ast.Wire{
 					{
@@ -31,14 +31,14 @@ func TestValidate(t *testing.T) {
 		{
 			name: "duplicate block",
 			diag: &ast.Diagram{
-				Blocks: []ast.Block{{Name: "B1"}, {Name: "B1"}},
+				Blocks: []ast.Block{{Label: "B1", Name: "B1"}, {Label: "B1", Name: "B1"}},
 			},
 			wantErr: true,
 		},
 		{
 			name: "missing source block",
 			diag: &ast.Diagram{
-				Blocks: []ast.Block{{Name: "B1"}},
+				Blocks: []ast.Block{{Label: "B1", Name: "B1"}},
 				Wires: []ast.Wire{
 					{Source: ast.PinRef{Block: "B2"}, Destination: ast.PinRef{Block: "B1"}},
 				},
@@ -49,8 +49,8 @@ func TestValidate(t *testing.T) {
 			name: "missing pin",
 			diag: &ast.Diagram{
 				Blocks: []ast.Block{
-					{Name: "B1", Outputs: []ast.Pin{{Name: "O1"}}},
-					{Name: "B2"},
+					{Label: "B1", Name: "B1", Outputs: []ast.Pin{{Name: "O1"}}},
+					{Label: "B2", Name: "B2"},
 				},
 				Wires: []ast.Wire{
 					{

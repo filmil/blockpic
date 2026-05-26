@@ -9,9 +9,9 @@ import (
 func TestAutoLayout(t *testing.T) {
 	diag := &ast.Diagram{
 		Blocks: []ast.Block{
-			{Name: "B1"},
-			{Name: "B2"},
-			{Name: "B3"},
+			{Label: "B1", Name: "B1"},
+			{Label: "B2", Name: "B2"},
+			{Label: "B3", Name: "B3"},
 		},
 		Wires: []ast.Wire{
 			{Source: ast.PinRef{Block: "B1"}, Destination: ast.PinRef{Block: "B2"}},

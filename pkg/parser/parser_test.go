@@ -19,6 +19,7 @@ diagram MyLogic {
 
     block DFF_1 {
         kind: "FLIPFLOP"
+        name: "DFF Display"
         inputs: D, CLK [bottom]
         outputs: Q
     }
@@ -61,12 +62,20 @@ diagram MyLogic {
 		t.Errorf("expected 2 blocks, got %d", len(diag.Blocks))
 	}
 
-	if diag.Blocks[0].Name != "LUT6_A" {
-		t.Errorf("expected first block 'LUT6_A', got '%s'", diag.Blocks[0].Name)
+	if diag.Blocks[0].Label != "LUT6_A" {
+		t.Errorf("expected first block label 'LUT6_A', got '%s'", diag.Blocks[0].Label)
 	}
 
 	if diag.Blocks[0].Kind != "LUT" {
 		t.Errorf("expected block kind 'LUT', got '%s'", diag.Blocks[0].Kind)
+	}
+
+	if diag.Blocks[1].Label != "DFF_1" {
+		t.Errorf("expected second block label 'DFF_1', got '%s'", diag.Blocks[1].Label)
+	}
+
+	if diag.Blocks[1].Name != "DFF Display" {
+		t.Errorf("expected second block name 'DFF Display', got '%s'", diag.Blocks[1].Name)
 	}
 
 	if len(diag.Wires) != 2 {

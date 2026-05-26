@@ -9,12 +9,12 @@ import (
 func Validate(diag *ast.Diagram) error {
 	blockMap := make(map[string]ast.Block)
 	
-	// 1. Check for duplicate block names
+	// 1. Check for duplicate block labels
 	for _, b := range diag.Blocks {
-		if _, ok := blockMap[b.Name]; ok {
-			return fmt.Errorf("duplicate block name: %s", b.Name)
+		if _, ok := blockMap[b.Label]; ok {
+			return fmt.Errorf("duplicate block label: %s", b.Label)
 		}
-		blockMap[b.Name] = b
+		blockMap[b.Label] = b
 	}
 
 	// 2. Verify wires
