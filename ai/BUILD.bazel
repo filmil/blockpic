@@ -19,6 +19,12 @@ exports_files([
     "complex_layout.svg",
     "text_rendering.svg",
     "arrow_rendering.svg",
+    "skin_arithmetic.svg",
+    "skin_bitwise.svg",
+    "skin_latches.svg",
+    "skin_muxes.svg",
+    "skin_special.svg",
+    "skin_utility.svg",
 ])
 
 markdown_lib(
@@ -37,6 +43,12 @@ markdown_lib(
         "complex_layout.svg",
         "text_rendering.svg",
         "arrow_rendering.svg",
+        "skin_arithmetic.svg",
+        "skin_bitwise.svg",
+        "skin_latches.svg",
+        "skin_muxes.svg",
+        "skin_special.svg",
+        "skin_utility.svg",
     ],
 )
 
@@ -90,6 +102,12 @@ write_source_files(
         "complex_layout.svg": ":complex_layout",
         "text_rendering.svg": ":text_rendering",
         "arrow_rendering.svg": ":arrow_rendering",
+        "skin_arithmetic.svg": ":skin_arithmetic",
+        "skin_bitwise.svg": ":skin_bitwise",
+        "skin_latches.svg": ":skin_latches",
+        "skin_muxes.svg": ":skin_muxes",
+        "skin_special.svg": ":skin_special",
+        "skin_utility.svg": ":skin_utility",
     },
 )
 
@@ -108,4 +126,34 @@ render_diagram(
 render_diagram(
     name = "arrow_rendering",
     src = "examples/arrow_rendering.hodos",
+)
+
+render_diagram(
+    name = "skin_arithmetic",
+    src = "examples/skin_arithmetic.hodos",
+)
+
+render_diagram(
+    name = "skin_bitwise",
+    src = "examples/skin_bitwise.hodos",
+)
+
+render_diagram(
+    name = "skin_latches",
+    src = "examples/skin_latches.hodos",
+)
+
+render_diagram(
+    name = "skin_muxes",
+    src = "examples/skin_muxes.hodos",
+)
+
+render_diagram(
+    name = "skin_special",
+    src = "examples/skin_special.hodos",
+)
+
+render_diagram(
+    name = "skin_utility",
+    src = "examples/skin_utility.hodos",
 )

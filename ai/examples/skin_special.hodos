@@ -1,0 +1,17 @@
+diagram skin_special {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block IN_C { kind: "INPUT_PIN"; outputs: O; }
+  block IN_D { kind: "INPUT_PIN"; outputs: O; }
+
+  block AOI3 { kind: "aoi3"; inputs: A, B, C; outputs: Y; }
+  wire IN_A.O -> AOI3.A
+  wire IN_B.O -> AOI3.B
+  wire IN_C.O -> AOI3.C
+
+  block AOI4 { kind: "aoi4"; inputs: A, B, C, D; outputs: Y; }
+  wire IN_A.O -> AOI4.A
+  wire IN_B.O -> AOI4.B
+  wire IN_C.O -> AOI4.C
+  wire IN_D.O -> AOI4.D
+}

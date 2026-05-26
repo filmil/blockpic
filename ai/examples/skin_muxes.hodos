@@ -1,0 +1,15 @@
+diagram skin_muxes {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block IN_S { kind: "INPUT_PIN"; outputs: O; }
+
+  block MUX { kind: "mux"; inputs: A, B, S; outputs: Y; }
+  wire IN_A.O -> MUX.A
+  wire IN_B.O -> MUX.B
+  wire IN_S.O -> MUX.S
+
+  block MUX_BUS { kind: "mux_bus"; inputs: A, B, S; outputs: Y; }
+  wire IN_A.O -> MUX_BUS.A
+  wire IN_B.O -> MUX_BUS.B
+  wire IN_S.O -> MUX_BUS.S
+}

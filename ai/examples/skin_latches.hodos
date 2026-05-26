@@ -1,0 +1,16 @@
+diagram skin_latches {
+  block IN_D { kind: "INPUT_PIN"; outputs: O; }
+  block IN_CLK { kind: "INPUT_PIN"; outputs: O; }
+
+  block DFF { kind: "dff"; inputs: D, CLK; outputs: Q; }
+  wire IN_D.O -> DFF.D
+  wire IN_CLK.O -> DFF.CLK
+
+  block DFF_BUS { kind: "dff_bus"; inputs: D, CLK; outputs: Q; }
+  wire IN_D.O -> DFF_BUS.D
+  wire IN_CLK.O -> DFF_BUS.CLK
+
+  block DLATCH { kind: "dlatch"; inputs: D, EN; outputs: Q; }
+  wire IN_D.O -> DLATCH.D
+  wire IN_CLK.O -> DLATCH.EN
+}
