@@ -12,6 +12,8 @@ go_library(
         "//pkg/scanner",
         "//pkg/validation",
         "@com_github_llgcode_draw2d//draw2dimg",
+        "@com_github_llgcode_draw2d//draw2dpdf",
+        "@com_github_llgcode_draw2d//draw2dsvg",
     ],
 )
 

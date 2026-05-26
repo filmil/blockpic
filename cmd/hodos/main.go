@@ -13,6 +13,8 @@ import (
 	"github.com/filmil/hodos/pkg/scanner"
 	"github.com/filmil/hodos/pkg/validation"
 	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/llgcode/draw2d/draw2dsvg"
+	"github.com/llgcode/draw2d/draw2dpdf"
 )
 
 func main() {
@@ -68,7 +70,7 @@ func compileCmd() {
 
 func renderCmd() {
 	renderFlags := flag.NewFlagSet("render", flag.ExitOnError)
-	format := renderFlags.String("format", "png", "Output format (png only for now)")
+	format := renderFlags.String("format", "png", "Output format (png, svg, pdf)")
 	output := renderFlags.String("o", "output.png", "Output file")
 
 	if len(os.Args) < 3 {
@@ -102,23 +104,50 @@ func renderCmd() {
 		os.Exit(1)
 	}
 
+
 	// Apply layout if missing
 	layout.AutoLayout(diag)
 
 	r := renderer.New(800, 600)
-	img, err := r.Render(diag)
-	if err != nil {
-		fmt.Printf("Error rendering: %v\n", err)
-		os.Exit(1)
-	}
 
 	if *format == "png" {
+		img, err := r.Render(diag)
+		if err != nil {
+			fmt.Printf("Error rendering: %v\n", err)
+			os.Exit(1)
+		}
 		err = draw2dimg.SaveToPngFile(*output, img)
 		if err != nil {
 			fmt.Printf("Error saving file: %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Printf("Successfully rendered to %s\n", *output)
+	} else if *format == "svg" {
+		svg := draw2dsvg.NewSvg()
+		svg.Width = "800px"
+		svg.Height = "600px"
+		gc := draw2dsvg.NewGraphicContext(svg)
+		if err := r.Draw(gc, diag); err != nil {
+			fmt.Printf("Error rendering SVG: %v\n", err)
+			os.Exit(1)
+		}
+		if err := draw2dsvg.SaveToSvgFile(*output, svg); err != nil {
+			fmt.Printf("Error saving file: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Successfully rendered SVG to %s\n", *output)
+	} else if *format == "pdf" {
+		pdf := draw2dpdf.NewPdf("PORTRAIT", "mm", "A4")
+		gc := draw2dpdf.NewGraphicContext(pdf)
+		if err := r.Draw(gc, diag); err != nil {
+			fmt.Printf("Error rendering PDF: %v\n", err)
+			os.Exit(1)
+		}
+		if err := draw2dpdf.SaveToPdfFile(*output, pdf); err != nil {
+			fmt.Printf("Error saving file: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Successfully rendered PDF to %s\n", *output)
 	} else {
 		fmt.Printf("Unsupported format: %s\n", *format)
 		os.Exit(1)

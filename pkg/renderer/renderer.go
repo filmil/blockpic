@@ -9,6 +9,7 @@ import (
 	"github.com/filmil/hodos/pkg/ast"
 	"github.com/filmil/hodos/pkg/shapes"
 	"github.com/filmil/hodos/pkg/router"
+	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
@@ -26,10 +27,7 @@ func New(w, h int) *Renderer {
 	return &Renderer{Width: w, Height: h}
 }
 
-func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
-	dest := image.NewRGBA(image.Rect(0, 0, r.Width, r.Height))
-	gc := draw2dimg.NewGraphicContext(dest)
-
+func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 	gc.SetFillColor(color.White)
 	gc.Clear()
 
@@ -156,7 +154,14 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		}
 	}
 
-	return dest, nil
+	return nil
+}
+
+func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
+	dest := image.NewRGBA(image.Rect(0, 0, r.Width, r.Height))
+	gc := draw2dimg.NewGraphicContext(dest)
+	err := r.Draw(gc, diag)
+	return dest, err
 }
 
 func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
@@ -178,7 +183,7 @@ func (r *Renderer) calculateSize(b ast.Block) (float64, float64) {
 	return 60.0, float64(numPins) * 20.0
 }
 
-func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) {
+func (r *Renderer) renderPins(gc draw2d.GraphicContext, b ast.Block, l ast.LayoutEntry, w, h float64, isMSI bool) {
 	gc.SetFillColor(ColorText)
 	offsetY := 0.0
 	usableH := h
