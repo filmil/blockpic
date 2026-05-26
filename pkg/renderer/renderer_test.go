@@ -20,8 +20,8 @@ func TestRenderer(t *testing.T) {
 			},
 		},
 		Layout: []ast.LayoutEntry{
-			{Block: "B1", X: 10, Y: 10},
-			{Block: "B2", X: 100, Y: 10},
+			{Block: "B1", X: 10, Y: 20},
+			{Block: "B2", X: 100, Y: 20},
 		},
 	}
 
@@ -53,21 +53,21 @@ func TestRenderer_AllShapes(t *testing.T) {
 			{Name: "REG1", Kind: "REGISTER"},
 		},
 		Layout: []ast.LayoutEntry{
-			{Block: "AND1", X: 10, Y: 10},
-			{Block: "OR1", X: 80, Y: 10},
-			{Block: "NOT1", X: 150, Y: 10},
-			{Block: "XOR1", X: 220, Y: 10},
-			{Block: "DFF1", X: 10, Y: 70},
-			{Block: "MUX1", X: 80, Y: 70},
-			{Block: "DEMUX1", X: 150, Y: 70},
-			{Block: "VCC1", X: 220, Y: 70},
-			{Block: "GND1", X: 10, Y: 130},
-			{Block: "CLK1", X: 80, Y: 130},
-			{Block: "REG1", X: 150, Y: 130},
+			{Block: "AND1", X: 10, Y: 20},
+			{Block: "OR1", X: 80, Y: 20},
+			{Block: "NOT1", X: 150, Y: 20},
+			{Block: "XOR1", X: 220, Y: 20},
+			{Block: "DFF1", X: 10, Y: 80},
+			{Block: "MUX1", X: 80, Y: 80},
+			{Block: "DEMUX1", X: 150, Y: 80},
+			{Block: "VCC1", X: 220, Y: 80},
+			{Block: "GND1", X: 10, Y: 140},
+			{Block: "CLK1", X: 80, Y: 140},
+			{Block: "REG1", X: 150, Y: 140},
 		},
 	}
 
-	r := New(400, 200)
+	r := New(400, 250)
 	img, err := r.Render(diag)
 	if err != nil {
 		t.Fatalf("Render failed: %v", err)

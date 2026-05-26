@@ -24,8 +24,8 @@ diagram TextRendering {
     wire B.Q -> C.~EN~ { hint: "Z-shape" }
 
     layout {
-        A at (10, 10);
-        B at (150, 10);
-        C at (300, 10);
+        A at (10, 20);
+        B at (150, 20);
+        C at (300, 20);
     }
 }
