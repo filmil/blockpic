@@ -1,8 +1,14 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "router",
     srcs = ["router.go"],
     importpath = "github.com/filmil/hodos/pkg/router",
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "router_test",
+    srcs = ["router_test.go"],
+    embed = [":router"],
 )

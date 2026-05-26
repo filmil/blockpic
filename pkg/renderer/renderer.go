@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"sort"
 	"strings"
 	"github.com/filmil/hodos/pkg/ast"
 	"github.com/filmil/hodos/pkg/shapes"
@@ -112,6 +113,15 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 	// Stage 2: Route and draw wire lines and arrowheads
 	var routedWires []routedWire
 
+	type wireSortInfo struct {
+		wire       ast.Wire
+		x1, y1, x2, y2 float64
+		d1, d2     router.Direction
+		distance   float64
+		isFeedback bool
+	}
+
+	var wireInfos []wireSortInfo
 	for _, w := range diag.Wires {
 		srcL, ok1 := layoutMap[w.Source.Block]
 		dstL, ok2 := layoutMap[w.Destination.Block]
@@ -134,12 +144,66 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 		x1, y1, d1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
 		x2, y2, d2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
 
-		// Route wire using blockObstacles only
-		points := router.Route(x1, y1, d1, x2, y2, d2, w.Hint, blockObstacles)
-		routedWires = append(routedWires, routedWire{Wire: w, Path: points})
+		distance := math.Abs(x2-x1) + math.Abs(y2-y1)
+		isFeedback := x2 < x1
+
+		wireInfos = append(wireInfos, wireSortInfo{
+			wire:       w,
+			x1:         x1,
+			y1:         y1,
+			x2:         x2,
+			y2:         y2,
+			d1:         d1,
+			d2:         d2,
+			distance:   distance,
+			isFeedback: isFeedback,
+		})
+	}
+
+	var feedforward []wireSortInfo
+	var feedback []wireSortInfo
+
+	for _, info := range wireInfos {
+		if info.isFeedback {
+			feedback = append(feedback, info)
+		} else {
+			feedforward = append(feedforward, info)
+		}
+	}
+
+	sort.Slice(feedforward, func(i, j int) bool {
+		if math.Abs(feedforward[i].distance-feedforward[j].distance) > 0.001 {
+			return feedforward[i].distance < feedforward[j].distance
+		}
+		return feedforward[i].wire.Source.Block < feedforward[j].wire.Source.Block
+	})
+	sort.Slice(feedback, func(i, j int) bool {
+		if math.Abs(feedback[i].distance-feedback[j].distance) > 0.001 {
+			return feedback[i].distance < feedback[j].distance
+		}
+		return feedback[i].wire.Source.Block < feedback[j].wire.Source.Block
+	})
+
+	var sortedWires []wireSortInfo
+	sortedWires = append(sortedWires, feedforward...)
+	sortedWires = append(sortedWires, feedback...)
+
+	var routedSegments []router.Segment
+
+	for _, info := range sortedWires {
+		// Route wire using blockObstacles and already routed segments
+		points := router.Route(info.x1, info.y1, info.d1, info.x2, info.y2, info.d2, info.wire.Hint, blockObstacles, routedSegments)
+		routedWires = append(routedWires, routedWire{Wire: info.wire, Path: points})
+
+		for i := 0; i < len(points)-1; i++ {
+			routedSegments = append(routedSegments, router.Segment{
+				P1: points[i],
+				P2: points[i+1],
+			})
+		}
 
 		gc.SetStrokeColor(ColorOutline)
-		thickness := float64(w.Thickness)
+		thickness := float64(info.wire.Thickness)
 		if thickness <= 0 {
 			thickness = 1
 		}
@@ -186,7 +250,7 @@ func (r *Renderer) Draw(gc draw2d.GraphicContext, diag *ast.Diagram) error {
 			gc.Fill()
 		}
 
-		if w.Crossline > 0 && len(points) > 1 {
+		if info.wire.Crossline > 0 && len(points) > 1 {
 			midIdx := len(points) / 2
 			p1 := points[midIdx-1]
 			p2 := points[midIdx]
