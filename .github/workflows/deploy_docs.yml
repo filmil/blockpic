@@ -35,6 +35,11 @@ jobs:
       - name: Build PDF and HTML docs
         run: bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //ai:book_pdf //ai:html_chunked
 
+      - name: Clean up publish directory
+        run: |
+          find ./bazel-bin/ai -name "*runfiles*" -prune -exec rm -rf {} + || true
+          find ./bazel-bin/ai -type f -size +50M -exec rm -f {} + || true
+
       - name: Deploy Docs
         uses: peaceiris/actions-gh-pages@v4
         with:
