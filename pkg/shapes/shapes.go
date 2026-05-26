@@ -42,3 +42,32 @@ func DrawNOT(gc draw2d.GraphicContext, x, y, w, h float64) {
 	gc.Close()
 	gc.Stroke()
 }
+
+func DrawDFF(gc draw2d.GraphicContext, x, y, w, h float64) {
+	// Standard rectangle for flip-flop
+	gc.BeginPath()
+	gc.MoveTo(x, y)
+	gc.LineTo(x+w, y)
+	gc.LineTo(x+w, y+h)
+	gc.LineTo(x, y+h)
+	gc.Close()
+	gc.FillStroke()
+
+	// Triangle for clock input if it exists (simplified for now)
+	gc.BeginPath()
+	gc.MoveTo(x, y+h*0.8)
+	gc.LineTo(x+5, y+h*0.75)
+	gc.LineTo(x, y+h*0.7)
+	gc.Stroke()
+}
+
+func DrawMUX(gc draw2d.GraphicContext, x, y, w, h float64) {
+	// Trapezoid for MUX
+	gc.BeginPath()
+	gc.MoveTo(x, y)
+	gc.LineTo(x+w, y+h*0.2)
+	gc.LineTo(x+w, y+h*0.8)
+	gc.LineTo(x, y+h)
+	gc.Close()
+	gc.FillStroke()
+}

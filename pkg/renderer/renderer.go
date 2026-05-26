@@ -58,8 +58,11 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 			shapes.DrawOR(gc, l.X, l.Y, w, h)
 		case "NOT":
 			shapes.DrawNOT(gc, l.X, l.Y, w, h)
+		case "FLIPFLOP", "DFF":
+			shapes.DrawDFF(gc, l.X, l.Y, w, h)
+		case "MUX":
+			shapes.DrawMUX(gc, l.X, l.Y, w, h)
 		default:
-			// Default rectangle
 			gc.BeginPath()
 			gc.MoveTo(l.X, l.Y)
 			gc.LineTo(l.X+w, l.Y)
@@ -70,7 +73,7 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		}
 
 		gc.SetFillColor(ColorText)
-		gc.FillStringAt(b.Name, l.X+2, l.Y-5) // Move name above the gate
+		gc.FillStringAt(b.Name, l.X+2, l.Y-5)
 	}
 
 	for _, w := range diag.Wires {
