@@ -85,6 +85,38 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 	}
 
 	for _, b := range diag.Blocks {
+		if strings.ToUpper(b.Kind) == "INPUT_PIN" {
+			pinName := "out"
+			if len(b.Outputs) > 0 {
+				pinName = b.Outputs[0].Name
+				if pinName == "" {
+					pinName = "out"
+				}
+			}
+			bit := getBit(b.Label, pinName, true)
+			mod.Ports[b.Label] = Port{
+				Direction: "input",
+				Bits:      []int{bit},
+			}
+			continue
+		}
+
+		if strings.ToUpper(b.Kind) == "OUTPUT_PIN" {
+			pinName := "in"
+			if len(b.Inputs) > 0 {
+				pinName = b.Inputs[0].Name
+				if pinName == "" {
+					pinName = "in"
+				}
+			}
+			bit := getBit(b.Label, pinName, false)
+			mod.Ports[b.Label] = Port{
+				Direction: "output",
+				Bits:      []int{bit},
+			}
+			continue
+		}
+
 		cell := Cell{
 			Type:           mapKindToYosysType(b.Kind),
 			PortDirections: make(map[string]string),
