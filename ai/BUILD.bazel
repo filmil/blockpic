@@ -11,12 +11,14 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "head.html",
-    "shapes.png",
-    "pins_buses.png",
-    "dynamic_sizing.png",
-    "msi_blocks.png",
-    "pin_aware.png",
-    "complex_layout.png",
+    "shapes.svg",
+    "pins_buses.svg",
+    "dynamic_sizing.svg",
+    "msi_blocks.svg",
+    "pin_aware.svg",
+    "complex_layout.svg",
+    "text_rendering.svg",
+    "arrow_rendering.svg",
 ])
 
 markdown_lib(
@@ -27,12 +29,14 @@ markdown_lib(
     ] + glob(["tasks/*.md"]),
     additional_inputs = [
         "//ai:head.html",
-        "shapes.png",
-        "pins_buses.png",
-        "dynamic_sizing.png",
-        "msi_blocks.png",
-        "pin_aware.png",
-        "complex_layout.png",
+        "shapes.svg",
+        "pins_buses.svg",
+        "dynamic_sizing.svg",
+        "msi_blocks.svg",
+        "pin_aware.svg",
+        "complex_layout.svg",
+        "text_rendering.svg",
+        "arrow_rendering.svg",
     ],
 )
 
@@ -78,14 +82,14 @@ render_diagram(
 write_source_files(
     name = "update_diagrams",
     files = {
-        "shapes.png": ":gen_shapes_example",
-        "pins_buses.png": ":gen_pins_buses_example",
-        "dynamic_sizing.png": ":gen_dynamic_sizing_example",
-        "msi_blocks.png": ":gen_msi_blocks_example",
-        "pin_aware.png": ":gen_pin_aware_example",
-        "complex_layout.png": ":gen_complex_layout_example",
-        "text_rendering.png": ":gen_text_rendering_example",
-        "arrow_rendering.png": ":gen_arrow_rendering_example",
+        "shapes.svg": ":shapes",
+        "pins_buses.svg": ":pins_buses",
+        "dynamic_sizing.svg": ":dynamic_sizing",
+        "msi_blocks.svg": ":msi_blocks",
+        "pin_aware.svg": ":pin_aware",
+        "complex_layout.svg": ":complex_layout",
+        "text_rendering.svg": ":text_rendering",
+        "arrow_rendering.svg": ":arrow_rendering",
     },
 )
 

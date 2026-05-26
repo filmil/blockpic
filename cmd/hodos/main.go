@@ -6,19 +6,10 @@ import (
 	"fmt"
 	"os"
 	"io/ioutil"
-	"image"
-
-	"github.com/filmil/hodos/pkg/ast"
-	"github.com/filmil/hodos/pkg/layout"
 	"github.com/filmil/hodos/pkg/parser"
-	"github.com/filmil/hodos/pkg/renderer"
 	"github.com/filmil/hodos/pkg/scanner"
 	"github.com/filmil/hodos/pkg/validation"
-	_ "github.com/filmil/hodos/third_party/draw2dfont"
-	"github.com/llgcode/draw2d"
-	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/llgcode/draw2d/draw2dsvg"
-	"github.com/llgcode/draw2d/draw2dpdf"
+	"github.com/filmil/hodos/pkg/yosys"
 )
 
 func main() {
@@ -74,11 +65,11 @@ func compileCmd() {
 
 func renderCmd() {
 	renderFlags := flag.NewFlagSet("render", flag.ExitOnError)
-	format := renderFlags.String("format", "png", "Output format (png, svg, pdf)")
-	output := renderFlags.String("o", "output.png", "Output file")
+	format := renderFlags.String("format", "yosys-json", "Output format (yosys-json)")
+	output := renderFlags.String("o", "output.json", "Output file")
 
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: hodos render <file.hodos> [-format png] [-o output.png]")
+		fmt.Println("Usage: hodos render <file.hodos> [-format yosys-json] [-o output.json]")
 		os.Exit(1)
 	}
 
@@ -108,83 +99,17 @@ func renderCmd() {
 		os.Exit(1)
 	}
 
-
-	r := renderer.New(800, 600)
-
-	// Create a dummy image and graphic context for measuring text sizes during layout
-	dummyImg := image.NewRGBA(image.Rect(0, 0, 10, 10))
-	dummyGc := draw2dimg.NewGraphicContext(dummyImg)
-	dummyGc.SetFontData(draw2d.FontData{Name: "luxisr", Family: draw2d.FontFamilySans, Style: draw2d.FontStyleNormal})
-	dummyGc.SetFontSize(10)
-
-	// Apply layout if missing
-	layout.AutoLayout(diag, func(b ast.Block) (float64, float64) {
-		return r.CalculateSize(dummyGc, b)
-	})
-
-	// Find the bounds of the layout to size the image
-	maxX := 800.0
-	maxY := 600.0
-	layoutMap := make(map[string]ast.LayoutEntry)
-	for _, l := range diag.Layout {
-		layoutMap[l.Block] = l
-	}
-
-	for _, b := range diag.Blocks {
-		l, ok := layoutMap[b.Label]
-		if !ok {
-			continue
-		}
-		bw, bh := r.CalculateSize(dummyGc, b)
-		if l.X+bw+40 > maxX {
-			maxX = l.X + bw + 40
-		}
-		if l.Y+bh+40 > maxY {
-			maxY = l.Y + bh + 40
-		}
-	}
-
-	// Recreate renderer with correct size
-	r = renderer.New(int(maxX), int(maxY))
-
-	if *format == "png" {
-		img, err := r.Render(diag)
+	if *format == "yosys-json" {
+		jsonBytes, err := yosys.Convert(diag)
 		if err != nil {
-			fmt.Printf("Error rendering: %v\n", err)
+			fmt.Printf("Error generating Yosys JSON: %v\n", err)
 			os.Exit(1)
 		}
-		err = draw2dimg.SaveToPngFile(*output, img)
-		if err != nil {
+		if err := ioutil.WriteFile(*output, jsonBytes, 0644); err != nil {
 			fmt.Printf("Error saving file: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Successfully rendered to %s\n", *output)
-	} else if *format == "svg" {
-		svg := draw2dsvg.NewSvg()
-		svg.Width = fmt.Sprintf("%dpx", r.Width)
-		svg.Height = fmt.Sprintf("%dpx", r.Height)
-		gc := draw2dsvg.NewGraphicContext(svg)
-		if err := r.Draw(gc, diag); err != nil {
-			fmt.Printf("Error rendering SVG: %v\n", err)
-			os.Exit(1)
-		}
-		if err := draw2dsvg.SaveToSvgFile(*output, svg); err != nil {
-			fmt.Printf("Error saving file: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("Successfully rendered SVG to %s\n", *output)
-	} else if *format == "pdf" {
-		pdf := draw2dpdf.NewPdf("PORTRAIT", "mm", "A4")
-		gc := draw2dpdf.NewGraphicContext(pdf)
-		if err := r.Draw(gc, diag); err != nil {
-			fmt.Printf("Error rendering PDF: %v\n", err)
-			os.Exit(1)
-		}
-		if err := draw2dpdf.SaveToPdfFile(*output, pdf); err != nil {
-			fmt.Printf("Error saving file: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("Successfully rendered PDF to %s\n", *output)
+		fmt.Printf("Successfully generated Yosys JSON to %s\n", *output)
 	} else {
 		fmt.Printf("Unsupported format: %s\n", *format)
 		os.Exit(1)

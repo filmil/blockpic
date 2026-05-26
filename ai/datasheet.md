@@ -79,7 +79,7 @@ diagram Shapes {
 </td>
 <td valign="top" width="60%">
 
-![IEEE Shapes](ai/shapes.png)
+![IEEE Shapes](ai/shapes.svg)
 
 </td>
 </tr>
@@ -132,7 +132,7 @@ diagram PinsAndBuses {
 </td>
 <td valign="top" width="60%">
 
-![Pins and Buses](ai/pins_buses.png)
+![Pins and Buses](ai/pins_buses.svg)
 
 </td>
 </tr>
@@ -176,7 +176,7 @@ diagram DynamicSizing {
 </td>
 <td valign="top" width="60%">
 
-![Dynamic Sizing](ai/dynamic_sizing.png)
+![Dynamic Sizing](ai/dynamic_sizing.svg)
 
 </td>
 </tr>
@@ -219,7 +219,7 @@ diagram MSIBlocks {
 </td>
 <td valign="top" width="60%">
 
-![MSI Blocks](ai/msi_blocks.png)
+![MSI Blocks](ai/msi_blocks.svg)
 
 </td>
 </tr>
@@ -276,7 +276,7 @@ diagram PinAware {
 </td>
 <td valign="top" width="60%">
 
-![Pin-Aware Routing](ai/pin_aware.png)
+![Pin-Aware Routing](ai/pin_aware.svg)
 
 </td>
 </tr>
@@ -319,7 +319,7 @@ diagram ComplexLayout {
 </td>
 <td valign="top" width="60%">
 
-![Complex Auto Layout](ai/complex_layout.png)
+![Complex Auto Layout](ai/complex_layout.svg)
 
 </td>
 </tr>

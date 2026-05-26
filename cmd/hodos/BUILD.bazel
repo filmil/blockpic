@@ -7,16 +7,10 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/ast",
-        "//pkg/layout",
         "//pkg/parser",
-        "//pkg/renderer",
         "//pkg/scanner",
         "//pkg/validation",
-        "//third_party/draw2dfont",
-        "@com_github_llgcode_draw2d//:draw2d",
-        "@com_github_llgcode_draw2d//draw2dimg",
-        "@com_github_llgcode_draw2d//draw2dpdf",
-        "@com_github_llgcode_draw2d//draw2dsvg",
+        "//pkg/yosys",
     ],
 )
 

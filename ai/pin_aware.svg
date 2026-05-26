@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:s="https://github.com/nturley/netlistsvg" width="201" height="193">
+  <style>svg {
+    stroke:#000;
+    fill:none;
+  }
+  text {
+    fill:#000;
+    stroke:none;
+    font-size:10px;
+    font-weight: bold;
+    font-family: "Courier New", monospace;
+  }
+  .nodelabel {
+    text-anchor: middle;
+  }
+  .inputPortLabel {
+    text-anchor: end;
+  }
+  .splitjoinBody {
+    fill:#000;
+  }</style>
+  <g s:type="generic" transform="translate(135,22)" s:width="30" s:height="40" id="cell_DST_BOT">
+    <text x="15" y="-4" class="nodelabel cell_DST_BOT" s:attribute="ref">CUSTOM</text>
+    <rect width="30" height="20" s:generic="body" class="cell_DST_BOT"/>
+    <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_DST_BOT~I_T">
+      <text x="-3" y="-4" class="inputPortLabel cell_DST_BOT">I_T</text>
+    </g>
+  </g>
+  <g s:type="generic" transform="translate(135,90)" s:width="30" s:height="40" id="cell_DST_RIGHT">
+    <text x="15" y="-4" class="nodelabel cell_DST_RIGHT" s:attribute="ref">CUSTOM</text>
+    <rect width="30" height="20" s:generic="body" class="cell_DST_RIGHT"/>
+    <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_DST_RIGHT~I_L">
+      <text x="-3" y="-4" class="inputPortLabel cell_DST_RIGHT">I_L</text>
+    </g>
+  </g>
+  <g s:type="generic" transform="translate(135,158)" s:width="30" s:height="40" id="cell_DST_TOP">
+    <text x="15" y="-4" class="nodelabel cell_DST_TOP" s:attribute="ref">CUSTOM</text>
+    <rect width="30" height="20" s:generic="body" class="cell_DST_TOP"/>
+    <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_DST_TOP~I_B">
+      <text x="-3" y="-4" class="inputPortLabel cell_DST_TOP">I_B</text>
+    </g>
+  </g>
+  <g s:type="generic" transform="translate(31,22)" s:width="30" s:height="40" id="cell_SRC">
+    <text x="15" y="-4" class="nodelabel cell_SRC" s:attribute="ref">CUSTOM</text>
+    <rect width="30" height="60" s:generic="body" class="cell_SRC"/>
+    <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_SRC~I_B">
+      <text x="-3" y="-4" class="inputPortLabel cell_SRC">I_B</text>
+    </g>
+    <g transform="translate(0,30)" s:x="0" s:y="10" s:pid="in0" id="port_SRC~I_L">
+      <text x="-3" y="-4" class="inputPortLabel cell_SRC">I_L</text>
+    </g>
+    <g transform="translate(0,50)" s:x="0" s:y="10" s:pid="in0" id="port_SRC~I_T">
+      <text x="-3" y="-4" class="inputPortLabel cell_SRC">I_T</text>
+    </g>
+    <g transform="translate(30,10)" s:x="30" s:y="10" s:pid="out0" id="port_SRC~O_B">
+      <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_SRC">O_B</text>
+    </g>
+    <g transform="translate(30,30)" s:x="30" s:y="10" s:pid="out0" id="port_SRC~O_R">
+      <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_SRC">O_R</text>
+    </g>
+    <g transform="translate(30,50)" s:x="30" s:y="10" s:pid="out0" id="port_SRC~O_T">
+      <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_SRC">O_T</text>
+    </g>
+  </g>
+  <line x1="62" x2="135" y1="32.5" y2="32.5" class="net_3"/>
+  <line x1="62" x2="101" y1="52.5" y2="52.5" class="net_4"/>
+  <line x1="101" x2="101" y1="52.5" y2="100.5" class="net_4"/>
+  <line x1="101" x2="135" y1="100.5" y2="100.5" class="net_4"/>
+  <line x1="62" x2="91" y1="72.5" y2="72.5" class="net_2"/>
+  <line x1="91" x2="91" y1="72.5" y2="168.5" class="net_2"/>
+  <line x1="91" x2="135" y1="168.5" y2="168.5" class="net_2"/>
+</svg>

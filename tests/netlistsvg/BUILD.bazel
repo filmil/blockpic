@@ -1,0 +1,7 @@
+load("//:defs.bzl", "hodos_diagram")
+
+hodos_diagram(
+    name = "simple_diagram",
+    src = "simple.hodos",
+    out = "simple.svg",
+)

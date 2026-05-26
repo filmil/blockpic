@@ -1,0 +1,14 @@
+{
+  "name": "hodos-netlistsvg",
+  "version": "1.0.0",
+  "description": "Integration of netlistsvg for Hodos diagrams",
+  "scripts": {
+    "netlistsvg": "netlistsvg"
+  },
+  "dependencies": {
+    "netlistsvg": "^1.0.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  }
+}
