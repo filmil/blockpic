@@ -1,0 +1,27 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "hodos_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/filmil/hodos/cmd/hodos",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/layout",
+        "//pkg/parser",
+        "//pkg/renderer",
+        "//pkg/scanner",
+        "@com_github_llgcode_draw2d//draw2dimg",
+    ],
+)
+
+go_binary(
+    name = "hodos",
+    embed = [":hodos_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "hodos_test",
+    srcs = ["main_test.go"],
+    embed = [":hodos_lib"],
+)
