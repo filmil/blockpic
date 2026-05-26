@@ -13,39 +13,27 @@ palette for hardware logic primitives.
 ## 2. Core Concepts
 
 ### 2.1 Blocks and Primitives
+A **Block** is the primary logical element. Each block has:
+- **Name**: A unique identifier.
+- **Kind**: The type of block (e.g., `AND`, `OR`, `FLIPFLOP`, `MUX`, `LUT`, `CUSTOM`).
+- **Input Pins**: Named input ports.
+- **Output Pins**: Named output ports.
+- **Parameters**: Key-value pairs for configuration (e.g., `init: 0x1234`).
+- **Dimensions**: Optional width and height.
+- **Custom Rendering**: Support for custom rendering functions (Phase 2).
 
-- **Block**: The fundamental unit, typically a rectangle.
-- **Mux**: A specialized trapezoidal block representing a multiplexer.
-- **Flip-Flop**: A block specialized for sequential logic.
-- **LUT**: A block representing a Look-Up Table.
+### 2.2 Pins (Ports)
+Pins are the connection points on blocks.
+- **Type**: `input` or `output`.
+- **Position Hint**: `left`, `right`, `top`, `bottom`.
 
-### 2.2 Ports
+### 2.3 Wires
+Wires connect an output pin of a source block to an input pin of a destination block.
+- **Source**: `(block_name, pin_name)`.
+- **Destination**: `(block_name, pin_name)`.
+- **Routing Hints**: Hints for the router (e.g., `straight`, `L-shape`, `Z-shape`).
 
-Ports are attachment points for connections. They are located on the boundaries of blocks.
-
-- **Position**: Ports can be positioned on the `left`, `right`, `top`, or
-  `bottom` of a block.
-- **Type**: Ports can be `input`, `output`, or `inout`.
-- **Labels**: Ports have internal or external labels (e.g., `D`, `Q`, `CE`,
-  `CLK`).
-
-### 2.3 Connections (Wires and Buses)
-
-Connections link ports together.
-
-- **Orthogonal Routing**: All connections are routed using 90-degree bends.
-- **Wire**: A standard signal line (1-bit).
-- **Bus**: A thicker signal line representing multiple bits.
-- **Bus Width**: Buses can have an optional width label (e.g., `[7:0]`).
-
-### 2.4 Containers and Groups
-
-- **Group**: A logical grouping of blocks and connections.
-- **Container**: A physical or logical boundary (e.g., a "Slice" or "CLB")
-  often rendered with a light grey background and dashed/dotted borders.
-
-### 2.5 Aesthetics (UG474 Style)
-
+### 2.4 Aesthetics (UG474 Style)
 - **Colors**:
     - Primitives: Light Blue (`#E6F2FF`) with a Dark Grey (`#333333`) outline.
     - Containers: Light Grey (`#F2F2F2`) or transparent with dashed borders.
@@ -55,38 +43,68 @@ Connections link ports together.
 
 ## 3. Syntax (Draft)
 
+Hodos uses a custom DSL designed for readability.
+
 ```hodos
-diagram MyDiagram {
+diagram MyLogic {
     config {
+        style: "Xilinx";
         font: "Helvetica", 9pt;
-        default_color: #E6F2FF;
     }
 
-    container SliceA {
-        style: dashed;
+    // Block declarations
+    block LUT6_A {
+        kind: "LUT";
+        params: { init: "0x8000000000000000" };
+        inputs: I0, I1, I2, I3, I4, I5;
+        outputs: O;
+        size: (40, 60);
+    }
 
-        lut LUT6_A {
-            pos: (10, 10);
-            port in I0, I1, I2, I3, I4, I5 [left];
-            port out O [right];
-        }
+    block DFF_1 {
+        kind: "FLIPFLOP";
+        inputs: D, CLK [bottom], CE [left];
+        outputs: Q;
+    }
 
-        mux MUX7_A {
-            pos: (100, 20);
-            port in I0, I1 [left];
-            port in S [bottom];
-            port out O [right];
-        }
+    // Wire declarations
+    wire LUT6_A.O -> DFF_1.D {
+        hint: "Z-shape";
+    }
 
-        wire LUT6_A.O -> MUX7_A.I0;
+    // Optional Layout
+    layout {
+        LUT6_A at (10, 10);
+        DFF_1 at (100, 10);
     }
 }
 ```
 
-## 4. Layout Rules
-- **Flow**: Diagrams generally flow from left to right.
-- **Grid**: Elements are snapped to a coordinate grid for alignment.
-- **Port Alignment**: Ports on opposite sides of a wire should align horizontally or vertically where possible to minimize bends.
+## 4. Layout and Rendering
+
+- **Logical First**: Connectivity is defined before layout.
+- **Automatic Layout**: Default grid-based or flow-based layout (Phase 2).
+- **Manual Refinement**: Deferred coordinate assignment via `layout` block.
+- **Styles**: Support for multiple rendering styles (e.g., "Xilinx", "Generic").
+
+## 5. Roadmap
+
+### Phase 1: Core Language and Renderer
+- Define core DSL for blocks and wires.
+- Basic `draw2d` rendering engine (rectangles, lines, text).
+- Support for `AND`, `OR`, `NOT` primitives.
+- Basic parameter support.
+
+### Phase 2: Advanced Features
+- Complex blocks (`FLIPFLOP`, `MUX`).
+- Custom rendering functions for blocks.
+- Basic auto-layout (grid layout).
+- Improved wire routing (orthogonal).
+
+### Phase 3: Tooling
+- CLI tool for rendering.
+- Library of common hardware blocks.
+
 
 ## 5. Rendering Engine and Implementation
 
