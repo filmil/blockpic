@@ -10,6 +10,9 @@ ug474
 * Implementation language is go.
   * You can use the draw2d library for rendering.
 
+* No manual layout until last moment. Have a way to declare blocks first, then
+  wires, and only then layout - maybe.
+
 
 ## Workspace
 
