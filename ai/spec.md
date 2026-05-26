@@ -51,7 +51,7 @@ Hodos strictly adheres to **ANSI/IEEE Std 91-1984** for logic symbols. It suppor
 - **Distinctive Shapes**: Standard semi-circular (AND), pointed (OR), and triangle (NOT) shapes.
 - **Rectangular Shapes**: Uniform rectangles using internal qualifying symbols:
     - `&` : AND
-    - `≥1`: OR
+    - `>=1`: OR
     - `1` : Buffer/Inverter
     - `=1`: XOR
     - `X/Y`: Specialized functions.
@@ -66,9 +66,9 @@ For MSI components like Registers and Counters, Hodos supports IEEE dependency n
 - **`V` (OR)**: OR dependency.
 
 #### 2.5.3 Functional Indicators
-- **Bubble (`○`)**: External negation.
+- **Bubble (`(o)`)**: External negation.
 - **Wedge (`>`)**: Dynamic indicator for edge-triggered inputs.
-- **Triangle (`▽`)**: Three-state (Hi-Z) output indicator.
+- **Triangle (`(v)`)**: Three-state (Hi-Z) output indicator.
 
 ## 3. Syntax (Draft)
 
