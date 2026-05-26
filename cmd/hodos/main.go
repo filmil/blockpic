@@ -122,6 +122,31 @@ func renderCmd() {
 		return r.CalculateSize(dummyGc, b)
 	})
 
+	// Find the bounds of the layout to size the image
+	maxX := 800.0
+	maxY := 600.0
+	layoutMap := make(map[string]ast.LayoutEntry)
+	for _, l := range diag.Layout {
+		layoutMap[l.Block] = l
+	}
+
+	for _, b := range diag.Blocks {
+		l, ok := layoutMap[b.Name]
+		if !ok {
+			continue
+		}
+		bw, bh := r.CalculateSize(dummyGc, b)
+		if l.X+bw+40 > maxX {
+			maxX = l.X + bw + 40
+		}
+		if l.Y+bh+40 > maxY {
+			maxY = l.Y + bh + 40
+		}
+	}
+
+	// Recreate renderer with correct size
+	r = renderer.New(int(maxX), int(maxY))
+
 	if *format == "png" {
 		img, err := r.Render(diag)
 		if err != nil {
@@ -136,8 +161,8 @@ func renderCmd() {
 		fmt.Printf("Successfully rendered to %s\n", *output)
 	} else if *format == "svg" {
 		svg := draw2dsvg.NewSvg()
-		svg.Width = "800px"
-		svg.Height = "600px"
+		svg.Width = fmt.Sprintf("%dpx", r.Width)
+		svg.Height = fmt.Sprintf("%dpx", r.Height)
 		gc := draw2dsvg.NewGraphicContext(svg)
 		if err := r.Draw(gc, diag); err != nil {
 			fmt.Printf("Error rendering SVG: %v\n", err)

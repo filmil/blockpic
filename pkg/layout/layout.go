@@ -112,6 +112,15 @@ func AutoLayout(diag *ast.Diagram, sizeFunc func(ast.Block) (float64, float64)) 
 		solver.AddConstraint(v.Right.Equals(v.Left.Add(cassowary.CM(w))))
 		// Bottom = Top + h
 		solver.AddConstraint(v.Bottom.Equals(v.Top.Add(cassowary.CM(h))))
+
+		// Keep blocks within image bounds (with margin)
+		cLeft := v.Left.GreaterThanOrEqualTo(cassowary.CM(20.0))
+		cLeft.Priority = cassowary.PriorityStrong
+		solver.AddConstraint(cLeft)
+
+		cTop := v.Top.GreaterThanOrEqualTo(cassowary.CM(25.0))
+		cTop.Priority = cassowary.PriorityStrong
+		solver.AddConstraint(cTop)
 	}
 
 	spacingX := 150.0
