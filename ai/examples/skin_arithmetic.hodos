@@ -1,0 +1,30 @@
+diagram skin_arithmetic {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block OUT_Y { kind: "OUTPUT_PIN"; inputs: I; }
+
+  block ADD { kind: "add"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> ADD.A
+  wire IN_B.O -> ADD.B
+  wire ADD.Y -> OUT_Y.I
+
+  block SUB { kind: "sub"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> SUB.A
+  wire IN_B.O -> SUB.B
+
+  block MUL { kind: "mul"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> MUL.A
+  wire IN_B.O -> MUL.B
+  
+  block DIV { kind: "div"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> DIV.A
+  wire IN_B.O -> DIV.B
+
+  block LT { kind: "lt"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> LT.A
+  wire IN_B.O -> LT.B
+
+  block SHR { kind: "shr"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> SHR.A
+  wire IN_B.O -> SHR.B
+}

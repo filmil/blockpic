@@ -137,25 +137,83 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 		}
 
 		mapPort := func(pinName string, isOutput bool, idx int) string {
-			if cell.Type == "$and" || cell.Type == "$or" || cell.Type == "$xor" || cell.Type == "$nand" || cell.Type == "$nor" || cell.Type == "$xnor" {
-				if isOutput { return "Y" }
-				if idx == 0 { return "A" }
-				if idx == 1 { return "B" }
-			}
-			if cell.Type == "$not" {
-				if isOutput { return "Y" }
+			switch cell.Type {
+			case "$and", "$or", "$xor", "$nand", "$nor", "$xnor", "$andnot", "$ornot",
+				"$add", "$sub", "$mul", "$div", "$mod", "$pow",
+				"$eq", "$ne", "$lt", "$le", "$ge", "$gt",
+				"$shr", "$shl", "$sshr", "$sshl":
+				if isOutput {
+					return "Y"
+				}
+				if idx == 0 {
+					return "A"
+				}
+				if idx == 1 {
+					return "B"
+				}
+			case "$not", "$buf", "$pos", "$neg", "$reduce_and", "$reduce_or", "$reduce_xor", "$reduce_xnor", "$reduce_bool", "$logic_not", "$reduce_nor", "$reduce_nxor":
+				if isOutput {
+					return "Y"
+				}
 				return "A"
-			}
-			if cell.Type == "$mux" {
-				if isOutput { return "Y" }
+			case "$mux", "$pmux", "$mux-bus", "$pmux-bus":
+				if isOutput {
+					return "Y"
+				}
+				if idx == 0 {
+					return "A"
+				}
+				if idx == 1 {
+					return "B"
+				}
+				if idx == 2 {
+					return "S"
+				}
+			case "$tribuf":
+				if isOutput {
+					return "Y"
+				}
+				if idx == 0 {
+					return "A"
+				}
+				if idx == 1 {
+					return "EN"
+				}
+			case "$dff", "$dff-bus", "$dffn", "$dffn-bus":
+				if isOutput {
+					return "Q"
+				}
+				if idx == 0 {
+					return "D"
+				}
+				if idx == 1 {
+					return "CLK"
+				}
+			case "$dlatch", "$dlatch-bus", "$dlatchn", "$dlatchn-bus":
+				if isOutput {
+					return "Q"
+				}
+				if idx == 0 {
+					return "D"
+				}
+				if idx == 1 {
+					return "EN"
+				}
+			case "$_AOI3_", "$_OAI3_":
+				if isOutput {
+					return "Y"
+				}
 				if idx == 0 { return "A" }
 				if idx == 1 { return "B" }
-				if idx == 2 { return "S" }
-			}
-			if cell.Type == "$dff" {
-				if isOutput { return "Q" }
-				if idx == 0 { return "D" }
-				if idx == 1 { return "CLK" }
+				if idx == 2 { return "C" }
+			case "$_AOI4_", "$_OAI4_":
+				if isOutput {
+					return "Y"
+				}
+				if idx == 0 { return "A" }
+				if idx == 1 { return "B" }
+				if idx == 2 { return "C" }
+				if idx == 3 { return "D" }
 			}
 			return pinName
 		}
@@ -195,10 +253,19 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 func mapKindToYosysType(kind string) string {
 	k := strings.ToLower(kind)
 	switch k {
-	case "and", "nand", "or", "nor", "xor", "xnor", "not", "mux", "dff", "add", "sub":
+	case "and", "nand", "or", "nor", "xor", "xnor", "not", "mux", "add", "sub",
+		"andnot", "ornot", "tribuf", "buf", "pos", "neg", "eq", "ne", "lt", "le", "ge", "gt",
+		"mul", "div", "mod", "pow", "shr", "shl", "sshr", "sshl",
+		"reduce_nor", "reduce_xor", "reduce_nxor",
+		"dff", "dffn", "dlatch", "dlatchn",
+		"split", "join", "constant":
 		return "$" + k
+	case "mux_bus", "dff_bus", "dffn_bus", "dlatch_bus", "dlatchn_bus":
+		return "$" + strings.ReplaceAll(k, "_", "-")
 	case "register", "reg":
 		return "$dff"
+	case "aoi3", "oai3", "aoi4", "oai4":
+		return "$_" + strings.ToUpper(k) + "_"
 	default:
 		// Unknown types render as generic blocks
 		return kind

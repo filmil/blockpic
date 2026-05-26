@@ -1,0 +1,14 @@
+diagram skin_utility {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_EN { kind: "INPUT_PIN"; outputs: O; }
+
+  block TRIBUF { kind: "tribuf"; inputs: A, EN; outputs: Y; }
+  wire IN_A.O -> TRIBUF.A
+  wire IN_EN.O -> TRIBUF.EN
+
+  block BUF { kind: "buf"; inputs: A; outputs: Y; }
+  wire IN_A.O -> BUF.A
+
+  block POS { kind: "pos"; inputs: A; outputs: Y; }
+  wire IN_A.O -> POS.A
+}

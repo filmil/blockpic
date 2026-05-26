@@ -1,0 +1,15 @@
+diagram skin_bitwise {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+
+  block RED_AND { kind: "reduce_and"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_AND.A
+
+  block RED_OR { kind: "reduce_or"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_OR.A
+
+  block RED_XOR { kind: "reduce_xor"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_XOR.A
+  
+  block LOGIC_NOT { kind: "logic_not"; inputs: A; outputs: Y; }
+  wire IN_A.O -> LOGIC_NOT.A
+}

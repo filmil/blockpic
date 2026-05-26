@@ -324,3 +324,215 @@ diagram ComplexLayout {
 </td>
 </tr>
 </table>
+
+## 13. Netlistsvg Skins Integration
+Hodos supports mapping its blocks to the comprehensive set of standard `netlistsvg` skin components natively. This enables rich schematic diagrams containing arithmetic operators, bitwise logic, latches, multiplexers, and specialized multi-input gates.
+
+### 13.1 Arithmetic and Logic Operators
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_arithmetic {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block OUT_Y { kind: "OUTPUT_PIN"; inputs: I; }
+
+  block ADD { kind: "add"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> ADD.A
+  wire IN_B.O -> ADD.B
+  wire ADD.Y -> OUT_Y.I
+
+  block SUB { kind: "sub"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> SUB.A
+  wire IN_B.O -> SUB.B
+
+  block MUL { kind: "mul"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> MUL.A
+  wire IN_B.O -> MUL.B
+  
+  block DIV { kind: "div"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> DIV.A
+  wire IN_B.O -> DIV.B
+
+  block LT { kind: "lt"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> LT.A
+  wire IN_B.O -> LT.B
+
+  block SHR { kind: "shr"; inputs: A, B; outputs: Y; }
+  wire IN_A.O -> SHR.A
+  wire IN_B.O -> SHR.B
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Arithmetic Components](ai/skin_arithmetic.svg)
+
+</td>
+</tr>
+</table>
+
+### 13.2 Bitwise and Reduction Operators
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_bitwise {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+
+  block RED_AND { kind: "reduce_and"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_AND.A
+
+  block RED_OR { kind: "reduce_or"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_OR.A
+
+  block RED_XOR { kind: "reduce_xor"; inputs: A; outputs: Y; }
+  wire IN_A.O -> RED_XOR.A
+  
+  block LOGIC_NOT { kind: "logic_not"; inputs: A; outputs: Y; }
+  wire IN_A.O -> LOGIC_NOT.A
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Bitwise Components](ai/skin_bitwise.svg)
+
+</td>
+</tr>
+</table>
+
+### 13.3 Latches and Registers
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_latches {
+  block IN_D { kind: "INPUT_PIN"; outputs: O; }
+  block IN_CLK { kind: "INPUT_PIN"; outputs: O; }
+
+  block DFF { kind: "dff"; inputs: D, CLK; outputs: Q; }
+  wire IN_D.O -> DFF.D
+  wire IN_CLK.O -> DFF.CLK
+
+  block DFF_BUS { kind: "dff_bus"; inputs: D, CLK; outputs: Q; }
+  wire IN_D.O -> DFF_BUS.D
+  wire IN_CLK.O -> DFF_BUS.CLK
+
+  block DLATCH { kind: "dlatch"; inputs: D, EN; outputs: Q; }
+  wire IN_D.O -> DLATCH.D
+  wire IN_CLK.O -> DLATCH.EN
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Latches and Registers](ai/skin_latches.svg)
+
+</td>
+</tr>
+</table>
+
+### 13.4 Multiplexers
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_muxes {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block IN_S { kind: "INPUT_PIN"; outputs: O; }
+
+  block MUX { kind: "mux"; inputs: A, B, S; outputs: Y; }
+  wire IN_A.O -> MUX.A
+  wire IN_B.O -> MUX.B
+  wire IN_S.O -> MUX.S
+
+  block MUX_BUS { kind: "mux_bus"; inputs: A, B, S; outputs: Y; }
+  wire IN_A.O -> MUX_BUS.A
+  wire IN_B.O -> MUX_BUS.B
+  wire IN_S.O -> MUX_BUS.S
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Multiplexers](ai/skin_muxes.svg)
+
+</td>
+</tr>
+</table>
+
+### 13.5 Special Logic Gates
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_special {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_B { kind: "INPUT_PIN"; outputs: O; }
+  block IN_C { kind: "INPUT_PIN"; outputs: O; }
+  block IN_D { kind: "INPUT_PIN"; outputs: O; }
+
+  block AOI3 { kind: "aoi3"; inputs: A, B, C; outputs: Y; }
+  wire IN_A.O -> AOI3.A
+  wire IN_B.O -> AOI3.B
+  wire IN_C.O -> AOI3.C
+
+  block AOI4 { kind: "aoi4"; inputs: A, B, C, D; outputs: Y; }
+  wire IN_A.O -> AOI4.A
+  wire IN_B.O -> AOI4.B
+  wire IN_C.O -> AOI4.C
+  wire IN_D.O -> AOI4.D
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Special Logic Gates](ai/skin_special.svg)
+
+</td>
+</tr>
+</table>
+
+### 13.6 Utility Nodes
+<table>
+<tr>
+<td valign="top" width="40%">
+
+```hodos
+diagram skin_utility {
+  block IN_A { kind: "INPUT_PIN"; outputs: O; }
+  block IN_EN { kind: "INPUT_PIN"; outputs: O; }
+
+  block TRIBUF { kind: "tribuf"; inputs: A, EN; outputs: Y; }
+  wire IN_A.O -> TRIBUF.A
+  wire IN_EN.O -> TRIBUF.EN
+
+  block BUF { kind: "buf"; inputs: A; outputs: Y; }
+  wire IN_A.O -> BUF.A
+
+  block POS { kind: "pos"; inputs: A; outputs: Y; }
+  wire IN_A.O -> POS.A
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Utility Nodes](ai/skin_utility.svg)
+
+</td>
+</tr>
+</table>
