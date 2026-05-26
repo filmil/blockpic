@@ -1,4 +1,15 @@
+# hodos: digital electronics diagram layouting engine
 
+
+
+# Fragment about general project advice
+
+Read the following files and dirs:
+
+    * Requirements are at `//ai/requirements.md`
+    * Specification is at `//ai/spec.md`.
+    * Leftover tasks live in `//ai/tasks`.
+    * The datasheet with implemented features are at `//ai/datasheet.md`
 
 
 # Fragment for handling bazel code

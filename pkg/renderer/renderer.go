@@ -287,6 +287,7 @@ type textLabel struct {
 	bw, bh     float64
 	defaultX   float64
 	defaultY   float64
+	align      string // "left", "center", "right"
 	// For crosslines
 	isHoriz    bool
 	midPoint   router.Point
@@ -409,6 +410,18 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 			displayName = b.Label
 		}
 
+		// Append non-layout parameters to the display name for rendering
+		var paramKeys []string
+		for k := range b.Params {
+			if k != "show_port_names" {
+				paramKeys = append(paramKeys, k)
+			}
+		}
+		sort.Strings(paramKeys)
+		for _, k := range paramKeys {
+			displayName += fmt.Sprintf("\\n%s=%s", k, b.Params[k])
+		}
+
 		nameInside := false
 		if !isMSI {
 			switch kind {
@@ -420,7 +433,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 		}
 
 		// 1. Block name label
-		nameW, nameH := measureText(gc, displayName)
+		_, nameH := measureText(gc, displayName)
 		blockRef := b
 		layoutRef := l
 		if nameInside {
@@ -432,8 +445,9 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 				layout:     &layoutRef,
 				bw:         w,
 				bh:         h,
-				defaultX:   l.X + w/2 - nameW/2,
+				defaultX:   l.X + w/2,
 				defaultY:   l.Y + h/2 + nameH/2 - 2,
+				align:      "center",
 			})
 		} else {
 			labels = append(labels, textLabel{
@@ -446,12 +460,11 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 				bh:         h,
 				defaultX:   l.X + 2,
 				defaultY:   l.Y - 5,
+				align:      "left",
 			})
 		}
 
-		// 2. MSI kind label
 		if isMSI {
-			kindW, _ := measureText(gc, kind)
 			labels = append(labels, textLabel{
 				text:       kind,
 				itemType:   "msi_kind",
@@ -460,8 +473,9 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 				layout:     &layoutRef,
 				bw:         w,
 				bh:         h,
-				defaultX:   l.X + w/2 - kindW/2,
+				defaultX:   l.X + w/2,
 				defaultY:   l.Y + h*0.15 + 4,
+				align:      "center",
 			})
 		}
 
@@ -501,6 +515,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 				} else if strings.HasPrefix(p.Name, "EN") {
 					pinLabel = "EN"
 				}
+				tw, _ := measureText(gc, pinLabel)
 
 				var tx, ty float64
 				if pos == router.DirLeft {
@@ -511,10 +526,10 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 					}
 					ty = py + 4
 				} else if pos == router.DirTop {
-					tx = px - 4
+					tx = px - tw/2
 					ty = py + 12
 				} else if pos == router.DirBottom {
-					tx = px - 4
+					tx = px - tw/2
 					ty = py - 6
 				}
 
@@ -528,6 +543,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 					bh:         h,
 					defaultX:   tx,
 					defaultY:   ty,
+					align:      "left",
 				})
 			}
 
@@ -559,10 +575,10 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 					}
 					ty = py + 4
 				} else if pos == router.DirTop {
-					tx = px - 4
+					tx = px - tw/2
 					ty = py + 12
 				} else if pos == router.DirBottom {
-					tx = px - 4
+					tx = px - tw/2
 					ty = py - 6
 				}
 
@@ -576,6 +592,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 					bh:         h,
 					defaultX:   tx,
 					defaultY:   ty,
+					align:      "left",
 				})
 			}
 		}
@@ -597,6 +614,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 				itemType: "crossline",
 				defaultX: mx + 2,
 				defaultY: my - 2,
+				align:    "left",
 				isHoriz:  isHoriz,
 				midPoint: router.Point{X: mx, Y: my},
 			})
@@ -624,21 +642,27 @@ func (r *Renderer) layoutAndDrawText(gc draw2d.GraphicContext, labels []textLabe
 				{l.X - tw - 5, l.Y + bh/2 + th/2},      // Left
 				{l.X + bw + 5, l.Y + bh/2 + th/2},      // Right
 			}
+		} else if item.itemType == "pin" {
+			candidates = []struct{ x, y float64 }{
+				{item.defaultX, item.defaultY},
+				{item.defaultX, item.defaultY - th - 2},
+				{item.defaultX, item.defaultY + th + 2},
+			}
 		} else if item.itemType == "crossline" {
 			mx, my := item.midPoint.X, item.midPoint.Y
 			if item.isHoriz {
 				candidates = []struct{ x, y float64 }{
-					{mx - tw/2, my - 4},             // Top-centered
+					{mx - tw/2, my - 4},              // Top-centered
 					{mx - tw/2, my + th + 4},         // Bottom-centered
 					{mx + 2, my - 2},                 // Top-Right (Default fallback)
-					{mx + 2, my + th + 2},             // Bottom-Right
+					{mx + 2, my + th + 2},            // Bottom-Right
 				}
 			} else {
 				candidates = []struct{ x, y float64 }{
-					{mx + 4, my + th/2},             // Right-centered
+					{mx + 4, my + th/2},              // Right-centered
 					{mx - tw - 4, my + th/2},         // Left-centered
 					{mx + 2, my - 2},                 // Top-Right (Default fallback)
-					{mx - tw - 2, my - 2},             // Top-Left
+					{mx - tw - 2, my - 2},            // Top-Left
 				}
 			}
 		} else {
@@ -668,14 +692,27 @@ func (r *Renderer) layoutAndDrawText(gc draw2d.GraphicContext, labels []textLabe
 			bTop := item.layout.Y
 			bBottom := item.layout.Y + item.bh
 
-			if finalX < bLeft {
-				finalX = bLeft
-			}
-			if finalX+tw > bRight {
-				finalX = bRight - tw
-			}
-			if finalX < bLeft {
-				finalX = bLeft
+			if item.align == "center" {
+				if finalX-tw/2 < bLeft {
+					finalX = bLeft + tw/2
+				}
+				if finalX+tw/2 > bRight {
+					finalX = bRight - tw/2
+				}
+			} else if item.align == "right" {
+				if finalX-tw < bLeft {
+					finalX = bLeft + tw
+				}
+				if finalX > bRight {
+					finalX = bRight
+				}
+			} else {
+				if finalX < bLeft {
+					finalX = bLeft
+				}
+				if finalX+tw > bRight {
+					finalX = bRight - tw
+				}
 			}
 
 			if finalY-th < bTop {
@@ -692,21 +729,42 @@ func (r *Renderer) layoutAndDrawText(gc draw2d.GraphicContext, labels []textLabe
 			bTop := item.layout.Y
 			bBottom := item.layout.Y + item.bh
 			tolerance := 0.001
-			if finalX < bLeft-tolerance || finalX+tw > bRight+tolerance || finalY-th < bTop-tolerance || finalY > bBottom+tolerance {
+			
+			boxLeft := finalX
+			boxRight := finalX + tw
+			if item.align == "center" {
+				boxLeft = finalX - tw/2
+				boxRight = finalX + tw/2
+			} else if item.align == "right" {
+				boxLeft = finalX - tw
+				boxRight = finalX
+			}
+
+			if boxLeft < bLeft-tolerance || boxRight > bRight+tolerance || finalY-th < bTop-tolerance || finalY > bBottom+tolerance {
 				return nil, fmt.Errorf("text %q inside block %q renders outside its shape boundaries", item.text, item.ownerLabel)
 			}
 		}
+		
+		boxLeft := finalX
+		boxRight := finalX + tw
+		if item.align == "center" {
+			boxLeft = finalX - tw/2
+			boxRight = finalX + tw/2
+		} else if item.align == "right" {
+			boxLeft = finalX - tw
+			boxRight = finalX
+		}
 
-		if finalX < 0 || finalX+tw > float64(r.Width) || finalY-th < 0 || finalY > float64(r.Height) {
-			return nil, fmt.Errorf("text %q at (%.1f, %.1f) renders outside the image extents [0, 0, %d, %d]", item.text, finalX, finalY, r.Width, r.Height)
+		if boxLeft < 0 || boxRight > float64(r.Width) || finalY-th < 0 || finalY > float64(r.Height) {
+			return nil, fmt.Errorf("text %q at (%.1f, %.1f) renders outside the image extents [0, 0, %d, %d]", item.text, boxLeft, finalY, r.Width, r.Height)
 		}
 
 		gc.SetFillColor(ColorText)
-		renderText(gc, item.text, finalX, finalY)
+		renderText(gc, item.text, finalX, finalY, item.align)
 
 		placedRects = append(placedRects, textRect{
 			Text: item.text,
-			X:    finalX,
+			X:    boxLeft,
 			Y:    finalY - th,
 			W:    tw,
 			H:    th,
@@ -1052,18 +1110,23 @@ func parseSegments(s string) []textSegment {
 	return segments
 }
 
+func measureLine(gc draw2d.GraphicContext, line string) float64 {
+	segments := parseSegments(line)
+	lineW := 0.0
+	for _, seg := range segments {
+		l, _, r, _ := gc.GetStringBounds(seg.text)
+		lineW += r - l
+	}
+	return lineW
+}
+
 func measureText(gc draw2d.GraphicContext, text string) (float64, float64) {
 	lines := strings.Split(strings.ReplaceAll(text, "\\n", "\n"), "\n")
 	lineHeight := 12.0
 	maxWidth := 0.0
 	
 	for _, line := range lines {
-		segments := parseSegments(line)
-		lineW := 0.0
-		for _, seg := range segments {
-			l, _, r, _ := gc.GetStringBounds(seg.text)
-			lineW += r - l
-		}
+		lineW := measureLine(gc, line)
 		if lineW > maxWidth {
 			maxWidth = lineW
 		}
@@ -1071,14 +1134,22 @@ func measureText(gc draw2d.GraphicContext, text string) (float64, float64) {
 	return maxWidth, float64(len(lines)) * lineHeight
 }
 
-func renderText(gc draw2d.GraphicContext, text string, x, y float64) float64 {
+func renderText(gc draw2d.GraphicContext, text string, x, y float64, align string) float64 {
 	lines := strings.Split(strings.ReplaceAll(text, "\\n", "\n"), "\n")
 	lineHeight := 12.0
 	maxWidth := 0.0
 
 	for i, line := range lines {
 		ly := y + float64(i)*lineHeight
+		
+		lineW := measureLine(gc, line)
+		
 		cx := x
+		if align == "center" {
+			cx = x - lineW/2
+		} else if align == "right" {
+			cx = x - lineW
+		}
 		
 		segments := parseSegments(line)
 		for _, seg := range segments {

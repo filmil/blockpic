@@ -136,3 +136,48 @@ func TestRenderer_PortVisibilityHints(t *testing.T) {
 		t.Errorf("expected DFF block with HintHidePorts to hide ports")
 	}
 }
+
+func TestRenderer_TextAlignment(t *testing.T) {
+	diag := &ast.Diagram{
+		Name: "TextAlignment",
+		Blocks: []ast.Block{
+			{
+				Label: "REG1",
+				Name:  "My_Long_Register_Name",
+				Kind:  "REGISTER",
+				Params: map[string]string{
+					"WIDTH": "32",
+					"TYPE":  "DFF",
+				},
+				Inputs: []ast.Pin{
+					{Name: "D_IN", Position: ast.PositionLeft},
+					{Name: "CLK", Position: ast.PositionBottom},
+				},
+				Outputs: []ast.Pin{
+					{Name: "Q_OUT", Position: ast.PositionRight},
+				},
+			},
+			{
+				Label: "LUT1",
+				Name:  "Small_LUT",
+				Kind:  "LUT",
+				Params: map[string]string{
+					"INIT": "0xABCD",
+				},
+			},
+		},
+		Layout: []ast.LayoutEntry{
+			{Block: "REG1", X: 100, Y: 100},
+			{Block: "LUT1", X: 300, Y: 150},
+		},
+	}
+
+	r := New(500, 300)
+	img, err := r.Render(diag)
+	if err != nil {
+		t.Fatalf("Render failed: %v", err)
+	}
+	if img == nil {
+		t.Fatalf("Rendered image is nil")
+	}
+}
