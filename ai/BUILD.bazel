@@ -1,3 +1,4 @@
+load("//ai:diagram.bzl", "render_diagram")
 load(
     "@bazel_ebook//build:rules.bzl",
     "ebook_pdf",
@@ -14,6 +15,7 @@ exports_files([
     "pins_buses.png",
     "dynamic_sizing.png",
     "msi_blocks.png",
+    "pin_aware.png",
 ])
 
 markdown_lib(
@@ -28,6 +30,7 @@ markdown_lib(
         "pins_buses.png",
         "dynamic_sizing.png",
         "msi_blocks.png",
+        "pin_aware.png",
     ],
 )
 
@@ -45,37 +48,11 @@ pandoc_chunked_html(
     deps = [":md"],
 )
 
-genrule(
-    name = "gen_shapes_example",
-    srcs = ["examples/shapes.hodos"],
-    outs = ["shapes_gen.png"],
-    cmd = "$(location //cmd/hodos) render $(location examples/shapes.hodos) -o $@",
-    tools = ["//cmd/hodos"],
-)
-
-genrule(
-    name = "gen_pins_buses_example",
-    srcs = ["examples/pins_buses.hodos"],
-    outs = ["pins_buses_gen.png"],
-    cmd = "$(location //cmd/hodos) render $(location examples/pins_buses.hodos) -o $@",
-    tools = ["//cmd/hodos"],
-)
-
-genrule(
-    name = "gen_dynamic_sizing_example",
-    srcs = ["examples/dynamic_sizing.hodos"],
-    outs = ["dynamic_sizing_gen.png"],
-    cmd = "$(location //cmd/hodos) render $(location examples/dynamic_sizing.hodos) -o $@",
-    tools = ["//cmd/hodos"],
-)
-
-genrule(
-    name = "gen_msi_blocks_example",
-    srcs = ["examples/msi_blocks.hodos"],
-    outs = ["msi_blocks_gen.png"],
-    cmd = "$(location //cmd/hodos) render $(location examples/msi_blocks.hodos) -o $@",
-    tools = ["//cmd/hodos"],
-)
+render_diagram(name = "shapes", src = "examples/shapes.hodos")
+render_diagram(name = "pins_buses", src = "examples/pins_buses.hodos")
+render_diagram(name = "dynamic_sizing", src = "examples/dynamic_sizing.hodos")
+render_diagram(name = "msi_blocks", src = "examples/msi_blocks.hodos")
+render_diagram(name = "pin_aware", src = "examples/pin_aware.hodos")
 
 write_source_files(
     name = "update_diagrams",
@@ -84,5 +61,6 @@ write_source_files(
         "pins_buses.png": ":gen_pins_buses_example",
         "dynamic_sizing.png": ":gen_dynamic_sizing_example",
         "msi_blocks.png": ":gen_msi_blocks_example",
+        "pin_aware.png": ":gen_pin_aware_example",
     },
 )

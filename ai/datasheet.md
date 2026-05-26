@@ -69,16 +69,6 @@ Hodos automatically calculates block dimensions based on the number of input and
 ### 9.1 Visual Reference
 ![Dynamic Sizing](ai/dynamic_sizing.png)
 
-## 8. Pins and Buses
-Hodos supports explicit pin rendering and multi-bit bus visualization.
-*   **Pin Rendering**: Named inputs and outputs are rendered on block boundaries.
-*   **Bus Thickness**: Wires can have custom thickness to represent buses.
-*   **Crossline Indicator**: Standard bus width indicators with labels.
-
-### 8.1 Visual Reference
-![Pins and Buses](ai/pins_buses.png)
-
-
 ## 10. Registers, Counters, and Dependency Notation
 Hodos strictly adheres to IEEE Std 91-1984 for MSI components.
 *   **Common Control Block**: MSI blocks like `REGISTER` and `COUNTER` feature a separated top section for common controls.
@@ -87,3 +77,12 @@ Hodos strictly adheres to IEEE Std 91-1984 for MSI components.
 
 ### 10.1 Visual Reference
 ![MSI Blocks](ai/msi_blocks.png)
+
+## 11. Pin-Aware Routing
+Hodos routes wires orthoganally, considering the physical side of the block where the pin is located.
+*   **Directional Exits**: Wires exit perpendicular to the boundary they originate from.
+*   **Directional Entries**: Wires enter perpendicular to the boundary they terminate at.
+*   **Supported Hints**: `straight`, `L-shape`, `Z-shape` paths intelligently adapt to top/bottom/left/right pin orientations.
+
+### 11.1 Visual Reference
+![Pin-Aware Routing](ai/pin_aware.png)

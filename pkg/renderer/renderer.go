@@ -118,10 +118,10 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		sw, sh := r.calculateSize(srcB)
 		dw, dh := r.calculateSize(dstB)
 
-		x1, y1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
-		x2, y2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
+		x1, y1, d1 := r.getPinPos(srcB, w.Source.Pin, srcL, sw, sh, false)
+		x2, y2, d2 := r.getPinPos(dstB, w.Destination.Pin, dstL, dw, dh, true)
 
-		points := router.Route(x1, y1, x2, y2, w.Hint)
+		points := router.Route(x1, y1, d1, x2, y2, d2, w.Hint)
 
 		gc.SetStrokeColor(ColorOutline)
 		thickness := float64(w.Thickness)
@@ -188,17 +188,42 @@ func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.L
 	}
 
 	for i, p := range b.Inputs {
-		py := l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+		pos := r.getPinPositionHint(p.Position, false)
 		
+		var px, py float64
+		if pos == router.DirLeft {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+			px = l.X
+		} else if pos == router.DirTop {
+			py = l.Y
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
+		} else if pos == router.DirBottom {
+			py = l.Y + h
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1)
+		} else {
+			// fallback left
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+			px = l.X
+		}
+
 		label := p.Name
 		
-		// Dependency Notation parsing (simplified for visualization)
+		// Dependency Notation parsing
 		if strings.HasPrefix(p.Name, "C") || strings.HasPrefix(p.Name, "CLK") {
-			// Draw Wedge for dynamic inputs
 			gc.BeginPath()
-			gc.MoveTo(l.X, py-4)
-			gc.LineTo(l.X+6, py)
-			gc.LineTo(l.X, py+4)
+			if pos == router.DirLeft {
+				gc.MoveTo(px, py-4)
+				gc.LineTo(px+6, py)
+				gc.LineTo(px, py+4)
+			} else if pos == router.DirBottom {
+				gc.MoveTo(px-4, py)
+				gc.LineTo(px, py-6)
+				gc.LineTo(px+4, py)
+			} else if pos == router.DirTop {
+				gc.MoveTo(px-4, py)
+				gc.LineTo(px, py+6)
+				gc.LineTo(px+4, py)
+			}
 			gc.Stroke()
 			label = "C"
 		} else if strings.HasPrefix(p.Name, "R") {
@@ -207,41 +232,102 @@ func (r *Renderer) renderPins(gc *draw2dimg.GraphicContext, b ast.Block, l ast.L
 			label = "EN"
 		}
 
-		if isMSI {
-			gc.FillStringAt(label, l.X+8, py+4)
-		} else {
-			gc.FillStringAt(label, l.X+2, py+4)
+		if pos == router.DirLeft {
+			if isMSI {
+				gc.FillStringAt(label, px+8, py+4)
+			} else {
+				gc.FillStringAt(label, px+2, py+4)
+			}
+			gc.BeginPath()
+			gc.MoveTo(px-2, py)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirTop {
+			gc.FillStringAt(label, px-4, py+12)
+			gc.BeginPath()
+			gc.MoveTo(px, py-2)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirBottom {
+			gc.FillStringAt(label, px-4, py-6)
+			gc.BeginPath()
+			gc.MoveTo(px, py+2)
+			gc.LineTo(px, py)
+			gc.Stroke()
 		}
-
-		gc.BeginPath()
-		gc.MoveTo(l.X-2, py)
-		gc.LineTo(l.X, py)
-		gc.Stroke()
 	}
 
 	for i, p := range b.Outputs {
-		py := l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+		pos := r.getPinPositionHint(p.Position, true)
+
+		var px, py float64
+		if pos == router.DirRight {
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+			px = l.X + w
+		} else if pos == router.DirTop {
+			py = l.Y
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
+		} else if pos == router.DirBottom {
+			py = l.Y + h
+			px = l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1)
+		} else {
+			// fallback right
+			py = l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+			px = l.X + w
+		}
+
 		label := p.Name
 		
-		if isMSI {
-			gc.FillStringAt(label, l.X+w-20, py+4)
-		} else {
-			gc.FillStringAt(label, l.X+w-15, py+4)
+		if pos == router.DirRight {
+			if isMSI {
+				gc.FillStringAt(label, px-20, py+4)
+			} else {
+				gc.FillStringAt(label, px-15, py+4)
+			}
+			gc.BeginPath()
+			gc.MoveTo(px, py)
+			gc.LineTo(px+2, py)
+			gc.Stroke()
+		} else if pos == router.DirTop {
+			gc.FillStringAt(label, px-4, py+12)
+			gc.BeginPath()
+			gc.MoveTo(px, py-2)
+			gc.LineTo(px, py)
+			gc.Stroke()
+		} else if pos == router.DirBottom {
+			gc.FillStringAt(label, px-4, py-6)
+			gc.BeginPath()
+			gc.MoveTo(px, py+2)
+			gc.LineTo(px, py)
+			gc.Stroke()
 		}
-		
-		gc.BeginPath()
-		gc.MoveTo(l.X+w, py)
-		gc.LineTo(l.X+w+2, py)
-		gc.Stroke()
 	}
 }
 
-func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, h float64, isDest bool) (float64, float64) {
+func (r *Renderer) getPinPositionHint(hint string, isDest bool) router.Direction {
+	switch hint {
+	case "left":
+		return router.DirLeft
+	case "right":
+		return router.DirRight
+	case "top":
+		return router.DirTop
+	case "bottom":
+		return router.DirBottom
+	default:
+		if isDest {
+			return router.DirRight
+		}
+		return router.DirLeft
+	}
+}
+
+func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, h float64, isDest bool) (float64, float64, router.Direction) {
 	if pinName == "" {
 		if isDest {
-			return l.X, l.Y + h/2
+			return l.X, l.Y + h/2, router.DirLeft
 		}
-		return l.X + w, l.Y + h/2
+		return l.X + w, l.Y + h/2, router.DirRight
 	}
 
 	kind := strings.ToUpper(b.Kind)
@@ -256,14 +342,33 @@ func (r *Renderer) getPinPos(b ast.Block, pinName string, l ast.LayoutEntry, w, 
 
 	for i, p := range b.Inputs {
 		if p.Name == pinName {
-			return l.X, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1)
+			pos := r.getPinPositionHint(p.Position, false)
+			if pos == router.DirLeft {
+				return l.X, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1), pos
+			} else if pos == router.DirTop {
+				return l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1), l.Y, pos
+			} else if pos == router.DirBottom {
+				return l.X + (float64(i)+1)*w/(float64(len(b.Inputs))+1), l.Y + h, pos
+			}
+			return l.X, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Inputs))+1), router.DirLeft
 		}
 	}
 	for i, p := range b.Outputs {
 		if p.Name == pinName {
-			return l.X + w, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1)
+			pos := r.getPinPositionHint(p.Position, true)
+			if pos == router.DirRight {
+				return l.X + w, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1), pos
+			} else if pos == router.DirTop {
+				return l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1), l.Y, pos
+			} else if pos == router.DirBottom {
+				return l.X + (float64(i)+1)*w/(float64(len(b.Outputs))+1), l.Y + h, pos
+			}
+			return l.X + w, l.Y + offsetY + (float64(i)+1)*usableH/(float64(len(b.Outputs))+1), router.DirRight
 		}
 	}
 
-	return l.X + w/2, l.Y + h/2
+	if isDest {
+		return l.X, l.Y + h/2, router.DirLeft
+	}
+	return l.X + w, l.Y + h/2, router.DirRight
 }
