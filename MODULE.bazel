@@ -1,0 +1,13 @@
+module(
+    name = "hodos",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "gazelle", version = "0.51.0")
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.from_file(go_mod = "//:go.mod")
+
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.from_file(go_mod = "//:go.mod")

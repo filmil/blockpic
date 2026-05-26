@@ -1,0 +1,6 @@
+# Load user-specific configurations if they exist.
+try-import %workspace%/user.bazelrc
+
+# Standard Bazel settings
+build --enable_bzlmod
+test --test_output=errors
