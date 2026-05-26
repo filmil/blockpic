@@ -473,10 +473,7 @@ func (r *Renderer) collectTextLabels(gc draw2d.GraphicContext, diag *ast.Diagram
 			usableH = h * 0.7
 		}
 
-		showPins := true
-		if isBasicElement(b.Kind) {
-			showPins = b.Params["show_port_names"] == "true"
-		}
+		showPins := r.shouldShowPins(b)
 
 		if showPins {
 			for i, p := range b.Inputs {
@@ -834,10 +831,7 @@ func (r *Renderer) CalculateSize(gc draw2d.GraphicContext, b ast.Block) (float64
 	nameW, _ := measureText(gc, displayName)
 	
 	maxInW, maxOutW := 0.0, 0.0
-	showPins := true
-	if isBasicElement(b.Kind) {
-		showPins = b.Params["show_port_names"] == "true"
-	}
+	showPins := r.shouldShowPins(b)
 	if showPins {
 		for _, p := range b.Inputs {
 			w, _ := measureText(gc, p.Name)
@@ -1123,4 +1117,36 @@ func isBasicElement(kind string) bool {
 	default:
 		return false
 	}
+}
+
+func isSmallElement(kind string) bool {
+	switch strings.ToUpper(kind) {
+	case "AND", "OR", "NOT", "XOR":
+		return true
+	default:
+		return false
+	}
+}
+
+func (r *Renderer) shouldShowPins(b ast.Block) bool {
+	// Default visibility: hidden for small elements (AND, OR, NOT, XOR), shown for others.
+	showPins := true
+	if isSmallElement(b.Kind) {
+		showPins = false
+	}
+
+	// Explicit overrides: Block Hint attribute
+	if b.Hint == ast.HintShowPorts {
+		showPins = true
+	} else if b.Hint == ast.HintHidePorts {
+		showPins = false
+	} else {
+		// Fallback check for parameters for backwards compatibility
+		if b.Params["show_port_names"] == "true" {
+			showPins = true
+		} else if b.Params["show_port_names"] == "false" {
+			showPins = false
+		}
+	}
+	return showPins
 }

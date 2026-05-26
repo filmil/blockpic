@@ -99,6 +99,12 @@ func (p *Parser) parseBlock() *ast.Block {
 					block.Name = p.curToken.Literal
 				}
 			}
+		case scanner.HINT:
+			if p.expectPeek(scanner.COLON) {
+				if p.expectPeek(scanner.STRING) {
+					block.Hint = ast.BlockHint(p.curToken.Literal)
+				}
+			}
 		case scanner.INPUTS:
 			if p.expectPeek(scanner.COLON) {
 				block.Inputs = p.parsePins()

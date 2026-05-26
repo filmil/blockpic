@@ -20,6 +20,7 @@ diagram MyLogic {
     block DFF_1 {
         kind: "FLIPFLOP"
         name: "DFF Display"
+        hint: "show-ports"
         inputs: D, CLK [bottom]
         outputs: Q
     }
@@ -76,6 +77,10 @@ diagram MyLogic {
 
 	if diag.Blocks[1].Name != "DFF Display" {
 		t.Errorf("expected second block name 'DFF Display', got '%s'", diag.Blocks[1].Name)
+	}
+
+	if diag.Blocks[1].Hint != "show-ports" {
+		t.Errorf("expected second block hint 'show-ports', got '%s'", diag.Blocks[1].Hint)
 	}
 
 	if len(diag.Wires) != 2 {
