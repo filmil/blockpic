@@ -891,15 +891,15 @@ func (r *Renderer) CalculateSize(gc draw2d.GraphicContext, b ast.Block) (float64
 	return w, h
 }
 
-func (r *Renderer) getPinPositionHint(hint string, isDest bool) router.Direction {
-	switch hint {
-	case "left":
+func (r *Renderer) getPinPositionHint(pos ast.PinPosition, isDest bool) router.Direction {
+	switch pos {
+	case ast.PositionLeft:
 		return router.DirLeft
-	case "right":
+	case ast.PositionRight:
 		return router.DirRight
-	case "top":
+	case ast.PositionTop:
 		return router.DirTop
-	case "bottom":
+	case ast.PositionBottom:
 		return router.DirBottom
 	default:
 		if isDest {
