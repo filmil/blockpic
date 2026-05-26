@@ -1,4 +1,5 @@
 load("@gazelle//:def.bzl", "gazelle")
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 
 # gazelle:prefix github.com/filmil/hodos
 gazelle(name = "gazelle")
@@ -7,3 +8,9 @@ exports_files([
     "README.md",
     "LICENSE",
 ])
+
+# bazel run //:buildifier
+buildifier(
+    name = "buildifier",
+)
+
