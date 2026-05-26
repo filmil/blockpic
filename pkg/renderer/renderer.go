@@ -53,18 +53,30 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 		gc.SetStrokeColor(ColorOutline)
 		gc.SetLineWidth(1)
 
-		switch strings.ToUpper(b.Kind) {
+		kind := strings.ToUpper(b.Kind)
+		switch kind {
 		case "AND":
 			shapes.DrawAND(gc, l.X, l.Y, w, h)
 		case "OR":
 			shapes.DrawOR(gc, l.X, l.Y, w, h)
 		case "NOT":
 			shapes.DrawNOT(gc, l.X, l.Y, w, h)
-		case "FLIPFLOP", "DFF":
+		case "XOR":
+			shapes.DrawXOR(gc, l.X, l.Y, w, h)
+		case "FLIPFLOP", "DFF", "JKFF", "TFF", "SRFF":
 			shapes.DrawDFF(gc, l.X, l.Y, w, h)
 		case "MUX":
 			shapes.DrawMUX(gc, l.X, l.Y, w, h)
+		case "DEMUX":
+			shapes.DrawDEMUX(gc, l.X, l.Y, w, h)
+		case "VCC":
+			shapes.DrawVCC(gc, l.X, l.Y, w, h)
+		case "GND":
+			shapes.DrawGND(gc, l.X, l.Y, w, h)
+		case "CLOCK":
+			shapes.DrawClock(gc, l.X, l.Y, w, h)
 		default:
+			// Default rectangle for REGISTER, COUNTER, etc.
 			gc.BeginPath()
 			gc.MoveTo(l.X, l.Y)
 			gc.LineTo(l.X+w, l.Y)
@@ -76,6 +88,11 @@ func (r *Renderer) Render(diag *ast.Diagram) (image.Image, error) {
 
 		gc.SetFillColor(ColorText)
 		gc.FillStringAt(b.Name, l.X+2, l.Y-5)
+		
+		// Internal label if kind is special but use standard rect
+		if kind == "REGISTER" || kind == "COUNTER" || kind == "SHIFT_REGISTER" {
+			gc.FillStringAt(kind, l.X+5, l.Y+h/2+4)
+		}
 	}
 
 	for _, w := range diag.Wires {
