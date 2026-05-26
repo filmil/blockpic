@@ -51,3 +51,11 @@ Hodos includes a validation layer to ensure logical correctness before rendering
 *   **Unique Names**: Blocks must have unique identifiers.
 *   **Connectivity**: Wire source and destination blocks must exist.
 *   **Pin Verification**: Referenced pins must exist on their respective blocks.
+
+## 9. Dynamic Gate Sizing
+Hodos automatically calculates block dimensions based on the number of input and output pins.
+*   **Automatic Height**: Blocks expand vertically to accommodate multiple pins while maintaining even distribution.
+*   **Precise Pin Positioning**: Pins are positioned exactly at the boundary intersection, ensuring clean orthogonal routing.
+
+### 9.1 Visual Reference
+![Dynamic Sizing](dynamic_sizing.png)

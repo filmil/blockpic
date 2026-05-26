@@ -1,0 +1,22 @@
+diagram DynamicSizing {
+    block LUT_MANY {
+        kind: "LUT";
+        inputs: I0, I1, I2, I3, I4, I5, I6, I7;
+        outputs: O0, O1;
+    }
+
+    block SMALL {
+        kind: "NOT";
+        inputs: I;
+        outputs: O;
+    }
+
+    wire LUT_MANY.O0 -> SMALL.I {
+        hint: "Z-shape";
+    }
+
+    layout {
+        LUT_MANY at (20, 20)
+        SMALL at (200, 40)
+    }
+}
