@@ -99,19 +99,13 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 			bit := sourceBits[srcKey]
 			netClass := fmt.Sprintf("net_%d", bit)
 
-			// Find all <line ... class="netClass" /> and duplicate them
-			// Outer line (black)
+			// Find all <line ... class="netClass" /> and modify their stroke
 			lineRe := regexp.MustCompile(fmt.Sprintf(`(<line[^>]*class="%s"[^>]*>)`, regexp.QuoteMeta(netClass)))
 			
-			// We replace the single line with a group:
-			// <g> <line stroke="black" stroke-width="6"/> <line stroke="white" stroke-width="4"/> </g>
 			svgStr = lineRe.ReplaceAllStringFunc(svgStr, func(match string) string {
-				// The original match has class="net_X". We want to add stroke/stroke-width.
-				outer := strings.Replace(match, "/>", ` stroke="#000" stroke-width="6" />`, 1)
-				inner := strings.Replace(match, "/>", ` stroke="#fff" stroke-width="4" />`, 1)
-				// Remove the class from the inner one so it doesn't get messed up by CSS
-				inner = strings.Replace(inner, fmt.Sprintf(`class="%s"`, netClass), "", 1)
-				return fmt.Sprintf("<g>\n    %s\n    %s\n  </g>", outer, inner)
+				// We want a solid thick black line.
+				// By replacing the closing '/>', we add the stroke and stroke-width.
+				return strings.Replace(match, "/>", ` stroke="#000" stroke-width="4" />`, 1)
 			})
 		}
 	}
