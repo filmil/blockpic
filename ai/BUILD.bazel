@@ -26,6 +26,8 @@ exports_files([
     "skin_special.svg",
     "skin_utility.svg",
     "skin_with_arrows.svg",
+    "test_features.svg",
+    "state_machine_feedback.svg",
 ])
 
 markdown_lib(
@@ -50,6 +52,8 @@ markdown_lib(
         "skin_muxes.svg",
         "skin_special.svg",
         "skin_utility.svg",
+        "test_features.svg",
+        "state_machine_feedback.svg",
     ],
 )
 
@@ -109,6 +113,8 @@ write_source_files(
         "skin_muxes.svg": ":skin_muxes",
         "skin_special.svg": ":skin_special",
         "skin_utility.svg": ":skin_utility",
+        "test_features.svg": ":test_features",
+        "state_machine_feedback.svg": ":state_machine_feedback",
     },
 )
 
@@ -167,4 +173,9 @@ render_diagram(
 render_diagram(
     name = "state_machine_feedback",
     src = "examples/state_machine_feedback.hodos",
+)
+
+render_diagram(
+    name = "test_mul",
+    src = "examples/test_mul.hodos",
 )
