@@ -1,0 +1,33 @@
+{
+  "modules": {
+    "test_module": {
+      "ports": {},
+      "cells": {
+        "text_test": {
+          "type": "$dff",
+          "parameters": {
+            "INIT": "0x8000\nMODE: FAST"
+          },
+          "attributes": {
+            "module_not_derived": 1
+          },
+          "port_directions": {
+            "CLK": "input",
+            "D": "input",
+            "Q": "output"
+          },
+          "connections": {
+            "CLK": [2],
+            "D": [3],
+            "Q": [4]
+          }
+        }
+      },
+      "netnames": {
+        "clk": { "hide_name": 0, "bits": [2], "attributes": {} },
+        "d": { "hide_name": 0, "bits": [3], "attributes": {} },
+        "q": { "hide_name": 0, "bits": [4], "attributes": {} }
+      }
+    }
+  }
+}

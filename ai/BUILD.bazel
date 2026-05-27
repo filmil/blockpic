@@ -25,6 +25,7 @@ exports_files([
     "skin_muxes.svg",
     "skin_special.svg",
     "skin_utility.svg",
+    "skin_with_arrows.svg",
 ])
 
 markdown_lib(
@@ -156,4 +157,14 @@ render_diagram(
 render_diagram(
     name = "skin_utility",
     src = "examples/skin_utility.hodos",
+)
+
+render_diagram(
+    name = "test_features",
+    src = "examples/test_features.hodos",
+)
+
+render_diagram(
+    name = "state_machine_feedback",
+    src = "examples/state_machine_feedback.hodos",
 )

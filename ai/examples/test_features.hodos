@@ -1,0 +1,14 @@
+diagram TestFeatures {
+    block IN_CLK { kind: "INPUT_PIN"; outputs: O; }
+    block DFF1 { 
+        kind: "dff"; 
+        inputs: D, CLK; 
+        outputs: Q; 
+        params: { "INIT": "0x00\nMODE: FAST", "LABEL": "~EN~" };
+    }
+    block NOT1 { kind: "not"; inputs: A; outputs: Y; }
+    
+    wire IN_CLK.O -> DFF1.CLK
+    wire DFF1.Q -> NOT1.A
+    wire NOT1.Y -> DFF1.D { hint: "feedback" }
+}
