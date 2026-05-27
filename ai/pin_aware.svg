@@ -10,6 +10,9 @@
     font-weight: bold;
     font-family: "Courier New", monospace;
   }
+  line {
+      stroke-linecap: round;
+  }
   .nodelabel {
     text-anchor: middle;
   }

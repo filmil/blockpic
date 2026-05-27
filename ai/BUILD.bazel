@@ -25,6 +25,7 @@ exports_files([
     "skin_muxes.svg",
     "skin_special.svg",
     "skin_utility.svg",
+    "skin.svg",
 ])
 
 markdown_lib(
