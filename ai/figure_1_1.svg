@@ -70,31 +70,13 @@
       <text x="5" y="-4" style="fill:#000; stroke:none" class="cell_SwitchMatrix">out1</text>
     </g>
   </g>
-  <g>
-    <line x1="56" x2="151" y1="52.5" y2="52.5" class="net_2" stroke="#000" stroke-width="6" />
-    <line x1="56" x2="151" y1="52.5" y2="52.5"  stroke="#fff" stroke-width="4" />
-  </g>
+  <line x1="56" x2="151" y1="52.5" y2="52.5" class="net_2" stroke="#000" stroke-width="4" />
   <line x1="182" x2="261" y1="32.5" y2="32.5" class="net_4"/>
-  <g>
-    <line x1="56" x2="107" y1="72.5" y2="72.5" class="net_3" stroke="#000" stroke-width="6" />
-    <line x1="56" x2="107" y1="72.5" y2="72.5"  stroke="#fff" stroke-width="4" />
-  </g>
-  <g>
-    <line x1="107" x2="107" y1="72.5" y2="75" class="net_3" stroke="#000" stroke-width="6" />
-    <line x1="107" x2="107" y1="72.5" y2="75"  stroke="#fff" stroke-width="4" />
-  </g>
-  <g>
-    <line x1="107" x2="217" y1="75" y2="75" class="net_3" stroke="#000" stroke-width="6" />
-    <line x1="107" x2="217" y1="75" y2="75"  stroke="#fff" stroke-width="4" />
-  </g>
-  <g>
-    <line x1="217" x2="217" y1="75" y2="52.5" class="net_3" stroke="#000" stroke-width="6" />
-    <line x1="217" x2="217" y1="75" y2="52.5"  stroke="#fff" stroke-width="4" />
-  </g>
-  <g>
-    <line x1="217" x2="261" y1="52.5" y2="52.5" class="net_3" stroke="#000" stroke-width="6" />
-    <line x1="217" x2="261" y1="52.5" y2="52.5"  stroke="#fff" stroke-width="4" />
-  </g>
+  <line x1="56" x2="107" y1="72.5" y2="72.5" class="net_3" stroke="#000" stroke-width="4" />
+  <line x1="107" x2="107" y1="72.5" y2="75" class="net_3" stroke="#000" stroke-width="4" />
+  <line x1="107" x2="217" y1="75" y2="75" class="net_3" stroke="#000" stroke-width="4" />
+  <line x1="217" x2="217" y1="75" y2="52.5" class="net_3" stroke="#000" stroke-width="4" />
+  <line x1="217" x2="261" y1="52.5" y2="52.5" class="net_3" stroke="#000" stroke-width="4" />
   <rect x="131.0" y="2.0" width="180.0" height="80.0" fill="none" stroke="#000" stroke-dasharray="5,5" stroke-width="1"/>
   <text x="136.0" y="17.0" font-family="monospace" font-size="12px" font-weight="bold">CLB</text>
 </svg>

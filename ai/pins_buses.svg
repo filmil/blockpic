@@ -58,8 +58,5 @@
     <g s:x="15" s:y="40" s:pid="ARST"/>
     <g s:x="15" s:y="40" s:pid="SRST"/>
   </g>
-  <g>
-    <line x1="44" x2="79" y1="32" y2="32" class="net_2" stroke="#000" stroke-width="6" />
-    <line x1="44" x2="79" y1="32" y2="32"  stroke="#fff" stroke-width="4" />
-  </g>
+  <line x1="44" x2="79" y1="32" y2="32" class="net_2" stroke="#000" stroke-width="4" />
 </svg>
