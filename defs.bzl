@@ -19,8 +19,8 @@ def hodos_diagram(name, src, out):
     )
     native.genrule(
         name = name,
-        srcs = [json_out],
+        srcs = [json_out, "//ai:skin_with_arrows.svg"],
         outs = [out],
-        cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $< -o $@",
+        cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $(location " + json_out + ") --skin $(location //ai:skin_with_arrows.svg) -o $@",
         tools = [":" + name + "_tool"],
     )

@@ -10,6 +10,9 @@
     font-weight: bold;
     font-family: "Courier New", monospace;
   }
+  line {
+      stroke-linecap: round;
+  }
   .nodelabel {
     text-anchor: middle;
   }
@@ -18,6 +21,9 @@
   }
   .splitjoinBody {
     fill:#000;
+  }
+  .net {
+    marker-end: url(#arrow);
   }</style>
   <g s:type="generic" transform="translate(135,22)" s:width="30" s:height="40" id="cell_DST_BOT">
     <text x="15" y="-4" class="nodelabel cell_DST_BOT" s:attribute="ref">CUSTOM</text>

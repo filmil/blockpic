@@ -536,3 +536,92 @@ diagram skin_utility {
 </td>
 </tr>
 </table>
+
+## 14. Advanced Routing and Text Features
+
+Hodos natively supports advanced ElkJS layout features via the integrated `netlistsvg` engine, including automatic cycle resolution for feedback loops. Additionally, text decorators such as unicode overbars (for active-low signals) and multiline parameters are fully supported. Furthermore, all wires are styled with directional arrowheads to clearly denote signal flow.
+
+<table>
+<tr>
+<th width="40%">Source Code</th>
+<th width="60%">Rendered Diagram</th>
+</tr>
+<tr>
+<td valign="top" width="40%">
+
+```
+diagram TestFeatures {
+    block IN_CLK { kind: "INPUT_PIN"; outputs: O; }
+    block DFF1 { 
+        kind: "dff"; 
+        inputs: D, CLK; 
+        outputs: Q; 
+        params: { "INIT": "0x00\nMODE: FAST", "LABEL": "~EN~" };
+    }
+    block NOT1 { kind: "not"; inputs: A; outputs: Y; }
+    
+    wire IN_CLK.O -> DFF1.CLK
+    wire DFF1.Q -> NOT1.A
+    wire NOT1.Y -> DFF1.D { hint: "feedback" }
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![Test Features](ai/test_features.svg)
+
+</td>
+</tr>
+<tr>
+<td valign="top" width="40%">
+
+```
+diagram StateMachineFeedback {
+    block CLK { kind: "INPUT_PIN"; outputs: O; }
+    block RST { kind: "INPUT_PIN"; outputs: O; }
+    block IN_A { kind: "INPUT_PIN"; outputs: O; }
+    block OUT_Y { kind: "OUTPUT_PIN"; inputs: I; }
+
+    block STATE_REG {
+        kind: "dff";
+        inputs: D, CLK;
+        outputs: Q;
+        params: { "LABEL": "STATE" };
+    }
+
+    block NEXT_STATE_LOGIC {
+        kind: "CUSTOM";
+        inputs: A, STATE_IN;
+        outputs: NEXT_STATE;
+        params: { "LABEL": "Next State\nLogic" };
+        size: (80, 80);
+    }
+
+    block OUTPUT_LOGIC {
+        kind: "CUSTOM";
+        inputs: STATE_IN;
+        outputs: Y;
+        params: { "LABEL": "Output\nLogic" };
+        size: (60, 60);
+    }
+
+    wire IN_A.O -> NEXT_STATE_LOGIC.A
+    wire STATE_REG.Q -> NEXT_STATE_LOGIC.STATE_IN { hint: "feedback" }
+    
+    wire NEXT_STATE_LOGIC.NEXT_STATE -> STATE_REG.D
+    wire CLK.O -> STATE_REG.CLK
+    
+    wire STATE_REG.Q -> OUTPUT_LOGIC.STATE_IN
+    wire OUTPUT_LOGIC.Y -> OUT_Y.I
+}
+```
+
+</td>
+<td valign="top" width="60%">
+
+![State Machine Feedback](ai/state_machine_feedback.svg)
+
+</td>
+</tr>
+</table>

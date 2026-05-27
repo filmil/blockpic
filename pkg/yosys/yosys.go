@@ -130,10 +130,19 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 			cell.Attributes["label"] = b.Label
 		}
 
-		for _, param := range []string{"WIDTH", "INIT", "TYPE"} {
-			if val, ok := b.Params[param]; ok {
-				cell.Attributes[param] = val
+		for k, v := range b.Params {
+			// Convert ~TEXT~ to unicode overbars
+			processedVal := v
+			if strings.HasPrefix(v, "~") && strings.HasSuffix(v, "~") {
+				coreText := v[1 : len(v)-1]
+				var overbar strings.Builder
+				for _, char := range coreText {
+					overbar.WriteRune(char)
+					overbar.WriteRune('\u0305') // Combining overline
+				}
+				processedVal = overbar.String()
 			}
+			cell.Attributes[k] = processedVal
 		}
 
 		mapPort := func(pinName string, isOutput bool, idx int) string {
