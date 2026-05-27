@@ -1,0 +1,15 @@
+diagram TestMul {
+    block IN_A { kind: "INPUT_PIN"; outputs: O; }
+    block IN_B { kind: "INPUT_PIN"; outputs: O; }
+    block MY_MUL {
+        kind: "mul";
+        inputs: A, B;
+        outputs: Y;
+        params: { "LABEL": "MY_AWESOME_MUL" };
+    }
+    block OUT_Y { kind: "OUTPUT_PIN"; inputs: I; }
+    
+    wire IN_A.O -> MY_MUL.A
+    wire IN_B.O -> MY_MUL.B
+    wire MY_MUL.Y -> OUT_Y.I
+}

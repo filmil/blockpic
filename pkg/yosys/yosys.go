@@ -25,6 +25,7 @@ type Port struct {
 }
 
 type Cell struct {
+	HideName       int              `json:"hide_name"`
 	Type           string           `json:"type"`
 	PortDirections map[string]string `json:"port_directions"`
 	Connections    map[string][]int  `json:"connections"`
