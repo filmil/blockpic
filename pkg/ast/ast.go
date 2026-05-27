@@ -5,6 +5,7 @@ type Diagram struct {
 	Name   string
 	Blocks []Block
 	Wires  []Wire
+	Groups []Group
 	Layout []LayoutEntry
 }
 
@@ -70,4 +71,9 @@ type LayoutEntry struct {
 
 type Size struct {
 	W, H float64
+}
+
+type Group struct {
+	Name   string
+	Blocks []string
 }

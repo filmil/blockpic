@@ -625,3 +625,83 @@ diagram StateMachineFeedback {
 </td>
 </tr>
 </table>
+
+## 15. Xilinx Layout Comparison
+
+Hodos supports high-fidelity schematic replication of common FPGA vendor diagrams. Below is a comparison between the original Xilinx UG474 `figure_1_1` documentation image and the exact identical layout recreated directly from Hodos source code.
+
+This demonstrates the engine's capability to render complex hierarchical layouts, custom element sizing, dashed group bounding boxes, and thick hollow block-arrow buses.
+
+<table>
+<tr>
+<th width="33%">Original Xilinx Reference</th>
+<th width="33%">Hodos Rendered SVG</th>
+<th width="33%">Hodos Source Code</th>
+</tr>
+<tr>
+<td valign="top" width="33%">
+
+![Original Xilinx UG474 Figure 1.1](../third_party/xilinx/figure_1_1.png)
+
+</td>
+<td valign="top" width="33%">
+
+![Hodos Figure 1.1](ai/figure_1_1.svg)
+
+</td>
+<td valign="top" width="33%">
+
+```hodos
+diagram figure_1_1 {
+    block SwitchMatrix {
+        kind: "generic"
+        name: "Switch Matrix"
+        inputs: in
+        outputs: out0, out1
+        size: (50, 100)
+    }
+
+    block Slice0 {
+        kind: "generic"
+        name: "Slice(0)"
+        inputs: in, cin
+        outputs: out, cout
+        size: (50, 40)
+    }
+
+    block Slice1 {
+        kind: "generic"
+        name: "Slice(1)"
+        inputs: in, cin
+        outputs: out, cout
+        size: (50, 40)
+    }
+
+    group "CLB" {
+        Slice0;
+        Slice1;
+    }
+
+    wire SwitchMatrix.out0 -> Slice0.in {
+        thickness: 2
+    }
+
+    wire SwitchMatrix.out1 -> Slice1.in {
+        thickness: 2
+    }
+
+    wire Slice0.cout -> Slice1.cin {
+        thickness: 1
+    }
+
+    layout {
+        SwitchMatrix at (10, 10)
+        Slice0 at (100, 10)
+        Slice1 at (100, 70)
+    }
+}
+```
+
+</td>
+</tr>
+</table>

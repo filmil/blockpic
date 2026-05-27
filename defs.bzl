@@ -17,10 +17,19 @@ def hodos_diagram(name, src, out):
     bin.netlistsvg_binary(
         name = name + "_tool",
     )
+    intermediate_svg = name + "_raw.svg"
     native.genrule(
-        name = name,
+        name = name + "_raw",
         srcs = [json_out, "//ai:skin_with_arrows.svg"],
-        outs = [out],
+        outs = [intermediate_svg],
         cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $(location " + json_out + ") --skin $(location //ai:skin_with_arrows.svg) -o $@",
         tools = [":" + name + "_tool"],
+    )
+
+    native.genrule(
+        name = name,
+        srcs = [src, intermediate_svg],
+        outs = [out],
+        cmd = "$(location //cmd/hodos) refine $(location " + src + ") -svg $(location " + intermediate_svg + ") -o $@",
+        tools = ["//cmd/hodos"],
     )

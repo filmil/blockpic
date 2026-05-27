@@ -14,7 +14,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: hodos [compile|render] <file>")
+		fmt.Println("Usage: hodos [compile|render|refine] <file>")
 		os.Exit(1)
 	}
 
@@ -25,6 +25,8 @@ func main() {
 		compileCmd()
 	case "render":
 		renderCmd()
+	case "refine":
+		refineCmd()
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
