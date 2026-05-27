@@ -61,6 +61,11 @@ func (p *Parser) ParseDiagram() *ast.Diagram {
 			if wire != nil {
 				diagram.Wires = append(diagram.Wires, *wire)
 			}
+		case scanner.GROUP:
+			group := p.parseGroup()
+			if group != nil {
+				diagram.Groups = append(diagram.Groups, *group)
+			}
 		case scanner.LAYOUT:
 			layout := p.parseLayout()
 			if layout != nil {
@@ -126,6 +131,30 @@ func (p *Parser) parseBlock() *ast.Block {
 	}
 	p.nextToken()
 	return block
+}
+
+func (p *Parser) parseGroup() *ast.Group {
+	if !p.expectPeek(scanner.STRING) {
+		return nil
+	}
+	group := &ast.Group{Name: p.curToken.Literal}
+
+	if !p.expectPeek(scanner.LBRACE) {
+		return nil
+	}
+	p.nextToken() // skip {
+
+	for !p.curTokenIs(scanner.RBRACE) && !p.curTokenIs(scanner.EOF) {
+		if p.curTokenIs(scanner.IDENT) {
+			group.Blocks = append(group.Blocks, p.curToken.Literal)
+			if p.peekTokenIs(scanner.SEMICOLON) {
+				p.nextToken() // skip ;
+			}
+		}
+		p.nextToken()
+	}
+	p.nextToken()
+	return group
 }
 
 func (p *Parser) parsePins() []ast.Pin {

@@ -1,0 +1,11 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "refine",
+    srcs = ["refine.go"],
+    importpath = "github.com/filmil/hodos/pkg/refine",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/ast",
+    ],
+)

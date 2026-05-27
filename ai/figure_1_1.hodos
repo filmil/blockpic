@@ -1,0 +1,48 @@
+diagram figure_1_1 {
+    block SwitchMatrix {
+        kind: "generic"
+        name: "Switch Matrix"
+        inputs: in
+        outputs: out0, out1
+        size: (50, 100)
+    }
+
+    block Slice0 {
+        kind: "generic"
+        name: "Slice(0)"
+        inputs: in, cin
+        outputs: out, cout
+        size: (50, 40)
+    }
+
+    block Slice1 {
+        kind: "generic"
+        name: "Slice(1)"
+        inputs: in, cin
+        outputs: out, cout
+        size: (50, 40)
+    }
+
+    group "CLB" {
+        Slice0;
+        Slice1;
+    }
+
+    wire SwitchMatrix.out0 -> Slice0.in {
+        thickness: 2
+    }
+
+    wire SwitchMatrix.out1 -> Slice1.in {
+        thickness: 2
+    }
+
+    wire Slice0.cout -> Slice1.cin {
+        thickness: 1
+    }
+
+    layout {
+        SwitchMatrix at (10, 10)
+        Slice0 at (100, 10)
+        Slice1 at (100, 70)
+    }
+}

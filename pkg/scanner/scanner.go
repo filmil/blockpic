@@ -31,6 +31,7 @@ const (
 	BLOCK
 	WIRE
 	LAYOUT
+	GROUP
 	KIND
 	NAME
 	INPUTS
@@ -48,6 +49,7 @@ var keywords = map[string]TokenType{
 	"block":     BLOCK,
 	"wire":      WIRE,
 	"layout":    LAYOUT,
+	"group":     GROUP,
 	"kind":      KIND,
 	"name":      NAME,
 	"inputs":    INPUTS,
