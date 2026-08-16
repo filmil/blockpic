@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# One run per branch: pushing again cancels the run still testing the
+# previous commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v4
+
+      # A runner missing a tool otherwise fails as a bare `exit 127` deep
+      # in a log. Say it plainly instead.
+      - name: Preflight -- required host tools
+        run: |
+          missing=""
+          for b in bazel git; do
+            command -v "$b" >/dev/null 2>&1 || missing="$missing  binary: $b\n"
+          done
+          if [ -n "$missing" ]; then
+            printf "Missing from the runner image:\n$missing" >&2
+            exit 1
+          fi
+
+      # //ai/... is excluded: the book targets build through bazel_ebook,
+      # whose rules drive a container via @rules_bid//build:docker_run.
+      # This job already runs inside a container, and nested containers
+      # cannot bind-mount job paths the host daemon cannot see. The book
+      # and the docs deploy remain covered by the GitHub-side CI.
+      - name: Test
+        run: bazel test --test_output=errors -- //... -//ai/...
