@@ -3,7 +3,7 @@ package validation
 
 import (
 	"testing"
-	"github.com/filmil/hodos/pkg/ast"
+	"github.com/filmil/blockpic/pkg/ast"
 )
 
 func TestValidate(t *testing.T) {

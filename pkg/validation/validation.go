@@ -3,7 +3,7 @@ package validation
 
 import (
 	"fmt"
-	"github.com/filmil/hodos/pkg/ast"
+	"github.com/filmil/blockpic/pkg/ast"
 )
 
 func Validate(diag *ast.Diagram) error {

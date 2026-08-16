@@ -1,10 +1,10 @@
-# Hodos Datasheet: Implemented Features
+# Blockpic Datasheet: Implemented Features
 
-This document provides a hierarchical overview of the features implemented in the Hodos DSL and rendering engine.
+This document provides a hierarchical overview of the features implemented in the Blockpic DSL and rendering engine.
 
 ## 1. Core Language (DSL)
 *   **AST Structure**: Support for `Diagram`, `Block`, `Wire`, and `Layout` definitions.
-*   **Lexer/Parser**: Recursive descent parser capable of reading `.hodos` files.
+*   **Lexer/Parser**: Recursive descent parser capable of reading `.blockpic` files.
     *   Block Attributes: `kind`, `inputs`, `outputs`, `params`, `size`.
     *   Wire Attributes: `source`, `destination`, `thickness`, `crossline`, `hint`.
     *   Layout Attributes: Explicit coordinate mapping (`at (x,y)`).
@@ -26,16 +26,16 @@ This document provides a hierarchical overview of the features implemented in th
 *   **Auto-Layout**: Basic flow-based coordinate assignment for unmapped blocks.
 
 ## 4. Tooling
-*   **CLI Application**: `hodos` binary.
-    *   `hodos compile <file>`: Validates DSL syntax.
-    *   `hodos render <file> [-format png] [-o output]`: Generates diagram images.
+*   **CLI Application**: `blockpic` binary.
+    *   `blockpic compile <file>`: Validates DSL syntax.
+    *   `blockpic render <file> [-format png] [-o output]`: Generates diagram images.
 
 ## 5. Continuous Delivery
 *   **Automated Releases**: GitHub Workflow for multi-arch binary releases (Linux, macOS).
 *   **Versioning**: Automatic semantic version tagging.
 
 ## 6. IEEE Standard Shape Library
-Hodos provides a comprehensive library of digital logic blocks based on IEEE standards.
+Blockpic provides a comprehensive library of digital logic blocks based on IEEE standards.
 
 ### 6.1 Supported Shapes
 *   **Logic Gates**: `AND`, `OR`, `NOT`, `XOR`.
@@ -48,7 +48,7 @@ Hodos provides a comprehensive library of digital logic blocks based on IEEE sta
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram Shapes {
     block AND1 { kind: "AND"; inputs: A, B; outputs: O; }
     block OR1 { kind: "OR"; inputs: A, B; outputs: O; }
@@ -86,13 +86,13 @@ diagram Shapes {
 </table>
 
 ## 7. AST Validation
-Hodos includes a validation layer to ensure logical correctness before rendering.
+Blockpic includes a validation layer to ensure logical correctness before rendering.
 *   **Unique Names**: Blocks must have unique identifiers.
 *   **Connectivity**: Wire source and destination blocks must exist.
 *   **Pin Verification**: Referenced pins must exist on their respective blocks.
 
 ## 8. Pins and Buses
-Hodos supports explicit pin rendering and multi-bit bus visualization.
+Blockpic supports explicit pin rendering and multi-bit bus visualization.
 *   **Pin Rendering**: Named inputs and outputs are rendered on block boundaries.
 *   **Bus Thickness**: Wires can have custom thickness to represent buses.
 *   **Crossline Indicator**: Standard bus width indicators with labels.
@@ -102,7 +102,7 @@ Hodos supports explicit pin rendering and multi-bit bus visualization.
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram PinsAndBuses {
     block REG1 {
         kind: "REGISTER";
@@ -139,7 +139,7 @@ diagram PinsAndBuses {
 </table>
 
 ## 9. Dynamic Gate Sizing
-Hodos automatically calculates block dimensions based on the number of input and output pins.
+Blockpic automatically calculates block dimensions based on the number of input and output pins.
 *   **Automatic Height**: Blocks expand vertically to accommodate multiple pins while maintaining even distribution.
 *   **Precise Pin Positioning**: Pins are positioned exactly at the boundary intersection, ensuring clean orthogonal routing.
 
@@ -148,7 +148,7 @@ Hodos automatically calculates block dimensions based on the number of input and
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram DynamicSizing {
     block LUT_MANY {
         kind: "LUT";
@@ -183,7 +183,7 @@ diagram DynamicSizing {
 </table>
 
 ## 10. Registers, Counters, and Dependency Notation
-Hodos strictly adheres to IEEE Std 91-1984 for MSI components.
+Blockpic strictly adheres to IEEE Std 91-1984 for MSI components.
 *   **Common Control Block**: MSI blocks like `REGISTER` and `COUNTER` feature a separated top section for common controls.
 *   **Dependency Notation**: Pins are labeled using IEEE functional indicators (`C` for clock, `EN` for enable, `R` for reset, `S` for set).
 *   **Dynamic Indicators**: Clocks (`CLK`, `C`) are rendered with the standard `>` wedge indicator.
@@ -193,7 +193,7 @@ Hodos strictly adheres to IEEE Std 91-1984 for MSI components.
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram MSIBlocks {
     block REG8 {
         kind: "REGISTER";
@@ -226,7 +226,7 @@ diagram MSIBlocks {
 </table>
 
 ## 11. Pin-Aware Routing
-Hodos routes wires orthoganally, considering the physical side of the block where the pin is located.
+Blockpic routes wires orthoganally, considering the physical side of the block where the pin is located.
 *   **Directional Exits**: Wires exit perpendicular to the boundary they originate from.
 *   **Directional Entries**: Wires enter perpendicular to the boundary they terminate at.
 *   **Supported Hints**: `straight`, `L-shape`, `Z-shape` paths intelligently adapt to top/bottom/left/right pin orientations.
@@ -236,7 +236,7 @@ Hodos routes wires orthoganally, considering the physical side of the block wher
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram PinAware {
     block SRC {
         kind: "CUSTOM";
@@ -284,7 +284,7 @@ diagram PinAware {
 
 
 ## 12. Advanced Auto-Layout
-Hodos features a robust layer-based automatic layout engine.
+Blockpic features a robust layer-based automatic layout engine.
 *   **Dependency Grouping**: Blocks are grouped into columns (layers) based on their logical depth from inputs to outputs.
 *   **Topological Sorting**: Longest-path layer assignment ensures clear left-to-right flow without manual coordinate mapping.
 *   **Cycle Handling**: The algorithm gracefully handles feedback loops by assigning arbitrary starting layers to cyclic components.
@@ -294,7 +294,7 @@ Hodos features a robust layer-based automatic layout engine.
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram ComplexLayout {
     block IN1 { kind: "INPUT_PIN"; outputs: O; }
     block IN2 { kind: "INPUT_PIN"; outputs: O; }
@@ -326,14 +326,14 @@ diagram ComplexLayout {
 </table>
 
 ## 13. Netlistsvg Skins Integration
-Hodos supports mapping its blocks to the comprehensive set of standard `netlistsvg` skin components natively. This enables rich schematic diagrams containing arithmetic operators, bitwise logic, latches, multiplexers, and specialized multi-input gates.
+Blockpic supports mapping its blocks to the comprehensive set of standard `netlistsvg` skin components natively. This enables rich schematic diagrams containing arithmetic operators, bitwise logic, latches, multiplexers, and specialized multi-input gates.
 
 ### 13.1 Arithmetic and Logic Operators
 <table>
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_arithmetic {
   block IN_A { kind: "INPUT_PIN"; outputs: O; }
   block IN_B { kind: "INPUT_PIN"; outputs: O; }
@@ -380,7 +380,7 @@ diagram skin_arithmetic {
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_bitwise {
   block IN_A { kind: "INPUT_PIN"; outputs: O; }
 
@@ -412,7 +412,7 @@ diagram skin_bitwise {
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_latches {
   block IN_D { kind: "INPUT_PIN"; outputs: O; }
   block IN_CLK { kind: "INPUT_PIN"; outputs: O; }
@@ -445,7 +445,7 @@ diagram skin_latches {
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_muxes {
   block IN_A { kind: "INPUT_PIN"; outputs: O; }
   block IN_B { kind: "INPUT_PIN"; outputs: O; }
@@ -477,7 +477,7 @@ diagram skin_muxes {
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_special {
   block IN_A { kind: "INPUT_PIN"; outputs: O; }
   block IN_B { kind: "INPUT_PIN"; outputs: O; }
@@ -511,7 +511,7 @@ diagram skin_special {
 <tr>
 <td valign="top" width="40%">
 
-```hodos
+```blockpic
 diagram skin_utility {
   block IN_A { kind: "INPUT_PIN"; outputs: O; }
   block IN_EN { kind: "INPUT_PIN"; outputs: O; }
@@ -539,7 +539,7 @@ diagram skin_utility {
 
 ## 14. Advanced Routing and Text Features
 
-Hodos natively supports advanced ElkJS layout features via the integrated `netlistsvg` engine, including automatic cycle resolution for feedback loops. Additionally, text decorators such as unicode overbars (for active-low signals) and multiline parameters are fully supported. Furthermore, all wires are styled with directional arrowheads to clearly denote signal flow.
+Blockpic natively supports advanced ElkJS layout features via the integrated `netlistsvg` engine, including automatic cycle resolution for feedback loops. Additionally, text decorators such as unicode overbars (for active-low signals) and multiline parameters are fully supported. Furthermore, all wires are styled with directional arrowheads to clearly denote signal flow.
 
 <table>
 <tr>
@@ -628,15 +628,15 @@ diagram StateMachineFeedback {
 
 ## 15. Xilinx Layout Comparison
 
-Hodos supports high-fidelity schematic replication of common FPGA vendor diagrams. Below is a comparison between the original Xilinx UG474 `figure_1_1` documentation image and the exact identical layout recreated directly from Hodos source code.
+Blockpic supports high-fidelity schematic replication of common FPGA vendor diagrams. Below is a comparison between the original Xilinx UG474 `figure_1_1` documentation image and the exact identical layout recreated directly from Blockpic source code.
 
 This demonstrates the engine's capability to render complex hierarchical layouts, custom element sizing, dashed group bounding boxes, and thick hollow block-arrow buses.
 
 <table>
 <tr>
 <th width="33%">Original Xilinx Reference</th>
-<th width="33%">Hodos Rendered SVG</th>
-<th width="33%">Hodos Source Code</th>
+<th width="33%">Blockpic Rendered SVG</th>
+<th width="33%">Blockpic Source Code</th>
 </tr>
 <tr>
 <td valign="top" width="33%">
@@ -646,12 +646,12 @@ This demonstrates the engine's capability to render complex hierarchical layouts
 </td>
 <td valign="top" width="33%">
 
-![Hodos Figure 1.1](ai/figure_1_1.svg)
+![Blockpic Figure 1.1](ai/figure_1_1.svg)
 
 </td>
 <td valign="top" width="33%">
 
-```hodos
+```blockpic
 diagram figure_1_1 {
     block SwitchMatrix {
         kind: "generic"

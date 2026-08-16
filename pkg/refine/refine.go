@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/filmil/hodos/pkg/ast"
+	"github.com/filmil/blockpic/pkg/ast"
 )
 
 // Process takes the parsed diagram and raw SVG bytes,

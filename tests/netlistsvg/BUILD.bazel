@@ -1,7 +1,7 @@
-load("//:defs.bzl", "hodos_diagram")
+load("//:defs.bzl", "blockpic_diagram")
 
-hodos_diagram(
+blockpic_diagram(
     name = "simple_diagram",
-    src = "simple.hodos",
+    src = "simple.blockpic",
     out = "simple.svg",
 )

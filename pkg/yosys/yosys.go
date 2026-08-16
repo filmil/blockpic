@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/filmil/hodos/pkg/ast"
+	"github.com/filmil/blockpic/pkg/ast"
 )
 
 type Netlist struct {

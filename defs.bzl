@@ -1,8 +1,8 @@
 load("@npm//:netlistsvg/package_json.bzl", "bin")
 
-def hodos_diagram(name, src, out):
+def blockpic_diagram(name, src, out):
     """
-    Renders a Hodos diagram to SVG using netlistsvg.
+    Renders a Blockpic diagram to SVG using netlistsvg.
     """
     json_out = name + ".json"
     
@@ -10,8 +10,8 @@ def hodos_diagram(name, src, out):
         name = name + "_json",
         srcs = [src],
         outs = [json_out],
-        cmd = "$(location //cmd/hodos) render $< -format yosys-json -o $@",
-        tools = ["//cmd/hodos"],
+        cmd = "$(location //cmd/blockpic) render $< -format yosys-json -o $@",
+        tools = ["//cmd/blockpic"],
     )
     
     bin.netlistsvg_binary(
@@ -30,6 +30,6 @@ def hodos_diagram(name, src, out):
         name = name,
         srcs = [src, intermediate_svg],
         outs = [out],
-        cmd = "$(location //cmd/hodos) refine $(location " + src + ") -svg $(location " + intermediate_svg + ") -o $@",
-        tools = ["//cmd/hodos"],
+        cmd = "$(location //cmd/blockpic) refine $(location " + src + ") -svg $(location " + intermediate_svg + ") -o $@",
+        tools = ["//cmd/blockpic"],
     )

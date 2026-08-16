@@ -60,13 +60,13 @@ jobs:
             ${{ runner.os }}-bazel-${{ matrix.arch }}-${{ steps.cache-key.outputs.date }}-
       - name: Build Binary
         run: |
-          bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache             --platforms=${{ matrix.platform }} //cmd/hodos:hodos
-          cp bazel-bin/cmd/hodos/hodos_/hodos hodos-${{ matrix.arch }}
+          bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache             --platforms=${{ matrix.platform }} //cmd/blockpic:blockpic
+          cp bazel-bin/cmd/blockpic/blockpic_/blockpic blockpic-${{ matrix.arch }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hodos-${{ matrix.arch }}
-          path: hodos-${{ matrix.arch }}
+          name: blockpic-${{ matrix.arch }}
+          path: blockpic-${{ matrix.arch }}
 
   release:
     needs: [tag, build]

@@ -75,32 +75,32 @@ pandoc_chunked_html(
 
 render_diagram(
     name = "shapes",
-    src = "examples/shapes.hodos",
+    src = "examples/shapes.blockpic",
 )
 
 render_diagram(
     name = "pins_buses",
-    src = "examples/pins_buses.hodos",
+    src = "examples/pins_buses.blockpic",
 )
 
 render_diagram(
     name = "figure_1_1",
-    src = "figure_1_1.hodos",
+    src = "figure_1_1.blockpic",
 )
 
 render_diagram(
     name = "dynamic_sizing",
-    src = "examples/dynamic_sizing.hodos",
+    src = "examples/dynamic_sizing.blockpic",
 )
 
 render_diagram(
     name = "msi_blocks",
-    src = "examples/msi_blocks.hodos",
+    src = "examples/msi_blocks.blockpic",
 )
 
 render_diagram(
     name = "pin_aware",
-    src = "examples/pin_aware.hodos",
+    src = "examples/pin_aware.blockpic",
 )
 
 write_source_files(
@@ -128,62 +128,62 @@ write_source_files(
 
 render_diagram(
     name = "complex_layout",
-    src = "examples/complex_layout.hodos",
+    src = "examples/complex_layout.blockpic",
 )
 
 render_diagram(
     name = "text_rendering",
-    src = "examples/text_rendering.hodos",
+    src = "examples/text_rendering.blockpic",
 )
 
 # Need to update write_source_files to include complex_layout
 
 render_diagram(
     name = "arrow_rendering",
-    src = "examples/arrow_rendering.hodos",
+    src = "examples/arrow_rendering.blockpic",
 )
 
 render_diagram(
     name = "skin_arithmetic",
-    src = "examples/skin_arithmetic.hodos",
+    src = "examples/skin_arithmetic.blockpic",
 )
 
 render_diagram(
     name = "skin_bitwise",
-    src = "examples/skin_bitwise.hodos",
+    src = "examples/skin_bitwise.blockpic",
 )
 
 render_diagram(
     name = "skin_latches",
-    src = "examples/skin_latches.hodos",
+    src = "examples/skin_latches.blockpic",
 )
 
 render_diagram(
     name = "skin_muxes",
-    src = "examples/skin_muxes.hodos",
+    src = "examples/skin_muxes.blockpic",
 )
 
 render_diagram(
     name = "skin_special",
-    src = "examples/skin_special.hodos",
+    src = "examples/skin_special.blockpic",
 )
 
 render_diagram(
     name = "skin_utility",
-    src = "examples/skin_utility.hodos",
+    src = "examples/skin_utility.blockpic",
 )
 
 render_diagram(
     name = "test_features",
-    src = "examples/test_features.hodos",
+    src = "examples/test_features.blockpic",
 )
 
 render_diagram(
     name = "state_machine_feedback",
-    src = "examples/state_machine_feedback.hodos",
+    src = "examples/state_machine_feedback.blockpic",
 )
 
 render_diagram(
     name = "test_mul",
-    src = "examples/test_mul.hodos",
+    src = "examples/test_mul.blockpic",
 )

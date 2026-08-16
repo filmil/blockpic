@@ -1,4 +1,4 @@
-# hodos: digital electronics diagram layouting engine
+# blockpic: digital electronics diagram layouting engine
 
 
 

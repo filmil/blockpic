@@ -3,7 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "parser",
     srcs = ["parser.go"],
-    importpath = "github.com/filmil/hodos/pkg/parser",
+    importpath = "github.com/filmil/blockpic/pkg/parser",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/ast",

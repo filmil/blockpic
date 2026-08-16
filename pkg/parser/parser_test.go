@@ -3,7 +3,7 @@ package parser
 
 import (
 	"testing"
-	"github.com/filmil/hodos/pkg/scanner"
+	"github.com/filmil/blockpic/pkg/scanner"
 )
 
 func TestParseDiagram(t *testing.T) {

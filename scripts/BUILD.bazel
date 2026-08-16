@@ -3,7 +3,7 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "scripts_lib",
     srcs = ["extract_xilinx.go"],
-    importpath = "github.com/filmil/hodos/scripts",
+    importpath = "github.com/filmil/blockpic/scripts",
     visibility = ["//visibility:private"],
     deps = ["@com_github_bitfield_script//:script"],
 )

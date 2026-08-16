@@ -2,7 +2,7 @@ load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@gazelle//:def.bzl", "gazelle")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 
-# gazelle:prefix github.com/filmil/hodos
+# gazelle:prefix github.com/filmil/blockpic
 gazelle(name = "gazelle")
 
 exports_files([

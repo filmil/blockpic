@@ -1,5 +1,5 @@
 module(
-    name = "hodos",
+    name = "blockpic",
     version = "0.0.1",
 )
 

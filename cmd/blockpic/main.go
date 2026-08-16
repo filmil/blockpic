@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"os"
 	"io/ioutil"
-	"github.com/filmil/hodos/pkg/parser"
-	"github.com/filmil/hodos/pkg/scanner"
-	"github.com/filmil/hodos/pkg/validation"
-	"github.com/filmil/hodos/pkg/yosys"
+	"github.com/filmil/blockpic/pkg/parser"
+	"github.com/filmil/blockpic/pkg/scanner"
+	"github.com/filmil/blockpic/pkg/validation"
+	"github.com/filmil/blockpic/pkg/yosys"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: hodos [compile|render|refine] <file>")
+		fmt.Println("Usage: blockpic [compile|render|refine] <file>")
 		os.Exit(1)
 	}
 
@@ -35,7 +35,7 @@ func main() {
 
 func compileCmd() {
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: hodos compile <file.hodos>")
+		fmt.Println("Usage: blockpic compile <file.blockpic>")
 		os.Exit(1)
 	}
 	file := os.Args[2]
@@ -71,7 +71,7 @@ func renderCmd() {
 	output := renderFlags.String("o", "output.json", "Output file")
 
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: hodos render <file.hodos> [-format yosys-json] [-o output.json]")
+		fmt.Println("Usage: blockpic render <file.blockpic> [-format yosys-json] [-o output.json]")
 		os.Exit(1)
 	}
 

@@ -1,9 +1,9 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
-    name = "hodos_lib",
+    name = "blockpic_lib",
     srcs = ["main.go", "refine.go"],
-    importpath = "github.com/filmil/hodos/cmd/hodos",
+    importpath = "github.com/filmil/blockpic/cmd/blockpic",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/ast",
@@ -16,13 +16,13 @@ go_library(
 )
 
 go_binary(
-    name = "hodos",
-    embed = [":hodos_lib"],
+    name = "blockpic",
+    embed = [":blockpic_lib"],
     visibility = ["//visibility:public"],
 )
 
 go_test(
-    name = "hodos_test",
+    name = "blockpic_test",
     srcs = ["main_test.go"],
-    embed = [":hodos_lib"],
+    embed = [":blockpic_lib"],
 )
