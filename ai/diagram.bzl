@@ -1,7 +1,7 @@
-load("//:defs.bzl", "hodos_diagram")
+load("//:defs.bzl", "blockpic_diagram")
 
 def render_diagram(name, src):
-    hodos_diagram(
+    blockpic_diagram(
         name = name,
         src = src,
         out = name + "_gen.svg",

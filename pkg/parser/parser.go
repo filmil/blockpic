@@ -4,8 +4,8 @@ package parser
 import (
 	"fmt"
 	"strconv"
-	"github.com/filmil/hodos/pkg/ast"
-	"github.com/filmil/hodos/pkg/scanner"
+	"github.com/filmil/blockpic/pkg/ast"
+	"github.com/filmil/blockpic/pkg/scanner"
 )
 
 type Parser struct {

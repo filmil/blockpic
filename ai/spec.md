@@ -1,12 +1,12 @@
-# Hodos Language Specification
+# Blockpic Language Specification
 
-Hodos is a domain-specific language (DSL) for engineering block diagram
+Blockpic is a domain-specific language (DSL) for engineering block diagram
 typesetting, designed to produce diagrams with the aesthetics of Xilinx UG474
 technical documentation.
 
 ## 1. Overview
 
-Hodos focuses on clear, functional, and aesthetically minimalist diagrams. It
+Blockpic focuses on clear, functional, and aesthetically minimalist diagrams. It
 prioritizes orthogonal routing, precise port placement, and a standard color
 palette for hardware logic primitives.
 
@@ -58,7 +58,7 @@ Wires connect an output pin of a source block to an input pin of a destination b
 - **Line Weights**: 0.5pt for wires, 1.5pt for buses.
 
 ### 2.5 Shape Library and IEEE Standards
-Hodos strictly adheres to **ANSI/IEEE Std 91-1984** for logic symbols. It supports both distinctive-shape and rectangular-shape symbols.
+Blockpic strictly adheres to **ANSI/IEEE Std 91-1984** for logic symbols. It supports both distinctive-shape and rectangular-shape symbols.
 
 #### 2.5.1 Basic Logic Gates
 - **Distinctive Shapes**: Standard semi-circular (AND), pointed (OR), and triangle (NOT) shapes.
@@ -70,7 +70,7 @@ Hodos strictly adheres to **ANSI/IEEE Std 91-1984** for logic symbols. It suppor
     - `X/Y`: Specialized functions.
 
 #### 2.5.2 Dependency Notation (for Complex Blocks)
-For MSI components like Registers and Counters, Hodos supports IEEE dependency notation to represent internal logic relationships:
+For MSI components like Registers and Counters, Blockpic supports IEEE dependency notation to represent internal logic relationships:
 - **`G` (AND)**: Gate dependency.
 - **`C` (Control)**: Timing/Clock dependency (often used with the `>` dynamic indicator for edge-triggering).
 - **`S` (Set) / `R` (Reset)**: Asynchronous set and reset.
@@ -87,9 +87,9 @@ For MSI components like Registers and Counters, Hodos supports IEEE dependency n
 
 ## 3. Syntax (Draft)
 
-Hodos uses a custom DSL designed for readability.
+Blockpic uses a custom DSL designed for readability.
 
-```hodos
+```blockpic
 diagram MyLogic {
     config {
         style: "Xilinx";

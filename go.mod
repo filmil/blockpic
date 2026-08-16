@@ -1,4 +1,4 @@
-module github.com/filmil/hodos
+module github.com/filmil/blockpic
 
 go 1.26.2
 

@@ -1,4 +1,4 @@
-# Hodos
+# Blockpic
 
 
 ## Synopsis
@@ -82,7 +82,7 @@ ug474
   * Develop a CLI tool for compiling and rendering diagrams.
   * Consider integration with other tools (e.g., VS Code extension).
   * Create a library of common blocks.
-  * We must have a documentation section which shows (1) the original xilinx layout, (2) the layout converted to hodos and (3) the hodos source, all three side by side.
+  * We must have a documentation section which shows (1) the original xilinx layout, (2) the layout converted to blockpic and (3) the blockpic source, all three side by side.
 
 
 ## Workspace

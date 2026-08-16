@@ -45,7 +45,7 @@ jobs:
         with:
           external_repository: filmil/hdlfactory.com.template
           publish_dir: ./bazel-bin/ai
-          destination_dir: static/hodos
+          destination_dir: static/blockpic
           publish_branch: main
           deploy_key: "${{ secrets.HDLFACTORY_DEPLOY_KEY }}"
 

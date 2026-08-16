@@ -3,7 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "yosys",
     srcs = ["yosys.go"],
-    importpath = "github.com/filmil/hodos/pkg/yosys",
+    importpath = "github.com/filmil/blockpic/pkg/yosys",
     visibility = ["//visibility:public"],
     deps = ["//pkg/ast"],
 )

@@ -1,7 +1,7 @@
 {
-  "name": "hodos-netlistsvg",
+  "name": "blockpic-netlistsvg",
   "version": "1.0.0",
-  "description": "Integration of netlistsvg for Hodos diagrams",
+  "description": "Integration of netlistsvg for Blockpic diagrams",
   "scripts": {
     "netlistsvg": "netlistsvg"
   },

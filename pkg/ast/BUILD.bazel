@@ -3,6 +3,6 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "ast",
     srcs = ["ast.go"],
-    importpath = "github.com/filmil/hodos/pkg/ast",
+    importpath = "github.com/filmil/blockpic/pkg/ast",
     visibility = ["//visibility:public"],
 )

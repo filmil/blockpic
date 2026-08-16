@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/filmil/hodos/pkg/parser"
-	"github.com/filmil/hodos/pkg/refine"
-	"github.com/filmil/hodos/pkg/scanner"
+	"github.com/filmil/blockpic/pkg/parser"
+	"github.com/filmil/blockpic/pkg/refine"
+	"github.com/filmil/blockpic/pkg/scanner"
 )
 
 func refineCmd() {
@@ -18,7 +18,7 @@ func refineCmd() {
 	output := refineFlags.String("o", "refined.svg", "Output refined SVG file")
 
 	if len(os.Args) < 4 {
-		fmt.Println("Usage: hodos refine <file.hodos> -svg <input.svg> [-o refined.svg]")
+		fmt.Println("Usage: blockpic refine <file.blockpic> -svg <input.svg> [-o refined.svg]")
 		os.Exit(1)
 	}
 
@@ -32,7 +32,7 @@ func refineCmd() {
 
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
-		fmt.Printf("Error reading hodos file: %v\n", err)
+		fmt.Printf("Error reading blockpic file: %v\n", err)
 		os.Exit(1)
 	}
 
