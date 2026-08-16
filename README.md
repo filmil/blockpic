@@ -1,5 +1,9 @@
 # Blockpic
 
+Forgejo (canonical):
+[![test](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/test.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=test.yml)
+
+GitHub (mirror, builds the book and docs):
 [![CI](https://github.com/filmil/blockpic/actions/workflows/main.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/main.yml)
 [![Deploy Docs](https://github.com/filmil/blockpic/actions/workflows/deploy_docs.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/deploy_docs.yml)
 [![Release](https://github.com/filmil/blockpic/actions/workflows/release.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/release.yml)
