@@ -6,12 +6,11 @@
 Blockpic is young, and both figures in this document show where.
 
 \begin{itemize}
-\item \textbf{Group labels.} A \code{group} draws a dashed box around
-  blocks. Its label lands on the label of a block in the top row, so
-  Fig.~\ref{fig:architecture} leaves its group out (issue~8).
 \item \textbf{Layout.} netlistsvg places every block. It cannot be told to
   line the four flip-flops up in a column, which a person drawing
-  Fig.~\ref{fig:netlist} would do.
+  Fig.~\ref{fig:netlist} would do. Nor does it know about groups: the
+  dashed box of the counter in Fig.~\ref{fig:architecture} also crosses
+  the \code{zero} port, which is not part of it.
 \item \textbf{Size.} A netlist of a few dozen cells is readable. One of a
   few thousand is not, so draw small modules (\S\ref{sec:from-netlist}).
 \end{itemize}

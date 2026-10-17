@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // The LED counter of counter.v, drawn by hand: a 4-bit register that
-// adds one on every clock edge. It has no group around the counter until
-// https://github.com/filmil/blockpic/issues/52 is fixed: the group's
-// label would cover the adder's.
+// adds one on every clock edge.
 diagram LedCounter {
     block clk { kind: "INPUT_PIN"; outputs: out; }
     block reset { kind: "INPUT_PIN"; outputs: out; }
@@ -30,4 +28,6 @@ diagram LedCounter {
     wire clear.Y -> count.D { thickness: 4; }
     wire clk.out -> count.CLK
     wire count.Q -> led.in { thickness: 4; }
+
+    group "counter" { plus; clear; count }
 }
