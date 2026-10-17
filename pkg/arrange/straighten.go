@@ -118,7 +118,7 @@ func straightenOne(g *Graph, id string) bool {
 	// one on its target's left side, to the right of it. A pin on the top
 	// or the bottom of a symbol, such as a buffer's enable, takes its
 	// wire from above or below.
-	if !src.onRight() || !dst.onLeft() || a.X >= b.X {
+	if src.side() != 'R' || dst.side() != 'L' || a.X >= b.X {
 		return false
 	}
 	n := src.node

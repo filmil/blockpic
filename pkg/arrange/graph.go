@@ -160,18 +160,21 @@ func (p portAt) at() Point {
 	return Point{p.node.X + p.port.X, p.node.Y + p.port.Y}
 }
 
-// sideSlack is how far, in pixels, a pin may sit from the side of its
-// block and still be on it: a skin may set a pin a pixel out.
-const sideSlack = 1
-
-// onLeft says whether the port is on its block's left side.
-func (p portAt) onLeft() bool {
-	return p.port.X <= sideSlack
-}
-
-// onRight says whether the port is on its block's right side.
-func (p portAt) onRight() bool {
-	return p.port.X >= p.node.Width-sideSlack
+// side is the side of its block that the port is on: the nearest one. A
+// skin may set a pin a little inside its symbol, as the adder's are, or a
+// pixel outside it.
+func (p portAt) side() byte {
+	x, y, w, h := p.port.X, p.port.Y, p.node.Width, p.node.Height
+	side, d := byte('L'), math.Abs(x)
+	for _, s := range []struct {
+		side byte
+		d    float64
+	}{{'R', math.Abs(w - x)}, {'T', math.Abs(y)}, {'B', math.Abs(h - y)}} {
+		if s.d < d {
+			side, d = s.side, s.d
+		}
+	}
+	return side
 }
 
 func indexPorts(g *Graph) portIndex {
