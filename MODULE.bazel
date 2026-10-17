@@ -1,6 +1,7 @@
 module(
     name = "blockpic",
     version = "0.0.1",
+    bazel_compatibility = [">=8.0.0"],
 )
 
 bazel_dep(name = "rules_go", version = "0.61.1")
@@ -10,7 +11,8 @@ bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.2")
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.from_file(go_mod = "//:go.mod")
 
-bazel_dep(name = "bazel_ebook", version = "2.0.15")
+# The book under //ai only; nothing a user of blockpic loads needs it.
+bazel_dep(name = "bazel_ebook", version = "2.0.15", dev_dependency = True)
 bazel_dep(name = "bazel_lib", version = "3.3.1")
 bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
 bazel_dep(name = "aspect_rules_js", version = "3.2.2")
@@ -28,13 +30,17 @@ bazel_dep(name = "texlive_bundle", version = "1.1.1", dev_dependency = True)
 
 register_toolchains("@texlive_bundle//:all", dev_dependency = True)
 
-npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
+# Not a dev dependency: blockpic_diagram runs netlistsvg (//:netlistsvg) for
+# every module that uses it. The repository name is blockpic's own, since
+# npm_translate_lock names must be unique across the module graph; inside
+# blockpic it is still @npm.
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
 npm.npm_translate_lock(
-    name = "npm",
+    name = "blockpic_npm",
     pnpm_lock = "//:pnpm-lock.yaml",
     verify_node_modules_ignored = "//:.bazelignore",
 )
-use_repo(npm, "npm")
+use_repo(npm, npm = "blockpic_npm")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")

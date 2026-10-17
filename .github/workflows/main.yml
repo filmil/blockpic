@@ -43,6 +43,30 @@ jobs:
       - name: Test
         run: bazel test --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //...
 
+  # blockpic as another module uses it: integration/ depends on it through
+  # a local_path_override and resolves everything else from the Bazel
+  # Central Registry alone, as BCR presubmit will. Both supported Bazel
+  # majors; bazelisk on the runner takes the version from USE_BAZEL_VERSION.
+  integration:
+    strategy:
+      fail-fast: false
+      matrix:
+        bazel: ["8.x", "9.x"]
+    runs-on: ubuntu-22.04
+    env:
+      USE_BAZEL_VERSION: ${{ matrix.bazel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Fails if anything blockpic needs is missing from BCR. No rc files,
+      # so no custom registry can stand in for a missing module.
+      - name: Dependencies resolve from BCR alone
+        run: cd integration && bazel --ignore_all_rc_files mod graph --registry=https://bcr.bazel.build > /dev/null
+
+      - name: Integration test
+        run: cd integration && bazel test --test_output=errors //...
+
   deploy-docs:
     needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'

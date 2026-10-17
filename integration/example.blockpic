@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+// A small diagram, drawn by blockpic as a dependency of another module.
+diagram Integration {
+    block in_a { kind: "INPUT_PIN"; outputs: out; }
+    block in_b { kind: "INPUT_PIN"; outputs: out; }
+    block sum { kind: "ADD"; inputs: A, B; outputs: Y; }
+    block led { kind: "OUTPUT_PIN"; inputs: in; }
+    wire in_a.out -> sum.A
+    wire in_b.out -> sum.B
+    wire sum.Y -> led.in
+}
