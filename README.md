@@ -104,7 +104,8 @@ comes from the netlist that rules_openxc7 synthesizes from the Verilog.
 ```bash
 bazel build //samples:pdfs
 ```
-The `samples` workflow publishes the PDFs every Sunday to the rolling
+The `samples` workflow publishes the PDFs daily, when `main` has changed,
+to the rolling
 [`samples`](https://github.com/filmil/blockpic/releases/tag/samples)
 release, and the `release` workflow attaches them to every version's
 release.

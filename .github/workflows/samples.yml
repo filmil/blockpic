@@ -2,16 +2,17 @@
 name: Samples
 
 # Builds the sample documents under //samples and publishes their PDFs to
-# the rolling prerelease `samples`, which always holds the PDFs of the
-# newest main: every Sunday, and on request. Each version's release carries
-# its own PDFs too; release.yml builds and attaches them.
+# the rolling prerelease `samples`, which holds the PDFs of the newest main:
+# every day when main has changed since the last publish, and on request.
+# Each version's release carries its own PDFs too; release.yml builds and
+# attaches them.
 #
 # TeX comes from the texlive_bundle module, so the runner needs no TeX.
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 4 * * 0'   # Sundays, 04:17 UTC
+    - cron: '17 4 * * *'   # daily, 04:17 UTC
 
 # One run at a time: a newer run replaces an older one.
 concurrency:
@@ -29,12 +30,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The `samples` tag points at the commit the published PDFs came
+      # from. On the daily run, if that is already this commit, nothing has
+      # changed: skip the build. A run started by hand always builds.
+      - name: Has main changed since the last publish
+        id: changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          last="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/samples" --jq .object.sha 2>/dev/null || true)"
+          if [ "$GITHUB_EVENT_NAME" = schedule ] && [ "$last" = "$GITHUB_SHA" ]; then
+            echo "The samples release is already built from $GITHUB_SHA; nothing to do."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Last published from ${last:-nothing}; building $GITHUB_SHA."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Bazel
+        if: steps.changed.outputs.changed == 'true'
         uses: abhinavsingh/setup-bazel@v3
         with:
           version: 9.3.0
 
       - name: Build the sample PDFs
+        if: steps.changed.outputs.changed == 'true'
         run: |
           set -eu
           bazel build //samples:pdfs
@@ -53,7 +74,7 @@ jobs:
       # place, never deleted, so its link keeps working: the tag moves to
       # this commit, and the PDFs are replaced.
       - name: Publish to the rolling release
-        if: github.ref == 'refs/heads/main'
+        if: steps.changed.outputs.changed == 'true' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
