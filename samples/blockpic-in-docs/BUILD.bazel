@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0
+# A sample engineering document whose figures blockpic draws: one from a
+# hand-written .blockpic file, one from the netlist that rules_openxc7
+# synthesises from counter.v. Every build redraws both, so the figures
+# cannot fall behind the design.
+load("@rules_latex_host//latex:defs.bzl", "latex_document")
+load("@rules_openxc7//openxc7:defs.bzl", "vivado_project", "vivado_synthesis")
+load("//:defs.bzl", "blockpic_diagram", "blockpic_netlist_diagram")
+load("//samples:defs.bzl", "svg_to_pdf")
+
+blockpic_diagram(
+    name = "architecture",
+    src = "counter.blockpic",
+    out = "architecture.svg",
+)
+
+vivado_project(
+    name = "counter",
+    srcs = ["counter.v"],
+    part = "xc7a200tfbg484-2",
+    top_level = "counter",
+)
+
+vivado_synthesis(
+    name = "counter_synth",
+    project = ":counter",
+)
+
+blockpic_netlist_diagram(
+    name = "netlist",
+    netlist = ":counter_synth",
+    out = "netlist.svg",
+)
+
+svg_to_pdf(
+    name = "architecture_pdf",
+    src = ":architecture",
+    out = "architecture.pdf",
+)
+
+svg_to_pdf(
+    name = "netlist_pdf",
+    src = ":netlist",
+    out = "netlist.pdf",
+)
+
+latex_document(
+    name = "blockpic_in_docs",
+    data = [
+        "counter.blockpic",
+        "counter.v",
+        ":architecture_pdf",
+        ":netlist_pdf",
+    ],
+    main = "blockpic_in_docs.tex",
+    visibility = ["//samples:__pkg__"],
+    deps = glob(["sections/*.tex"]),
+)

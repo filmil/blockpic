@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Samples
+
+# Builds the sample documents under //samples and publishes their PDFs.
+#
+# * Every Sunday, and on request, to the rolling release `samples`, which
+#   always holds the PDFs of the newest main.
+# * On every pushed version tag, to that tag's release, so each release
+#   carries the PDFs that its own code drew.
+#
+# The `fj` CLI is not available inside the runner; the release action talks
+# to Forgejo's API itself.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 0'   # Sundays, 04:17 UTC
+  push:
+    tags: ['v*']
+
+# One run per release: a newer run replaces an older one.
+concurrency:
+  group: samples-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GIT_PAGER: cat
+  PAGER: cat
+  GIT_TERMINAL_PROMPT: "0"
+
+jobs:
+  samples:
+    runs-on: docker
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight -- required host tools
+        run: |
+          missing=""
+          for b in bazel git; do
+            command -v "$b" >/dev/null 2>&1 || missing="$missing  binary: $b\n"
+          done
+          if [ -n "$missing" ]; then
+            printf "Missing from the runner image:\n$missing" >&2
+            exit 1
+          fi
+
+      - name: Build the sample PDFs
+        run: |
+          set -eu
+          bazel build //samples:pdfs
+          mkdir -p dist/samples
+          for f in $(bazel cquery --output=files //samples:pdfs 2>/dev/null); do
+            test -s "$f" || { echo "empty PDF: $f" >&2; exit 1; }
+            cp "$f" dist/samples/
+          done
+          ls -l dist/samples
+
+      - name: Publish to the rolling release
+        if: github.ref_type != 'tag'
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.4
+        with:
+          direction: upload
+          url: ${{ github.server_url }}
+          repo: ${{ github.repository }}
+          tag: samples
+          title: Sample documents (newest main)
+          release-dir: dist/samples
+          override: true
+          prerelease: true
+          token: ${{ secrets.FORGEJO_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Attach to the tag's release
+        if: github.ref_type == 'tag'
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.13.4
+        with:
+          direction: upload
+          url: ${{ github.server_url }}
+          repo: ${{ github.repository }}
+          tag: ${{ github.ref_name }}
+          release-dir: dist/samples
+          token: ${{ secrets.FORGEJO_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}

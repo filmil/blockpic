@@ -2,6 +2,7 @@
 
 Forgejo (canonical):
 [![test](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/test.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=test.yml)
+[![samples](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/samples.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=samples.yml)
 
 GitHub (mirror, builds the book and docs):
 [![CI](https://github.com/filmil/blockpic/actions/workflows/main.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/main.yml)
@@ -75,6 +76,19 @@ blockpic_netlist_diagram(
 `bazel build //:counter_diagram` gives `counter.svg`. The imported
 source is kept, as `counter_diagram.blockpic` from `//:counter_diagram_src`.
 `tests/openxc7` is this example, with a test.
+
+## Samples
+
+`samples/` holds documents whose figures blockpic draws during the build.
+`samples/blockpic-in-docs` is a three-page IEEE paper about a 4-bit LED
+counter. One figure comes from a hand-written `.blockpic` file. The other
+comes from the netlist that rules_openxc7 synthesizes from the Verilog.
+```bash
+bazel build //samples:pdfs
+```
+The PDFs are published by the `samples` workflow: every Sunday to the
+rolling [`samples`](https://git.hdlfactory.com/HDL/blockpic/releases/tag/samples)
+release, and to the release of every version tag.
 
 ## Documentation
 

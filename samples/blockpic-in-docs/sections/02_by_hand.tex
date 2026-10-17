@@ -1,0 +1,44 @@
+% SPDX-License-Identifier: Apache-2.0
+% 02_by_hand.tex: Drawing a block diagram by hand
+\section{Drawing a Block Diagram by Hand}
+\label{sec:by-hand}
+
+An architecture diagram shows what a design does, not how synthesis built
+it. Someone has to decide what goes in it, so it is written by hand. In
+blockpic, it is written as text. Listing~\ref{lst:blockpic} is the counter's
+architecture.
+
+\lstinputlisting[style=bp,firstline=6,caption={The counter's architecture,
+\code{counter.blockpic}.},label={lst:blockpic},float=t]{counter.blockpic}
+
+A \code{block} has a label, a kind, and its input and output pins. The kind
+picks the symbol: \code{ADD} draws an adder, \code{MUX} a multiplexer and
+\code{DFF} a flip-flop with a clock wedge. An \code{INPUT\_PIN} or
+\code{OUTPUT\_PIN} block is a port of the design. A \code{wire} joins an
+output pin to an input pin. A wire with a \code{thickness} is drawn as a
+bus.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{architecture.pdf}
+\caption{The counter's architecture, drawn by blockpic from
+Listing~\ref{lst:blockpic}. The thick lines are the 4-bit buses.}
+\label{fig:architecture}
+\end{figure}
+
+Fig.~\ref{fig:architecture} is the result. Blockpic placed every block and
+routed every wire; the file gives no coordinates. The feedback from the
+register to the adder is routed around the outside, and the four 4-bit
+buses are drawn thick.
+
+\begin{guideline}[Keep the diagram beside the code]
+Put the \code{.blockpic} file in the same directory as the HDL it describes.
+A change to the design then shows the diagram in the same review, and the
+reviewer can ask for the two to agree.
+\end{guideline}
+
+\begin{tip}
+Name blocks after the signals they make. Here the register is called
+\code{count}, as in the Verilog, so a reader can match the figure to the
+listing by name.
+\end{tip}

@@ -21,6 +21,13 @@ bazel_dep(name = "rules_nodejs", version = "6.7.4")
 bazel_dep(name = "rules_openxc7", version = "0.2.0", dev_dependency = True)
 bazel_dep(name = "rules_shell", version = "0.8.0", dev_dependency = True)
 
+# Builds the sample documents under //samples with a hermetic TeX tree,
+# both from filmil's registry (.bazelrc).
+bazel_dep(name = "rules_latex_host", version = "0.3.1", dev_dependency = True)
+bazel_dep(name = "texlive_bundle", version = "1.1.1", dev_dependency = True)
+
+register_toolchains("@texlive_bundle//:all", dev_dependency = True)
+
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
 npm.npm_translate_lock(
     name = "npm",

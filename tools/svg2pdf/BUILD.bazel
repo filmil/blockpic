@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
+# svg2pdf <in.svg> <out.pdf>: a blockpic SVG as a PDF for \includegraphics.
+js_binary(
+    name = "svg2pdf",
+    data = [
+        "//:node_modules/dejavu-fonts-ttf",
+        "//:node_modules/pdfkit",
+        "//:node_modules/svg-to-pdfkit",
+    ],
+    entry_point = "svg2pdf.js",
+    visibility = ["//visibility:public"],
+)

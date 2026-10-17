@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: Apache-2.0
+// The LED counter of counter.v, drawn by hand: a 4-bit register that
+// adds one on every clock edge. It has no group around the counter until
+// https://git.hdlfactory.com/HDL/blockpic/issues/8 is fixed: the group's
+// label would cover the adder's.
+diagram LedCounter {
+    block clk { kind: "INPUT_PIN"; outputs: out; }
+    block reset { kind: "INPUT_PIN"; outputs: out; }
+    block one { kind: "INPUT_PIN"; outputs: out; }
+    block zero { kind: "INPUT_PIN"; outputs: out; }
+    block plus {
+        kind: "ADD"; name: "+1";
+        inputs: A, B; outputs: Y;
+    }
+    block clear {
+        kind: "MUX"; name: "clear";
+        inputs: A, B, S; outputs: Y;
+    }
+    block count {
+        kind: "DFF"; name: "count";
+        inputs: D, CLK; outputs: Q;
+    }
+    block led { kind: "OUTPUT_PIN"; inputs: in; }
+
+    wire count.Q -> plus.A { thickness: 4; }
+    wire one.out -> plus.B { thickness: 4; }
+    wire plus.Y -> clear.A { thickness: 4; }
+    wire zero.out -> clear.B { thickness: 4; }
+    wire reset.out -> clear.S
+    wire clear.Y -> count.D { thickness: 4; }
+    wire clk.out -> count.CLK
+    wire count.Q -> led.in { thickness: 4; }
+}

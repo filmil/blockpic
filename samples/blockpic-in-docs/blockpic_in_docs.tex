@@ -1,0 +1,146 @@
+% SPDX-License-Identifier: Apache-2.0
+% blockpic_in_docs.tex: a sample IEEE two-column document whose figures
+% blockpic draws during the Bazel build (collection house style).
+\documentclass[journal,9pt]{IEEEtran}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,topsep=2pt,itemsep=1pt}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[hidelinks,bookmarks=true,pdfauthor={HDL Factory},
+            pdftitle={Figures That Follow the Design}]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{guideline}{Guideline}[section]
+\newtheorem{example}{Example}[section]
+\theoremstyle{remark}
+\newtheorem*{tip}{Tip}
+\newtheorem*{pitfall}{Pitfall}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\term}[1]{\emph{#1}}
+
+% --- Listings: one style per language. The keyword is the only bold role
+% and the comment the only italic one, so a listing reads in greyscale.
+\definecolor{kwblue}{RGB}{20,60,150}
+\definecolor{cmtgreen}{RGB}{90,120,90}
+\definecolor{strred}{RGB}{150,50,40}
+\definecolor{framegray}{gray}{0.70}
+\definecolor{bgshade}{gray}{0.97}
+
+\lstdefinestyle{base}{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\bfseries\color{kwblue},
+  commentstyle=\itshape\color{cmtgreen},
+  stringstyle=\color{strred},
+  frame=single,
+  rulecolor=\color{framegray},
+  framesep=3pt,
+  backgroundcolor=\color{bgshade},
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  breakatwhitespace=true,
+  belowcaptionskip=9pt,
+}
+
+\lstdefinelanguage{blockpic}{
+  morekeywords={diagram,block,wire,group,layout,kind,name,inputs,outputs,
+                params,size,hint,thickness,crossline,at},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]",
+}
+
+\lstdefinelanguage{starlark}{
+  morekeywords={load,def,return,if,else,for,in,True,False,None},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]",
+}
+
+\lstdefinestyle{bp}{style=base,language=blockpic}
+\lstdefinestyle{bzl}{style=base,language=starlark}
+\lstdefinestyle{vlog}{style=base,language=Verilog}
+
+\tikzset{
+  box/.style={draw,rounded corners=1pt,align=center,inner sep=3pt,
+              minimum height=6.5mm,font=\footnotesize},
+  src/.style={box,fill=blue!7},
+  act/.style={box,fill=green!12},
+  art/.style={box,fill=orange!12},
+  fl/.style={-{Stealth[length=4pt]},shorten >=2.5pt,shorten <=2.5pt},
+}
+
+% ---------------------------------------------------------------------------
+\title{Figures That Follow the Design\\{\large Drawing Block Diagrams and
+Netlists with Blockpic in a Bazel Build}}
+
+\author{HDL Factory%
+\thanks{A sample document for blockpic, a language and tool that typesets
+digital block diagrams. Every figure in it is drawn during the build that
+makes this PDF: one from a hand-written diagram, and one from the netlist
+that Yosys synthesizes for an AMD 7-series part. The running example is a
+4-bit counter that drives four LEDs.}}
+
+\markboth{Blockpic samples~~$\cdot$~~2026}{Figures That Follow the Design}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A figure in a design document is usually drawn once by hand, and then it
+quietly stops matching the design. This sample shows a way to stop that from
+happening. Blockpic draws block diagrams from short text files, and it draws
+gate-level schematics from the netlists that synthesis writes. A Bazel build
+runs synthesis, draws the figures and typesets the document in one graph.
+When the HDL changes, the next build redraws the figures. The running
+example is a 4-bit LED counter, synthesized by the open AMD 7-series flow of
+rules\_openxc7.
+\end{abstract}
+
+\begin{IEEEkeywords}
+block diagrams, schematics, documentation, netlists, Yosys, Bazel, FPGA
+\end{IEEEkeywords}
+
+
+\input{sections/01_intro.tex}
+\input{sections/02_by_hand.tex}
+\input{sections/03_from_netlist.tex}
+\input{sections/04_build.tex}
+\input{sections/05_limits.tex}
+\input{sections/06_conclusion.tex}
+
+% =====================================================================
+\begin{thebibliography}{10}
+\bibitem{yosys} C.~Wolf, ``Yosys Open SYnthesis Suite,''
+  \url{https://yosyshq.net/yosys/}.
+\bibitem{netlistsvg} N.~Turley, ``netlistsvg: draws an SVG schematic from a
+  Yosys JSON netlist,'' \url{https://github.com/nturley/netlistsvg}.
+\bibitem{openxc7} openXC7, ``nextpnr for AMD 7-series FPGAs, the himbaechel
+  Xilinx architecture,'' \url{https://github.com/openXC7/nextpnr}.
+\bibitem{prjxray} F4PGA, ``Project X-Ray: documenting the 7-series
+  bitstream format,'' \url{https://github.com/f4pga/prjxray}.
+\bibitem{rulesopenxc7} F.~Filmar, ``rules\_openxc7: Bazel rules for AMD
+  7-series FPGAs with the open toolchain,''
+  \url{https://github.com/filmil/bazel_rules_openxc7}.
+\bibitem{ug474} AMD, ``7 Series FPGAs Configurable Logic Block User
+  Guide,'' UG474.
+\bibitem{bazel} The Bazel Authors, ``Bazel,'' \url{https://bazel.build}.
+\end{thebibliography}
+
+\end{document}
