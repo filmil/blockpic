@@ -1,6 +1,8 @@
 module(
     name = "blockpic",
-    version = "0.0.1",
+    # 0.0.0 in the tree: publish-to-bcr writes the release tag's version
+    # into each registry entry.
+    version = "0.0.0",
     bazel_compatibility = [">=8.0.0"],
 )
 
