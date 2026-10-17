@@ -6,6 +6,7 @@ load(
 )
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("//ai:diagram.bzl", "render_diagram")
+load("//samples:defs.bzl", "svg_to_pdf")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,6 +31,45 @@ exports_files([
     "figure_1_1.svg",
 ])
 
+# The figures the datasheet shows. The markdown names each without an
+# extension, and each output picks its format: the HTML the SVG, the PDF a
+# PDF made from it, which pdflatex includes as it is. (LaTeX's svg package
+# would need Inkscape at build time, which the hermetic build has not.)
+# The PDFs are committed beside the SVGs, by //ai:update_book_pdfs, because
+# pandoc reads figures from the source tree; its tests fail when they fall
+# behind.
+_BOOK_FIGURES = [
+    "shapes",
+    "pins_buses",
+    "dynamic_sizing",
+    "msi_blocks",
+    "pin_aware",
+    "complex_layout",
+    "skin_arithmetic",
+    "skin_bitwise",
+    "skin_latches",
+    "skin_muxes",
+    "skin_special",
+    "skin_utility",
+    "test_features",
+    "state_machine_feedback",
+    "figure_1_1",
+]
+
+[
+    svg_to_pdf(
+        name = f + "_pdf",
+        src = f + ".svg",
+        out = f + "_gen.pdf",
+    )
+    for f in _BOOK_FIGURES
+]
+
+write_source_files(
+    name = "update_book_pdfs",
+    files = {f + ".pdf": ":" + f + "_pdf" for f in _BOOK_FIGURES},
+)
+
 markdown_lib(
     name = "md",
     srcs = [
@@ -38,28 +78,13 @@ markdown_lib(
     ] + glob(["tasks/*.md"]),
     additional_inputs = [
         "//ai:head.html",
-        "shapes.svg",
-        "pins_buses.svg",
-        "dynamic_sizing.svg",
-        "msi_blocks.svg",
-        "pin_aware.svg",
-        "complex_layout.svg",
-        "text_rendering.svg",
-        "arrow_rendering.svg",
-        "skin_arithmetic.svg",
-        "skin_bitwise.svg",
-        "skin_latches.svg",
-        "skin_muxes.svg",
-        "skin_special.svg",
-        "skin_utility.svg",
-        "test_features.svg",
-        "state_machine_feedback.svg",
-        "figure_1_1.svg",
-    ],
+        "//third_party/xilinx:figure_1_1.png",
+    ] + [f + ".svg" for f in _BOOK_FIGURES] + [f + ".pdf" for f in _BOOK_FIGURES],
 )
 
 ebook_pdf(
     name = "book_pdf",
+    args = ["--default-image-extension=pdf"],
     metadata_xml = "epub-metadata.xml",
     title_yaml = "title.yaml",
     deps = [":md"],
@@ -67,7 +92,10 @@ ebook_pdf(
 
 pandoc_chunked_html(
     name = "html_chunked",
-    args = ["--include-in-header=ai/head.html"],
+    args = [
+        "--include-in-header=ai/head.html",
+        "--default-image-extension=svg",
+    ],
     toc = True,
     deps = [":md"],
 )
