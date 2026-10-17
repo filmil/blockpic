@@ -15,9 +15,14 @@ ARCHIVE="blockpic-${TAG}.zip"
 # convenience symlinks (bazel-*, also integration/bazel-*) into the output
 # base, and it walks before -x filters, so the exclusion alone does not
 # stop that.
-# release_notes.txt: the shell creates it before this script starts.
-zip --quiet --symlinks --recurse-paths "${ARCHIVE}" . \
-  -x '*.git*' '*bazel-*' '*node_modules/*' 'user.bazelrc' \
+# --wild-stop-dirs: `*` stops at `/`, and `**` crosses it, so `bazel-*`
+# means the top-level symlinks only, not a tracked docs/bazel-guide.md.
+# Left out: git's files and the GitHub workflows, which the registry entry
+# does not need; Bazel's symlinks; node_modules; the release notes, which
+# the shell creates before this script starts.
+zip --quiet --symlinks --wild-stop-dirs --recurse-paths "${ARCHIVE}" . \
+  -x '.git' '.git/**' '.gitignore' '.github/**' \
+     'bazel-*' 'integration/bazel-*' 'node_modules/**' 'user.bazelrc' \
      'release_notes.txt' "${ARCHIVE}"
 
 cat <<NOTES
