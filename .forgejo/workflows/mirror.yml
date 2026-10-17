@@ -12,6 +12,12 @@
 # access to the contents of filmil/blockpic and nothing else, set in this
 # repository's Actions secrets.
 #
+# Version tags are made on GitHub, by release.yml's monthly release. The
+# mirror does not fetch them back, nor delete or overwrite them. v0.1.0 to
+# v1.1.0 are on both forges today, at the same commits. Make a version tag
+# on one side only: the same name at another commit is rejected here, and
+# the job fails.
+#
 # The instance's own push mirror (Settings, Repository, Mirror Settings)
 # does the same from the server itself, without the runner; if that is
 # set up, this workflow is redundant and can go.
@@ -43,7 +49,15 @@ jobs:
             echo "A_GITHUB_MIRROR_TOKEN is not set; nothing to do" >&2
             exit 1
           fi
-          git fetch --tags origin
-          git remote add github "https://x-access-token:${TOKEN}@github.com/filmil/blockpic.git"
-          git push github HEAD:refs/heads/main
+          # main itself, not HEAD: a run started by hand on another ref
+          # must not push that ref as GitHub's main.
+          git fetch --tags origin '+refs/heads/main:refs/remotes/origin/main'
+          git remote add github https://github.com/filmil/blockpic.git
+          # The token goes in the local config as a header, not in the
+          # remote's URL, so git's messages cannot print it; the trap takes
+          # it out again.
+          cfgkey='http.https://github.com/.extraheader'
+          trap 'git config --local --unset-all "$cfgkey" || true' EXIT
+          git config --local "$cfgkey" "Authorization: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          git push github refs/remotes/origin/main:refs/heads/main
           git push github 'refs/tags/v*:refs/tags/v*'
