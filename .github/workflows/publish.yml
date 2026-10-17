@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Publishes a release to filmil's own registry (filmil/bazel-registry).
+# Called by release.yml after each release; can be started by hand too.
+#
+# attest: false. Only publish-bcr.yml attests: every attesting publish
+# uploads MODULE.bazel.intoto.jsonl and source.json.intoto.jsonl to the
+# release under those fixed names, so a second one would overwrite the
+# first's, and leave the first registry's attestations.json naming hashes
+# its URLs no longer serve.
+name: "Publish to my Bazel registry"
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+    secrets:
+      BCR_PUBLISH_TOKEN:
+        required: false
+        description: "Pushes the entry to filmil/bazel-registry and opens its pull request."
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag to publish"
+        required: true
+        type: string
+
+jobs:
+  publish:
+    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.5.0"
+    with:
+      tag_name: ${{ inputs.tag_name }}
+      registry: filmil/bazel-registry
+      registry_fork: filmil/bazel-registry
+      attest: false
+      draft: false
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    secrets:
+      publish_token: ${{ secrets.BCR_PUBLISH_TOKEN }}
