@@ -117,5 +117,47 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 		}
 	}
 
+	svgStr = drawNames(diag, svgStr)
+
 	return []byte(svgStr), nil
+}
+
+// cellTitle finds the title of a skinned cell: the text netlistsvg fills
+// with the cell's label.
+var cellTitle = `(<text[^>]*class="nodelabel cell_%s"[^>]*s:attribute="ref"[^>]*>)[^<]*(</text>)`
+
+// genericCell finds a generic cell's group and its body, whose height
+// netlistsvg sets by the number of ports.
+var genericCell = `<g s:type="generic" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*id="cell_%s">\s*<text[^>]*>[^<]*</text>\s*<rect width="([-\d.]+)" height="([-\d.]+)"`
+
+// drawNames shows each block's name, when it has one other than its kind.
+// netlistsvg titles a skinned cell with its label, so the title is
+// replaced by the name. It titles a generic cell with its kind, which
+// says what the cell is, so the name goes under the cell instead.
+func drawNames(diag *ast.Diagram, svgStr string) string {
+	for _, b := range diag.Blocks {
+		if b.Name == "" || b.Name == b.Kind {
+			continue
+		}
+		label := regexp.QuoteMeta(b.Label)
+		name := escapeText(b.Name)
+		if m := regexp.MustCompile(fmt.Sprintf(genericCell, label)).FindStringSubmatch(svgStr); m != nil {
+			tx, _ := strconv.ParseFloat(m[1], 64)
+			ty, _ := strconv.ParseFloat(m[2], 64)
+			w, _ := strconv.ParseFloat(m[3], 64)
+			h, _ := strconv.ParseFloat(m[4], 64)
+			text := fmt.Sprintf(`<text x="%.1f" y="%.1f" class="nodelabel cell_%s" text-anchor="middle">%s</text>`,
+				tx+w/2, ty+h+11, b.Label, name)
+			svgStr = strings.Replace(svgStr, "</svg>", "  "+text+"\n</svg>", 1)
+			continue
+		}
+		re := regexp.MustCompile(fmt.Sprintf(cellTitle, label))
+		svgStr = re.ReplaceAllString(svgStr, "${1}"+strings.ReplaceAll(name, "$", "$$")+"${2}")
+	}
+	return svgStr
+}
+
+// escapeText makes s safe as the text of an SVG element.
+func escapeText(s string) string {
+	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(s)
 }

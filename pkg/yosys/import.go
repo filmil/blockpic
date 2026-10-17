@@ -356,9 +356,14 @@ func (im *importer) connectPins(s port, name string, bits []bit, src ast.PinRef)
 			return
 		}
 		kind, pin := constantCell(value)
+		// GND and VCC say their value; a CONST is named by it.
+		name := kind
+		if kind == "CONST" {
+			name = value
+		}
 		b := im.addBlock(ast.Block{
 			Label:   im.label(im.numbered(kind)),
-			Name:    value,
+			Name:    name,
 			Kind:    kind,
 			Outputs: []ast.Pin{{Name: pin}},
 		})
