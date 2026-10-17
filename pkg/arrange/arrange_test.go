@@ -367,11 +367,13 @@ func TestExtentTakesTheLabelEitherWay(t *testing.T) {
 	if r := n.extent(); r.x0 != 85 || r.x1 != 145 || r.y0 != 84 || r.y1 != 120 {
 		t.Errorf("extent = %+v, want from x=85 to 145 and y=84 to 120", r)
 	}
-	// A coordinate that is not a number leaves the label out.
-	bad := []json.RawMessage{json.RawMessage(`{"id":"a.label.ref","x":"left","y":-16,"width":30,"height":11}`)}
-	n.Labels = &bad
-	if r := n.extent(); r != (rect{100, 100, 130, 120}) {
-		t.Errorf("extent with an unreadable label = %+v, want the body alone", r)
+	// A coordinate that is not a finite number leaves the label out.
+	for _, x := range []string{`"left"`, `"NaN"`, `"Inf"`, `true`, `null`, `[1]`} {
+		bad := []json.RawMessage{json.RawMessage(`{"id":"a.label.ref","x":` + x + `,"y":-16,"width":30,"height":11}`)}
+		n.Labels = &bad
+		if r := n.extent(); r != (rect{100, 100, 130, 120}) {
+			t.Errorf("extent with a label at x=%s = %+v, want the body alone", x, r)
+		}
 	}
 }
 

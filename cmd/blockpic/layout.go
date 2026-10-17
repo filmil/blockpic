@@ -203,6 +203,11 @@ func (l *layouter) lay(nl *yosys.Netlist, tag string) (*arrange.Graph, error) {
 
 func (l *layouter) run(args ...string) error {
 	cmd := exec.Command(l.nsv, args...)
+	// nsv is a js_binary, which wants BAZEL_BINDIR. A genrule sets it; a
+	// run by hand from the execution root needs ".", as a genrule gives.
+	if os.Getenv("BAZEL_BINDIR") == "" {
+		cmd.Env = append(os.Environ(), "BAZEL_BINDIR=.")
+	}
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
