@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+
+# nsv graph|layout|draw: netlistsvg's steps one at a time, for
+# `blockpic layout`. See nsv.js.
+js_binary(
+    name = "nsv",
+    data = ["//:node_modules/netlistsvg"],
+    entry_point = "nsv.js",
+    visibility = ["//visibility:public"],
+)

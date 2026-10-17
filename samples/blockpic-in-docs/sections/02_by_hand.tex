@@ -21,6 +21,7 @@ bus: a thick line, crossed by a short slash with its width beside it. A
 wire can also name the type of the bus, as in \code{type: "nibble\_t"};
 the mark then shows the type in place of the width. A \code{group} draws
 a dashed box around blocks that belong together, here the counter itself.
+The group is laid out as one box, so no other block falls inside it.
 
 \begin{figure}[t]
 \centering
@@ -34,8 +35,10 @@ Fig.~\ref{fig:architecture} is the result. Blockpic placed every block and
 routed every wire; the file gives no coordinates. The style is that of the
 figures in AMD's UG474 \cite{ug474}: a plain sans-serif face, thin lines
 without arrowheads, and pin names such as \code{D} and \code{CK} inside the
-box. The feedback from the register to the adder is routed around the
-outside, and every 4-bit bus is drawn thick and marked with its width.
+box. The feedback from the register to the adder is routed over the top,
+inside the group, and every 4-bit bus is drawn thick and marked with its
+width. The adder's inputs are equal, so blockpic gives the upper one to the
+wire that arrives from above, and no wire crosses another.
 
 \begin{guideline}[Keep the diagram beside the code]
 Put the \code{.blockpic} file in the same directory as the HDL it describes.

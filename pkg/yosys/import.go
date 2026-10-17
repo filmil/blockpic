@@ -87,10 +87,10 @@ func parseBits(vs []any) ([]bit, error) {
 // typedef of the net that holds exactly those bits, when Yosys recorded
 // one (the wiretype attribute of a SystemVerilog wire). A driven port whose bits
 // come from more than one pin is split into one pin per bit, named
-// PORT_i. A constant is drawn as a block of its own for each driven pin:
-// a GND or VCC cell when its bits are all zeros or all ones, or else a
-// CONST cell named by the value, such as 4'b0001. Undriven bits are left
-// out.
+// PORT_i. A constant is a block of its own for each driven pin: a GND or
+// VCC cell when its bits are all zeros or all ones, or else a CONST cell
+// named by the value, such as 4'b0001. The skins draw these as tie-offs,
+// the value beside a short stub at the pin. Undriven bits are left out.
 //
 // The returned diagram passes validation.Validate. An error is returned
 // when the netlist does not parse or no module can be chosen.

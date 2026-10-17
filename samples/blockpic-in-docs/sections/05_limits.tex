@@ -6,11 +6,10 @@
 Blockpic is young, and both figures in this document show where.
 
 \begin{itemize}
-\item \textbf{Layout.} netlistsvg places every block. It cannot be told to
+\item \textbf{Layout.} ELK places every block. It cannot be told to
   line the four flip-flops up in a column, which a person drawing
-  Fig.~\ref{fig:netlist} would do. Nor does it know about groups: the
-  dashed box of the counter in Fig.~\ref{fig:architecture} also crosses
-  the \code{zero} port, which is not part of it.
+  Fig.~\ref{fig:netlist} would do. Wires that fan out, such as the clock
+  and the reset, still bend on their way to each flip-flop.
 \item \textbf{Size.} A netlist of a few dozen cells is readable. One of a
   few thousand is not, so draw small modules (\S\ref{sec:from-netlist}).
 \end{itemize}

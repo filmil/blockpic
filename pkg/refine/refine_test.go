@@ -190,3 +190,51 @@ func TestGroupLabelClearsBlockTitles(t *testing.T) {
 		t.Errorf("the drawing does not take the box in:\n%s", got)
 	}
 }
+
+// A group whose box the layout gave is drawn there, and not around its
+// blocks; a group without one still gets a box around its blocks.
+func TestGroupBoxFromLayout(t *testing.T) {
+	diag := &ast.Diagram{
+		Name: "D",
+		Groups: []ast.Group{
+			{Name: "laid", Blocks: []string{"a"}},
+			{Name: "drawn", Blocks: []string{"a"}},
+		},
+	}
+	svg := `<svg width="400" height="300">
+  <g s:type="add" transform="translate(100,100)" s:width="25" s:height="25" id="cell_a">
+  </g>
+</svg>`
+	out, err := ProcessLaidOut(diag, []byte(svg), map[int]Box{0: {X: 10, Y: 20, Width: 300, Height: 200}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		`<rect x="10.0" y="20.0" width="300.0" height="200.0" class="groupBox"`,
+		`<text x="15.0" y="31.0" class="groupLabel" text-anchor="start" style="font-weight:bold">laid</text>`,
+		`<rect x="80.0" y="70.0" width="65.0" height="75.0" class="groupBox"`,
+		`>drawn</text>`,
+	} {
+		if !strings.Contains(string(out), want) {
+			t.Errorf("output lacks %s:\n%s", want, out)
+		}
+	}
+}
+
+// A tie-off's value, set to the left of its stub, widens the drawing as a
+// port's name does.
+func TestFitCanvasTieOff(t *testing.T) {
+	diag := &ast.Diagram{Name: "D"}
+	svg := `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
+  <g s:type="CONST" transform="translate(12,40)" s:width="60" s:height="10" id="cell_CONST_1">
+    <text x="42" y="8" class="pinOut cell_CONST_1" s:attribute="ref" text-anchor="end">32'h0000_0001</text>
+  </g>
+</svg>`
+	out, err := Process(diag, []byte(svg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(out), `viewBox="-19.5 `) {
+		t.Errorf("the drawing was not widened to the left for the value:\n%s", out)
+	}
+}

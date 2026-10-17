@@ -13,14 +13,32 @@ import (
 )
 
 // Process takes the parsed diagram and raw SVG bytes,
-// and returns refined SVG bytes with groups and thick buses.
+// and returns refined SVG bytes with groups and thick buses. A group's box
+// is drawn around its blocks.
 func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
+	return ProcessLaidOut(diag, svgBytes, nil)
+}
+
+// Box is where the layout put a group, in the drawing's coordinates.
+type Box struct {
+	X, Y, Width, Height float64
+}
+
+// ProcessLaidOut is Process for a drawing whose layout gave its groups
+// boxes of their own, keyed by the group's index in the diagram. Such a
+// box is drawn where the layout put it: the layout kept every other block
+// out of it. A group without one gets a box around its blocks.
+func ProcessLaidOut(diag *ast.Diagram, svgBytes []byte, boxes map[int]Box) ([]byte, error) {
 	// Let's use string manipulation or a lightweight XML library.
 	// Since netlistsvg output is predictable, we can use regexes to find bounds.
 	svgStr := string(svgBytes)
 
 	// 1. Add dashed bounding boxes for groups
-	for _, group := range diag.Groups {
+	for gi, group := range diag.Groups {
+		if b, ok := boxes[gi]; ok {
+			svgStr = strings.Replace(svgStr, "</svg>", groupBoxSVG(group.Name, b.X, b.Y, b.Width, b.Height), 1)
+			continue
+		}
 		minX, minY := math.MaxFloat64, math.MaxFloat64
 		maxX, maxY := -math.MaxFloat64, -math.MaxFloat64
 		found := false
@@ -89,9 +107,7 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 			w := maxX - minX
 			h := maxY - minY
 
-			rectStr := fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" class="groupBox" fill="none" stroke="#000" stroke-dasharray="5,5" stroke-width="1"/>`, minX, minY, w, h)
-			textStr := fmt.Sprintf(`<text x="%.1f" y="%.1f" class="groupLabel" text-anchor="start" style="font-weight:bold">%s</text>`, minX+5, minY+11, escapeText(group.Name))
-			svgStr = strings.Replace(svgStr, "</svg>", fmt.Sprintf("  %s\n  %s\n</svg>", rectStr, textStr), 1)
+			svgStr = strings.Replace(svgStr, "</svg>", groupBoxSVG(group.Name, minX, minY, w, h), 1)
 		}
 	}
 
@@ -139,6 +155,14 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 	return []byte(svgStr), nil
 }
 
+// groupBoxSVG is the dashed box of a group, with its name in the top left
+// corner, and the end of the drawing after them.
+func groupBoxSVG(name string, x, y, w, h float64) string {
+	rectStr := fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" class="groupBox" fill="none" stroke="#000" stroke-dasharray="5,5" stroke-width="1"/>`, x, y, w, h)
+	textStr := fmt.Sprintf(`<text x="%.1f" y="%.1f" class="groupLabel" text-anchor="start" style="font-weight:bold">%s</text>`, x+5, y+11, escapeText(name))
+	return fmt.Sprintf("  %s\n  %s\n</svg>", rectStr, textStr)
+}
+
 // cellTitle finds the title of a skinned cell: the text netlistsvg fills
 // with the cell's label. A skin may give it any class besides the cell's.
 var cellTitle = `(<text[^>]*class="[^"]*\bcell_%s"[^>]*s:attribute="ref"[^>]*>)[^<]*(</text>)`
@@ -179,8 +203,9 @@ func escapeText(s string) string {
 	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(s)
 }
 
-// portLabel finds a port cell and the text that names it.
-var portLabel = regexp.MustCompile(`<g s:type="(?:inputExt|outputExt)" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*>\s*<text x="([-\d.]+)"[^>]*class="([^"]*)"[^>]*>([^<]*)</text>`)
+// portLabel finds a port cell, or a tie-off, and the text that names it.
+// A tie-off's value is set to the left of its stub.
+var portLabel = regexp.MustCompile(`<g s:type="(?:inputExt|outputExt|GND|VCC|CONST)" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*>\s*<text x="([-\d.]+)"[^>]*class="([^"]*)"[^>]*>([^<]*)</text>`)
 
 // bodyHeight finds the height of a generic cell's body.
 var bodyHeight = regexp.MustCompile(`<rect\b[^>]*?\sheight="([-\d.]+)"[^>]*s:generic="body"`)
@@ -195,8 +220,8 @@ var svgSize = regexp.MustCompile(`<svg([^>]*) width="([\d.]+)" height="([\d.]+)"
 // skins' 9 to 10 pixel faces, a little wide to be safe.
 const charWidth = 5.5
 
-// fitCanvas grows the drawing so that the names of its ports and the
-// boxes of its groups fit. netlistsvg sizes the drawing to its cells, so a
+// fitCanvas grows the drawing so that the names of its ports and
+// tie-offs, and the boxes of its groups, fit. netlistsvg sizes the drawing to its cells, so a
 // name set beside a port at the edge, or a group box around a block at the
 // edge, falls outside it. The drawing gets a viewBox that takes them in;
 // a port name's width is estimated from its length.

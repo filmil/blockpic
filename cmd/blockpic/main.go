@@ -14,7 +14,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: blockpic [compile|render|refine|import] <file>")
+		fmt.Println("Usage: blockpic [compile|render|layout|refine|import] <file>")
 		os.Exit(1)
 	}
 
@@ -25,6 +25,8 @@ func main() {
 		compileCmd()
 	case "render":
 		renderCmd()
+	case "layout":
+		layoutCmd()
 	case "refine":
 		refineCmd()
 	case "import":
