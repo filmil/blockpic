@@ -3,6 +3,7 @@ package refine
 
 import (
 	"fmt"
+	"html"
 	"math"
 	"regexp"
 	"strconv"
@@ -112,12 +113,13 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 			svgStr = lineRe.ReplaceAllStringFunc(svgStr, func(match string) string {
 				// We want a solid thick black line.
 				// By replacing the closing '/>', we add the stroke and stroke-width.
-				return strings.Replace(match, "/>", ` stroke="#000" stroke-width="4" />`, 1)
+				return strings.Replace(match, "/>", ` stroke="#000" stroke-width="3" />`, 1)
 			})
 		}
 	}
 
 	svgStr = drawNames(diag, svgStr)
+	svgStr = fitPortLabels(svgStr)
 
 	return []byte(svgStr), nil
 }
@@ -160,4 +162,49 @@ func drawNames(diag *ast.Diagram, svgStr string) string {
 // escapeText makes s safe as the text of an SVG element.
 func escapeText(s string) string {
 	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(s)
+}
+
+// portLabel finds a port cell and the text that names it.
+var portLabel = regexp.MustCompile(`<g s:type="(?:inputExt|outputExt)" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*>\s*<text x="([-\d.]+)"[^>]*class="([^"]*)"[^>]*>([^<]*)</text>`)
+
+// svgSize finds the size netlistsvg gives the drawing.
+var svgSize = regexp.MustCompile(`<svg([^>]*) width="([\d.]+)" height="([\d.]+)"`)
+
+// charWidth is the width, in pixels, of an average character of the
+// skins' 9 to 10 pixel faces, a little wide to be safe.
+const charWidth = 5.5
+
+// fitPortLabels widens the drawing so that the names of its ports fit.
+// netlistsvg sizes the drawing to its cells, so a name set beside a port
+// at the edge falls outside it. The drawing gets a viewBox that takes in
+// every port name, estimated from its length.
+func fitPortLabels(svgStr string) string {
+	size := svgSize.FindStringSubmatch(svgStr)
+	if size == nil {
+		return svgStr
+	}
+	width, _ := strconv.ParseFloat(size[2], 64)
+	height, _ := strconv.ParseFloat(size[3], 64)
+	minX, maxX := 0.0, width
+	for _, m := range portLabel.FindAllStringSubmatch(svgStr, -1) {
+		tx, _ := strconv.ParseFloat(m[1], 64)
+		x, _ := strconv.ParseFloat(m[3], 64)
+		w := float64(len([]rune(html.UnescapeString(m[5])))) * charWidth
+		left := tx + x
+		switch {
+		case strings.Contains(m[4], "inputPortLabel"), strings.Contains(m[4], "pinOut"):
+			left -= w
+		case strings.Contains(m[4], "pinIn"):
+		default:
+			left -= w / 2
+		}
+		minX = math.Min(minX, left-2)
+		maxX = math.Max(maxX, left+w+2)
+	}
+	if minX == 0 && maxX == width {
+		return svgStr
+	}
+	w := maxX - minX
+	return strings.Replace(svgStr, size[0], fmt.Sprintf(`<svg%s width="%g" height="%g" viewBox="%g 0 %g %g"`,
+		size[1], w, height, minX, w, height), 1)
 }
