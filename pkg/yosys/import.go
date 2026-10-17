@@ -37,8 +37,9 @@ type inCell struct {
 }
 
 type inNetname struct {
-	HideName int   `json:"hide_name"`
-	Bits     []any `json:"bits"`
+	HideName   int            `json:"hide_name"`
+	Bits       []any          `json:"bits"`
+	Attributes map[string]any `json:"attributes"`
 }
 
 // bit is one bit of a connection: a net number, or a constant when net is
@@ -82,7 +83,9 @@ func parseBits(vs []any) ([]bit, error) {
 // Each cell becomes a block of the cell's type, and each module port
 // becomes an INPUT_PIN or OUTPUT_PIN block (an inout port is drawn as an
 // input). A wire joins a driving pin to a driven pin; when it carries
-// several bits, its thickness is their number. A driven port whose bits
+// several bits, its thickness is their number, and its type is the
+// typedef of the net that holds exactly those bits, when Yosys recorded
+// one (the wiretype attribute of a SystemVerilog wire). A driven port whose bits
 // come from more than one pin is split into one pin per bit, named
 // PORT_i. A constant is drawn as a block of its own for each driven pin:
 // a GND or VCC cell when its bits are all zeros or all ones, or else a
@@ -167,6 +170,9 @@ type importer struct {
 	wireIdx map[[2]ast.PinRef]int
 	// typeCount numbers the unnamed blocks of each kind.
 	typeCount map[string]int
+	// busTypes finds the type of a bus by its bits, from the wiretype
+	// attribute that Yosys gives a wire declared with a typedef.
+	busTypes map[string]string
 }
 
 // port is a connection of a block: a cell's port, or a module port
@@ -178,6 +184,7 @@ type port struct {
 }
 
 func (im *importer) run() error {
+	im.findBusTypes()
 	// sources drive bits; sinks are driven: cell inputs and module
 	// outputs.
 	var sources, sinks []port
@@ -379,8 +386,39 @@ func (im *importer) connectPins(s port, name string, bits []bit, src ast.PinRef)
 	w := ast.Wire{Source: src, Destination: dst}
 	if len(bits) > 1 {
 		w.Thickness = len(bits)
+		w.Type = im.busTypes[bitsKey(bits)]
 	}
 	im.diag.Wires = append(im.diag.Wires, w)
+}
+
+// bitsKey makes a map key of a sequence of bits.
+func bitsKey(bits []bit) string {
+	var sb strings.Builder
+	for _, x := range bits {
+		fmt.Fprintf(&sb, "%d%c,", x.net, x.value)
+	}
+	return sb.String()
+}
+
+// findBusTypes maps the bits of every net that Yosys gave a wiretype
+// attribute, a wire declared with a typedef, to the name of its type.
+func (im *importer) findBusTypes() {
+	im.busTypes = make(map[string]string)
+	for _, n := range sortedKeys(im.mod.Netnames) {
+		nn := im.mod.Netnames[n]
+		t, ok := nn.Attributes["wiretype"].(string)
+		if !ok || t == "" || len(nn.Bits) < 2 {
+			continue
+		}
+		bits, err := parseBits(nn.Bits)
+		if err != nil {
+			continue
+		}
+		key := bitsKey(bits)
+		if _, ok := im.busTypes[key]; !ok {
+			im.busTypes[key] = strings.TrimPrefix(t, "\\")
+		}
+	}
 }
 
 // constant spells bits, least significant first, as a Verilog constant.
@@ -524,7 +562,7 @@ var keywords = map[string]bool{
 	"diagram": true, "block": true, "wire": true, "layout": true,
 	"group": true, "kind": true, "name": true, "inputs": true,
 	"outputs": true, "params": true, "size": true, "hint": true,
-	"thickness": true, "crossline": true, "at": true,
+	"thickness": true, "crossline": true, "at": true, "type": true,
 }
 
 // identifier makes a blockpic identifier from a Yosys name: every run of
