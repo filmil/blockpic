@@ -98,7 +98,7 @@ diagram Shapes {
 </td>
 <td valign="top" width="60%">
 
-![IEEE Shapes](ai/shapes.svg)
+![IEEE Shapes](ai/shapes)
 
 </td>
 </tr>
@@ -151,7 +151,7 @@ diagram PinsAndBuses {
 </td>
 <td valign="top" width="60%">
 
-![Pins and Buses](ai/pins_buses.svg)
+![Pins and Buses](ai/pins_buses)
 
 </td>
 </tr>
@@ -195,7 +195,7 @@ diagram DynamicSizing {
 </td>
 <td valign="top" width="60%">
 
-![Dynamic Sizing](ai/dynamic_sizing.svg)
+![Dynamic Sizing](ai/dynamic_sizing)
 
 </td>
 </tr>
@@ -238,7 +238,7 @@ diagram MSIBlocks {
 </td>
 <td valign="top" width="60%">
 
-![MSI Blocks](ai/msi_blocks.svg)
+![MSI Blocks](ai/msi_blocks)
 
 </td>
 </tr>
@@ -295,7 +295,7 @@ diagram PinAware {
 </td>
 <td valign="top" width="60%">
 
-![Pin-Aware Routing](ai/pin_aware.svg)
+![Pin-Aware Routing](ai/pin_aware)
 
 </td>
 </tr>
@@ -338,7 +338,7 @@ diagram ComplexLayout {
 </td>
 <td valign="top" width="60%">
 
-![Complex Auto Layout](ai/complex_layout.svg)
+![Complex Auto Layout](ai/complex_layout)
 
 </td>
 </tr>
@@ -388,7 +388,7 @@ diagram skin_arithmetic {
 </td>
 <td valign="top" width="60%">
 
-![Arithmetic Components](ai/skin_arithmetic.svg)
+![Arithmetic Components](ai/skin_arithmetic)
 
 </td>
 </tr>
@@ -420,7 +420,7 @@ diagram skin_bitwise {
 </td>
 <td valign="top" width="60%">
 
-![Bitwise Components](ai/skin_bitwise.svg)
+![Bitwise Components](ai/skin_bitwise)
 
 </td>
 </tr>
@@ -453,7 +453,7 @@ diagram skin_latches {
 </td>
 <td valign="top" width="60%">
 
-![Latches and Registers](ai/skin_latches.svg)
+![Latches and Registers](ai/skin_latches)
 
 </td>
 </tr>
@@ -485,7 +485,7 @@ diagram skin_muxes {
 </td>
 <td valign="top" width="60%">
 
-![Multiplexers](ai/skin_muxes.svg)
+![Multiplexers](ai/skin_muxes)
 
 </td>
 </tr>
@@ -519,7 +519,7 @@ diagram skin_special {
 </td>
 <td valign="top" width="60%">
 
-![Special Logic Gates](ai/skin_special.svg)
+![Special Logic Gates](ai/skin_special)
 
 </td>
 </tr>
@@ -550,7 +550,7 @@ diagram skin_utility {
 </td>
 <td valign="top" width="60%">
 
-![Utility Nodes](ai/skin_utility.svg)
+![Utility Nodes](ai/skin_utility)
 
 </td>
 </tr>
@@ -588,7 +588,7 @@ diagram TestFeatures {
 </td>
 <td valign="top" width="60%">
 
-![Test Features](ai/test_features.svg)
+![Test Features](ai/test_features)
 
 </td>
 </tr>
@@ -639,7 +639,7 @@ diagram StateMachineFeedback {
 </td>
 <td valign="top" width="60%">
 
-![State Machine Feedback](ai/state_machine_feedback.svg)
+![State Machine Feedback](ai/state_machine_feedback)
 
 </td>
 </tr>
@@ -660,12 +660,12 @@ This demonstrates the engine's capability to render complex hierarchical layouts
 <tr>
 <td valign="top" width="33%">
 
-![Original Xilinx UG474 Figure 1.1](../third_party/xilinx/figure_1_1.png)
+![Original Xilinx UG474 Figure 1.1](third_party/xilinx/figure_1_1.png)
 
 </td>
 <td valign="top" width="33%">
 
-![Blockpic Figure 1.1](ai/figure_1_1.svg)
+![Blockpic Figure 1.1](ai/figure_1_1)
 
 </td>
 <td valign="top" width="33%">

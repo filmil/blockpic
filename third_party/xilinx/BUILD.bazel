@@ -1,0 +1,6 @@
+# Figures from AMD's UG474, which the book (//ai) sets beside blockpic's
+# drawings of them.
+exports_files(
+    glob(["*.png"]),
+    visibility = ["//ai:__pkg__"],
+)
