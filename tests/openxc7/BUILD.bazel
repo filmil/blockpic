@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+# A design synthesised by rules_openxc7, drawn by blockpic.
+load("@rules_openxc7//openxc7:defs.bzl", "vivado_project", "vivado_synthesis")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//:defs.bzl", "blockpic_netlist_diagram")
+
+vivado_project(
+    name = "counter",
+    srcs = ["counter.v"],
+    part = "xc7a200tfbg484-2",
+    top_level = "counter",
+)
+
+vivado_synthesis(
+    name = "counter_synth",
+    project = ":counter",
+)
+
+blockpic_netlist_diagram(
+    name = "counter_diagram",
+    out = "counter.svg",
+    netlist = ":counter_synth",
+)
+
+sh_test(
+    name = "counter_diagram_test",
+    size = "small",
+    srcs = ["counter_diagram_test.sh"],
+    args = [
+        "$(rootpath :counter_diagram)",
+        "$(rootpath :counter_diagram_src)",
+    ],
+    data = [
+        ":counter_diagram",
+        ":counter_diagram_src",
+    ],
+)
