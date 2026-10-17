@@ -63,7 +63,7 @@ jobs:
 
   build:
     needs: tag
-    if: ${{ needs.tag.outputs.tag_name != '' }}
+    if: ${{ needs.tag.outputs.new_tag != '' }}
     strategy:
       matrix:
         include:
