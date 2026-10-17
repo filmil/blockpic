@@ -9,6 +9,14 @@ on:
   schedule:
     - cron: '0 0 1 * *' # Monthly on the 1st
   workflow_dispatch: # Manual trigger
+    inputs:
+      bump:
+        description: >-
+          The bump to make when no commit since the last tag asks for one
+          ("false": release only if a commit asks).
+        type: choice
+        options: ["false", "patch", "minor", "major"]
+        default: "false"
 
 jobs:
   tag:
@@ -32,10 +40,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
-          # No commit that asks for a release (feat, fix, or a breaking
-          # change) means no tag, and every job below is skipped. The same
-          # tree is not released twice.
-          default_bump: false
+          # On the monthly run, no commit that asks for a release (feat, fix,
+          # or a breaking change) means no tag, and every job below is
+          # skipped: the same tree is not released twice. A run started by
+          # hand may ask for a bump anyway.
+          default_bump: ${{ inputs.bump || 'false' }}
 
   # Runs the tests, builds the source archive with
   # .github/workflows/release_prep.sh, attests it, and creates the release.
@@ -110,9 +119,10 @@ jobs:
         run: |
           set -eu
           bazel build //samples:pdfs
-          files="$(bazel cquery --output=files //samples:pdfs)"
           mkdir -p samples-out
-          cp $files samples-out/
+          bazel cquery --output=files //samples:pdfs > pdfs.txt
+          test -s pdfs.txt
+          while IFS= read -r f; do cp "$f" samples-out/; done < pdfs.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:

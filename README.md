@@ -107,6 +107,14 @@ notes give the line to use:
 bazel_dep(name = "blockpic", version = "<the newest release>")
 ```
 
+The Bazel Central Registry is Bazel's default. To take blockpic from
+filmil's registry instead, list it in your `.bazelrc`:
+
+```
+common --registry=https://bcr.bazel.build
+common --registry=https://raw.githubusercontent.com/filmil/bazel-registry/main
+```
+
 Then draw a diagram, or a Yosys JSON netlist, in a `BUILD.bazel` file:
 
 ```starlark
