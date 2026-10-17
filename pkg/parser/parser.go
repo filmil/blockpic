@@ -254,6 +254,12 @@ func (p *Parser) parseWire() *ast.Wire {
 						wire.Crossline, _ = strconv.Atoi(p.curToken.Literal)
 					}
 				}
+			case scanner.TYPE:
+				if p.expectPeek(scanner.COLON) {
+					if p.expectPeek(scanner.STRING) {
+						wire.Type = p.curToken.Literal
+					}
+				}
 			}
 			p.nextToken()
 		}

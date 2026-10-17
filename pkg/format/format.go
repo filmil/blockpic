@@ -63,6 +63,9 @@ func Format(diag *ast.Diagram) []byte {
 		if w.Crossline > 0 {
 			attrs = append(attrs, fmt.Sprintf("crossline: %d;", w.Crossline))
 		}
+		if w.Type != "" {
+			attrs = append(attrs, fmt.Sprintf("type: %s;", quote(w.Type)))
+		}
 		if w.Hint != "" {
 			attrs = append(attrs, fmt.Sprintf("hint: %s;", quote(string(w.Hint))))
 		}

@@ -42,6 +42,7 @@ const (
 	THICKNESS
 	CROSSLINE
 	AT
+	TYPE
 )
 
 var keywords = map[string]TokenType{
@@ -60,6 +61,7 @@ var keywords = map[string]TokenType{
 	"thickness": THICKNESS,
 	"crossline": CROSSLINE,
 	"at":        AT,
+	"type":      TYPE,
 }
 
 type Token struct {

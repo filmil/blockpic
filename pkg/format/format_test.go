@@ -39,6 +39,7 @@ func TestFormatParsesBack(t *testing.T) {
 				Destination: ast.PinRef{Block: "reg1", Pin: "D"},
 				Thickness:   4,
 				Crossline:   4,
+				Type:        "nibble_t",
 				Hint:        ast.HintZShape,
 			},
 		},
