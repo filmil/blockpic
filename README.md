@@ -3,6 +3,7 @@
 Forgejo (canonical):
 [![test](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/test.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=test.yml)
 [![samples](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/samples.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=samples.yml)
+[![mirror](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/mirror.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=mirror.yml)
 
 GitHub (mirror, builds the book and docs):
 [![CI](https://github.com/filmil/blockpic/actions/workflows/main.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/main.yml)
