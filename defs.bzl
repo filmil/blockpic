@@ -5,7 +5,7 @@ def blockpic_diagram(name, src, out):
     Renders a Blockpic diagram to SVG using netlistsvg.
     """
     json_out = name + ".json"
-    
+
     native.genrule(
         name = name + "_json",
         srcs = [src],
@@ -13,7 +13,7 @@ def blockpic_diagram(name, src, out):
         cmd = "$(location //cmd/blockpic) render $< -format yosys-json -o $@",
         tools = ["//cmd/blockpic"],
     )
-    
+
     bin.netlistsvg_binary(
         name = name + "_tool",
     )
