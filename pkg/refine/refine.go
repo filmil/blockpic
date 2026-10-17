@@ -57,6 +57,17 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 			if len(hMatch) == 2 {
 				h, _ = strconv.ParseFloat(hMatch[1], 64)
 			}
+			// A generic cell grows with its ports, past the s:height of
+			// its template; its body says how tall it is.
+			if strings.Contains(match, `s:type="generic"`) {
+				start := strings.Index(svgStr, match) + len(match)
+				end := strings.Index(svgStr[start:], "</g>")
+				if end >= 0 {
+					if b := bodyHeight.FindStringSubmatch(svgStr[start : start+end]); b != nil {
+						h, _ = strconv.ParseFloat(b[1], 64)
+					}
+				}
+			}
 
 			if w > 0 && h > 0 {
 				found = true
@@ -68,16 +79,18 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 		}
 
 		if found {
-			pad := 20.0
+			// The label has a row of its own at the top of the box,
+			// above the titles that blocks carry over their bodies.
+			pad, labelRow := 20.0, 10.0
 			minX -= pad
-			minY -= pad
+			minY -= pad + labelRow
 			maxX += pad
 			maxY += pad
 			w := maxX - minX
 			h := maxY - minY
 
-			rectStr := fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="none" stroke="#000" stroke-dasharray="5,5" stroke-width="1"/>`, minX, minY, w, h)
-			textStr := fmt.Sprintf(`<text x="%.1f" y="%.1f" font-family="monospace" font-size="12px" font-weight="bold">%s</text>`, minX+5, minY+15, group.Name)
+			rectStr := fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" class="groupBox" fill="none" stroke="#000" stroke-dasharray="5,5" stroke-width="1"/>`, minX, minY, w, h)
+			textStr := fmt.Sprintf(`<text x="%.1f" y="%.1f" class="groupLabel" text-anchor="start" style="font-weight:bold">%s</text>`, minX+5, minY+11, escapeText(group.Name))
 			svgStr = strings.Replace(svgStr, "</svg>", fmt.Sprintf("  %s\n  %s\n</svg>", rectStr, textStr), 1)
 		}
 	}
@@ -120,7 +133,7 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 
 	svgStr = drawBusWidths(diag, svgStr, sourceBits)
 	svgStr = drawNames(diag, svgStr)
-	svgStr = fitPortLabels(svgStr)
+	svgStr = fitCanvas(svgStr)
 	svgStr = strokeLines(svgStr)
 
 	return []byte(svgStr), nil
@@ -169,6 +182,12 @@ func escapeText(s string) string {
 // portLabel finds a port cell and the text that names it.
 var portLabel = regexp.MustCompile(`<g s:type="(?:inputExt|outputExt)" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*>\s*<text x="([-\d.]+)"[^>]*class="([^"]*)"[^>]*>([^<]*)</text>`)
 
+// bodyHeight finds the height of a generic cell's body.
+var bodyHeight = regexp.MustCompile(`<rect\b[^>]*?\sheight="([-\d.]+)"[^>]*s:generic="body"`)
+
+// groupBox finds the dashed box of a group.
+var groupBox = regexp.MustCompile(`<rect x="([-\d.]+)" y="([-\d.]+)" width="([-\d.]+)" height="([-\d.]+)" class="groupBox"`)
+
 // svgSize finds the size netlistsvg gives the drawing.
 var svgSize = regexp.MustCompile(`<svg([^>]*) width="([\d.]+)" height="([\d.]+)"`)
 
@@ -176,11 +195,12 @@ var svgSize = regexp.MustCompile(`<svg([^>]*) width="([\d.]+)" height="([\d.]+)"
 // skins' 9 to 10 pixel faces, a little wide to be safe.
 const charWidth = 5.5
 
-// fitPortLabels widens the drawing so that the names of its ports fit.
-// netlistsvg sizes the drawing to its cells, so a name set beside a port
-// at the edge falls outside it. The drawing gets a viewBox that takes in
-// every port name, estimated from its length.
-func fitPortLabels(svgStr string) string {
+// fitCanvas grows the drawing so that the names of its ports and the
+// boxes of its groups fit. netlistsvg sizes the drawing to its cells, so a
+// name set beside a port at the edge, or a group box around a block at the
+// edge, falls outside it. The drawing gets a viewBox that takes them in;
+// a port name's width is estimated from its length.
+func fitCanvas(svgStr string) string {
 	size := svgSize.FindStringSubmatch(svgStr)
 	if size == nil {
 		return svgStr
@@ -188,6 +208,15 @@ func fitPortLabels(svgStr string) string {
 	width, _ := strconv.ParseFloat(size[2], 64)
 	height, _ := strconv.ParseFloat(size[3], 64)
 	minX, maxX := 0.0, width
+	minY, maxY := 0.0, height
+	for _, m := range groupBox.FindAllStringSubmatch(svgStr, -1) {
+		var c [4]float64
+		for i := range c {
+			c[i], _ = strconv.ParseFloat(m[i+1], 64)
+		}
+		minX, minY = math.Min(minX, c[0]-1), math.Min(minY, c[1]-1)
+		maxX, maxY = math.Max(maxX, c[0]+c[2]+1), math.Max(maxY, c[1]+c[3]+1)
+	}
 	for _, m := range portLabel.FindAllStringSubmatch(svgStr, -1) {
 		tx, _ := strconv.ParseFloat(m[1], 64)
 		x, _ := strconv.ParseFloat(m[3], 64)
@@ -203,12 +232,12 @@ func fitPortLabels(svgStr string) string {
 		minX = math.Min(minX, left-2)
 		maxX = math.Max(maxX, left+w+2)
 	}
-	if minX == 0 && maxX == width {
+	if minX == 0 && maxX == width && minY == 0 && maxY == height {
 		return svgStr
 	}
-	w := maxX - minX
-	return strings.Replace(svgStr, size[0], fmt.Sprintf(`<svg%s width="%g" height="%g" viewBox="%g 0 %g %g"`,
-		size[1], w, height, minX, w, height), 1)
+	w, h := maxX-minX, maxY-minY
+	return strings.Replace(svgStr, size[0], fmt.Sprintf(`<svg%s width="%g" height="%g" viewBox="%g %g %g %g"`,
+		size[1], w, h, minX, minY, w, h), 1)
 }
 
 // netLine finds a straight segment of a net.
