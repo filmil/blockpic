@@ -1,16 +1,33 @@
 # Blockpic
 
-Forgejo (canonical):
-[![test](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/test.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=test.yml)
-[![samples](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/samples.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=samples.yml)
-[![mirror](https://git.hdlfactory.com/HDL/blockpic/badges/workflows/mirror.yml/badge.svg?branch=main)](https://git.hdlfactory.com/HDL/blockpic/actions?workflow=mirror.yml)
-
-GitHub (mirror, builds the book and docs):
 [![CI](https://github.com/filmil/blockpic/actions/workflows/main.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/main.yml)
+[![Samples](https://github.com/filmil/blockpic/actions/workflows/samples.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/samples.yml)
 [![Deploy Docs](https://github.com/filmil/blockpic/actions/workflows/deploy_docs.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/deploy_docs.yml)
 [![Release](https://github.com/filmil/blockpic/actions/workflows/release.yml/badge.svg)](https://github.com/filmil/blockpic/actions/workflows/release.yml)
 
+blockpic lives at [github.com/filmil/blockpic](https://github.com/filmil/blockpic).
+Issues and pull requests are welcome there.
+
 Blockpic is a language for engineering block diagram typesetting, designed to produce diagrams with the aesthetics of Xilinx UG474 technical documentation.
+
+## What it draws
+
+A 4-bit LED counter, drawn by hand in
+[`counter.blockpic`](samples/blockpic-in-docs/counter.blockpic). The slashes
+mark bus widths:
+
+<img src="docs/images/architecture.svg" alt="A 4-bit counter: an adder, a clear multiplexer and a register, with the buses marked 4 bits wide" width="480">
+
+The same counter as rules_openxc7 synthesizes it from
+[`counter.v`](samples/blockpic-in-docs/counter.v): Yosys's netlist of
+7-series primitives, drawn by `blockpic import` with no hand placement:
+
+<img src="docs/images/netlist.svg" alt="The synthesized netlist of the counter: input and output buffers, a CARRY4, and four FDRE flip-flops" width="720">
+
+Both figures are built by Bazel from those sources, as in the
+[sample paper](samples/blockpic-in-docs). Refresh the copies shown here
+with `bazel run //:update_readme_images`; a test fails when they fall
+behind.
 
 ## Usage
 
@@ -87,9 +104,10 @@ comes from the netlist that rules_openxc7 synthesizes from the Verilog.
 ```bash
 bazel build //samples:pdfs
 ```
-The PDFs are published by the `samples` workflow: every Sunday to the
-rolling [`samples`](https://git.hdlfactory.com/HDL/blockpic/releases/tag/samples)
-release, and to the release of every version tag.
+The `samples` workflow publishes the PDFs every Sunday to the rolling
+[`samples`](https://github.com/filmil/blockpic/releases/tag/samples)
+release, and the `release` workflow attaches them to every version's
+release.
 
 ## Documentation
 

@@ -1,5 +1,6 @@
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@gazelle//:def.bzl", "gazelle")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 
 # gazelle:prefix github.com/filmil/blockpic
@@ -17,4 +18,15 @@ npm_link_all_packages(name = "node_modules")
 # bazel run //:buildifier
 buildifier(
     name = "buildifier",
+)
+
+# The sample figures shown in README.md. Refresh them with
+#   bazel run //:update_readme_images
+# The generated test fails when they no longer match what blockpic draws.
+write_source_files(
+    name = "update_readme_images",
+    files = {
+        "docs/images/architecture.svg": "//samples/blockpic-in-docs:architecture_readme",
+        "docs/images/netlist.svg": "//samples/blockpic-in-docs:netlist_readme",
+    },
 )

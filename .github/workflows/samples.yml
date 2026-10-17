@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Samples
+
+# Builds the sample documents under //samples and publishes their PDFs to
+# the rolling prerelease `samples`, which always holds the PDFs of the
+# newest main: every Sunday, and on request. Each version's release carries
+# its own PDFs too; release.yml builds and attaches them.
+#
+# TeX comes from the texlive_bundle module, so the runner needs no TeX.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 0'   # Sundays, 04:17 UTC
+
+# One run at a time: a newer run replaces an older one.
+concurrency:
+  group: samples
+  cancel-in-progress: true
+
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: abhinavsingh/setup-bazel@v3
+        with:
+          version: 9.3.0
+
+      - name: Build the sample PDFs
+        run: |
+          set -eu
+          bazel build //samples:pdfs
+          mkdir -p dist/samples
+          for f in $(bazel cquery --output=files //samples:pdfs 2>/dev/null); do
+            test -s "$f" || { echo "empty PDF: $f" >&2; exit 1; }
+            cp "$f" dist/samples/
+          done
+          ls -l dist/samples
+
+      # Recreated each time, so that the tag points at the commit the PDFs
+      # were built from.
+      - name: Publish to the rolling release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          gh release delete samples --cleanup-tag --yes || true
+          gh release create samples dist/samples/*.pdf \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Sample documents (newest main)" \
+            --notes "The sample documents under samples/, built from $GITHUB_SHA by the samples workflow."

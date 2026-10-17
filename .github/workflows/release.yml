@@ -117,7 +117,7 @@ jobs:
       - name: Setup Bazel
         uses: abhinavsingh/setup-bazel@v3
         with:
-          version: 9.0.1
+          version: 9.3.0
       - name: Build the sample PDFs
         run: |
           bazel build //samples:pdfs
