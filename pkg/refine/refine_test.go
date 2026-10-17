@@ -80,7 +80,7 @@ func TestDrawNames(t *testing.T) {
 	}
 }
 
-func TestFitPortLabels(t *testing.T) {
+func TestFitCanvas(t *testing.T) {
 	// An output named beside its flag at the right edge, and an input
 	// named left of its flag at the left edge.
 	svg := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50">
@@ -91,7 +91,7 @@ func TestFitPortLabels(t *testing.T) {
     <text x="-3" y="8" class="inputPortLabel cell_clk" s:attribute="ref">clk</text>
   </g>
 </svg>`
-	got := fitPortLabels(svg)
+	got := fitCanvas(svg)
 	// led ends at 80+23+3*5.5+2 = 121.5; clk starts at 0-3-16.5-2 = -21.5.
 	want := `<svg xmlns="http://www.w3.org/2000/svg" width="143" height="50" viewBox="-21.5 0 143 50"`
 	if !strings.Contains(got, want) {
@@ -99,8 +99,8 @@ func TestFitPortLabels(t *testing.T) {
 	}
 	// A drawing whose names fit is left alone.
 	fits := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"></svg>`
-	if got := fitPortLabels(fits); got != fits {
-		t.Errorf("fitPortLabels changed a drawing that fits: %s", got)
+	if got := fitCanvas(fits); got != fits {
+		t.Errorf("fitCanvas changed a drawing that fits: %s", got)
 	}
 }
 
@@ -155,5 +155,38 @@ func TestStrokeLines(t *testing.T) {
 	want := `<svg><line x1="0" x2="1" y1="0" y2="0" class="net_2" stroke="#000"/><line x1="0" x2="1" y1="0" y2="0" class="net_3" stroke="#000" stroke-width="3" /></svg>`
 	if got := strokeLines(in); got != want {
 		t.Errorf("strokeLines:\n got %s\nwant %s", got, want)
+	}
+}
+
+func TestGroupLabelClearsBlockTitles(t *testing.T) {
+	diag := &ast.Diagram{
+		Name:   "D",
+		Groups: []ast.Group{{Name: "counter & co", Blocks: []string{"count"}}},
+	}
+	// A generic cell at the top edge whose body is taller than its
+	// template says.
+	svg := `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <g s:type="generic" transform="translate(50,10)" s:width="60" s:height="40" id="cell_count">
+    <text x="30" y="-4" class="nodelabel cell_count" s:attribute="ref">FDRE</text>
+    <rect fill="none" stroke="#000" width="60" height="80" s:generic="body" class="cell_count"/>
+  </g>
+</svg>`
+	out, err := Process(diag, []byte(svg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := string(out)
+	// The box: 20 to each side, 30 above for the label row, and the body's
+	// real height of 80.
+	if !strings.Contains(got, `<rect x="30.0" y="-20.0" width="100.0" height="130.0" class="groupBox"`) {
+		t.Errorf("box not around the cell:\n%s", got)
+	}
+	// The label's baseline, -9, is above the block title's top, 10-4-9 = -3.
+	if !strings.Contains(got, `<text x="35.0" y="-9.0" class="groupLabel" text-anchor="start" style="font-weight:bold">counter &amp; co</text>`) {
+		t.Errorf("label not above the block title:\n%s", got)
+	}
+	// The drawing grows upward to take the box in.
+	if !strings.Contains(got, `viewBox="0 -21 200 221"`) {
+		t.Errorf("the drawing does not take the box in:\n%s", got)
 	}
 }
