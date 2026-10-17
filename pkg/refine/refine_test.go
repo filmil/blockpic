@@ -41,7 +41,7 @@ func TestDrawNames(t *testing.T) {
 	svg := `<svg>
   <g s:type="generic" transform="translate(100,50)" s:width="30" s:height="40" id="cell_count_3">
     <text x="15" y="-4" class="nodelabel cell_count_3" s:attribute="ref">FDRE</text>
-    <rect width="30" height="80" s:generic="body" class="cell_count_3"/>
+    <rect fill="none" stroke="#000" width="30" height="80" s:generic="body" class="cell_count_3"/>
   </g>
   <g s:type="generic" transform="translate(0,0)" s:width="30" s:height="40" id="cell_IBUF_1">
     <text x="15" y="-4" class="nodelabel cell_IBUF_1" s:attribute="ref">IBUF</text>
@@ -134,10 +134,10 @@ func TestDrawBusWidths(t *testing.T) {
 	got := string(out)
 	for _, want := range []string{
 		// The longest horizontal run of net_2, from 10 to 50 at y 80.
-		`<line x1="27.0" x2="33.0" y1="85.0" y2="75.0" class="busWidth"/>`,
+		`<line x1="27.0" x2="33.0" y1="85.0" y2="75.0" class="busWidth" stroke="#000"/>`,
 		`<text x="34.0" y="76.0" class="busWidth" style="font-size:7px">4</text>`,
 		// The type wins over the crossline and the thickness.
-		`<line x1="55.0" x2="65.0" y1="23.0" y2="17.0" class="busWidth"/>`,
+		`<line x1="55.0" x2="65.0" y1="23.0" y2="17.0" class="busWidth" stroke="#000"/>`,
 		`<text x="66.0" y="23.0" class="busWidth" style="font-size:7px">word_t</text>`,
 		`style="font-size:7px">16</text>`,
 	} {
@@ -147,5 +147,13 @@ func TestDrawBusWidths(t *testing.T) {
 	}
 	if n := strings.Count(got, `<text`); n != 3 {
 		t.Errorf("%d marks, want 3:\n%s", n, got)
+	}
+}
+
+func TestStrokeLines(t *testing.T) {
+	in := `<svg><line x1="0" x2="1" y1="0" y2="0" class="net_2"/><line x1="0" x2="1" y1="0" y2="0" class="net_3" stroke="#000" stroke-width="3" /></svg>`
+	want := `<svg><line x1="0" x2="1" y1="0" y2="0" class="net_2" stroke="#000"/><line x1="0" x2="1" y1="0" y2="0" class="net_3" stroke="#000" stroke-width="3" /></svg>`
+	if got := strokeLines(in); got != want {
+		t.Errorf("strokeLines:\n got %s\nwant %s", got, want)
 	}
 }
