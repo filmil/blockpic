@@ -208,3 +208,38 @@ func TestIdentifier(t *testing.T) {
 		}
 	}
 }
+
+func TestImportBusTypes(t *testing.T) {
+	// An RTL netlist, as Yosys writes it before mapping to primitives: a
+	// 4-bit adder between two ports declared with a typedef.
+	const nl = `{"modules": {"top": {"attributes": {"top": 1},
+		"ports": {
+			"a": {"direction": "input", "bits": [2, 3, 4, 5]},
+			"y": {"direction": "output", "bits": [6, 7, 8, 9]}
+		},
+		"cells": {"\\inc": {"type": "$add",
+			"port_directions": {"A": "input", "B": "input", "Y": "output"},
+			"connections": {"A": [2, 3, 4, 5], "B": ["1", "0", "0", "0"], "Y": [6, 7, 8, 9]}}},
+		"netnames": {
+			"a": {"hide_name": 0, "bits": [2, 3, 4, 5], "attributes": {"wiretype": "\\nibble_t"}},
+			"y": {"hide_name": 0, "bits": [6, 7, 8, 9], "attributes": {"wiretype": "\\nibble_t"}}
+		}
+	}}}`
+	d, err := Import([]byte(nl), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	types := make(map[string]string)
+	for _, w := range d.Wires {
+		types[w.Source.Block+"."+w.Source.Pin+" -> "+w.Destination.Block+"."+w.Destination.Pin] = w.Type
+	}
+	for wire, want := range map[string]string{
+		"a.out -> inc.A":     "nibble_t",
+		"inc.Y -> y.in":      "nibble_t",
+		"CONST_1.O -> inc.B": "",
+	} {
+		if got, ok := types[wire]; !ok || got != want {
+			t.Errorf("wire %s: type %q (present %v), want %q; wires %+v", wire, got, ok, want, d.Wires)
+		}
+	}
+}

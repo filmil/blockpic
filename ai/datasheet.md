@@ -25,6 +25,12 @@ This document provides a hierarchical overview of the features implemented in th
     *   Fallback: Standard rectangular block rendering.
 *   **Wire Routing**:
     *   Support for `thickness` styling.
+    *   Bus-width marks: every wire wider than one bit is crossed by a
+        short slash with its width beside it. The width is the wire's
+        `crossline` when it has one, else its `thickness`. A wire with a
+        `type: "name"` shows the type's name instead, and `blockpic import`
+        takes it from the `wiretype` attribute that Yosys gives a wire
+        declared with a SystemVerilog typedef.
     *   Orthogonal routing paths (`straight`, `L-shape`, `Z-shape`).
     *   Bus width indicators (`crossline`).
 

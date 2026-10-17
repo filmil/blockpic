@@ -56,7 +56,10 @@ type Wire struct {
 	Destination PinRef
 	Thickness   int
 	Crossline   int
-	Hint        RoutingHint
+	// Type names the type of the bus, such as a SystemVerilog typedef.
+	// Its bus-width mark shows the name in place of the width.
+	Type string
+	Hint RoutingHint
 }
 
 type PinRef struct {

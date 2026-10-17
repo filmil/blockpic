@@ -103,3 +103,49 @@ func TestFitPortLabels(t *testing.T) {
 		t.Errorf("fitPortLabels changed a drawing that fits: %s", got)
 	}
 }
+
+func TestDrawBusWidths(t *testing.T) {
+	diag := &ast.Diagram{
+		Name: "D",
+		Wires: []ast.Wire{
+			// net_2: a 4-bit bus with a horizontal run; two wires, one mark.
+			{Source: ast.PinRef{Block: "a", Pin: "out"}, Destination: ast.PinRef{Block: "x", Pin: "in"}, Thickness: 4},
+			{Source: ast.PinRef{Block: "a", Pin: "out"}, Destination: ast.PinRef{Block: "y", Pin: "in"}, Thickness: 4},
+			// net_3: one bit, no mark.
+			{Source: ast.PinRef{Block: "b", Pin: "out"}, Destination: ast.PinRef{Block: "x", Pin: "en"}},
+			// net_4: a typed bus that runs only vertically.
+			{Source: ast.PinRef{Block: "c", Pin: "out"}, Destination: ast.PinRef{Block: "z", Pin: "in"}, Thickness: 8, Crossline: 32, Type: "word_t"},
+			// net_5: a crossline with no thickness.
+			{Source: ast.PinRef{Block: "d", Pin: "out"}, Destination: ast.PinRef{Block: "z", Pin: "en"}, Crossline: 16},
+		},
+	}
+	svg := `<svg width="100" height="100">
+  <line x1="0" x2="10" y1="20" y2="20" class="net_2"/>
+  <line x1="10" x2="10" y1="20" y2="80" class="net_2"/>
+  <line x1="10" x2="50" y1="80" y2="80" class="net_2"/>
+  <line x1="0" x2="50" y1="40" y2="40" class="net_3"/>
+  <line x1="60" x2="60" y1="0" y2="40" class="net_4"/>
+  <line x1="0" x2="20" y1="90" y2="90" class="net_5"/>
+</svg>`
+	out, err := Process(diag, []byte(svg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := string(out)
+	for _, want := range []string{
+		// The longest horizontal run of net_2, from 10 to 50 at y 80.
+		`<line x1="27.0" x2="33.0" y1="85.0" y2="75.0" class="busWidth"/>`,
+		`<text x="34.0" y="76.0" class="busWidth" style="font-size:7px">4</text>`,
+		// The type wins over the crossline and the thickness.
+		`<line x1="55.0" x2="65.0" y1="23.0" y2="17.0" class="busWidth"/>`,
+		`<text x="66.0" y="23.0" class="busWidth" style="font-size:7px">word_t</text>`,
+		`style="font-size:7px">16</text>`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %s in:\n%s", want, got)
+		}
+	}
+	if n := strings.Count(got, `<text`); n != 3 {
+		t.Errorf("%d marks, want 3:\n%s", n, got)
+	}
+}

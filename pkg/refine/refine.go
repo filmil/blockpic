@@ -118,6 +118,7 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 		}
 	}
 
+	svgStr = drawBusWidths(diag, svgStr, sourceBits)
 	svgStr = drawNames(diag, svgStr)
 	svgStr = fitPortLabels(svgStr)
 
@@ -207,4 +208,77 @@ func fitPortLabels(svgStr string) string {
 	w := maxX - minX
 	return strings.Replace(svgStr, size[0], fmt.Sprintf(`<svg%s width="%g" height="%g" viewBox="%g 0 %g %g"`,
 		size[1], w, height, minX, w, height), 1)
+}
+
+// netLine finds a straight segment of a net.
+var netLine = `<line x1="([-\d.]+)" x2="([-\d.]+)" y1="([-\d.]+)" y2="([-\d.]+)" class="%s"`
+
+// busLabel is what the bus-width mark of a wire says: the wire's type
+// when it has one, else its crossline, else its thickness. It is empty
+// for a wire of one bit with no type.
+func busLabel(w ast.Wire) string {
+	switch {
+	case w.Type != "":
+		return w.Type
+	case w.Crossline > 0:
+		return strconv.Itoa(w.Crossline)
+	case w.Thickness > 1:
+		return strconv.Itoa(w.Thickness)
+	}
+	return ""
+}
+
+// drawBusWidths marks every bus with a short slash across it and its width
+// or type beside the slash, as hardware figures do. The mark goes at the
+// middle of the net's longest horizontal segment, or of its longest
+// vertical one when it has none. A net is marked once, however many wires
+// leave its pin; sourceBits numbers the nets as yosys.Convert does.
+func drawBusWidths(diag *ast.Diagram, svgStr string, sourceBits map[string]int) string {
+	labels := make(map[int]string)
+	var order []int
+	for _, w := range diag.Wires {
+		label := busLabel(w)
+		if label == "" {
+			continue
+		}
+		bit := sourceBits[fmt.Sprintf("%s.%s", w.Source.Block, w.Source.Pin)]
+		if _, ok := labels[bit]; !ok {
+			order = append(order, bit)
+			labels[bit] = label
+		}
+	}
+
+	var marks strings.Builder
+	for _, bit := range order {
+		re := regexp.MustCompile(fmt.Sprintf(netLine, fmt.Sprintf("net_%d", bit)))
+		var best [4]float64
+		bestLen, bestHorizontal := -1.0, false
+		for _, m := range re.FindAllStringSubmatch(svgStr, -1) {
+			var c [4]float64
+			for i := range c {
+				c[i], _ = strconv.ParseFloat(m[i+1], 64)
+			}
+			horizontal := c[2] == c[3]
+			length := math.Abs(c[1]-c[0]) + math.Abs(c[3]-c[2])
+			if (horizontal && !bestHorizontal) || (horizontal == bestHorizontal && length > bestLen) {
+				best, bestLen, bestHorizontal = c, length, horizontal
+			}
+		}
+		if bestLen < 0 {
+			continue
+		}
+		x, y := (best[0]+best[1])/2, (best[2]+best[3])/2
+		label := escapeText(labels[bit])
+		if bestHorizontal {
+			fmt.Fprintf(&marks, `  <line x1="%.1f" x2="%.1f" y1="%.1f" y2="%.1f" class="busWidth"/>`+"\n", x-3, x+3, y+5, y-5)
+			fmt.Fprintf(&marks, `  <text x="%.1f" y="%.1f" class="busWidth" style="font-size:7px">%s</text>`+"\n", x+4, y-4, label)
+		} else {
+			fmt.Fprintf(&marks, `  <line x1="%.1f" x2="%.1f" y1="%.1f" y2="%.1f" class="busWidth"/>`+"\n", x-5, x+5, y+3, y-3)
+			fmt.Fprintf(&marks, `  <text x="%.1f" y="%.1f" class="busWidth" style="font-size:7px">%s</text>`+"\n", x+6, y+3, label)
+		}
+	}
+	if marks.Len() == 0 {
+		return svgStr
+	}
+	return strings.Replace(svgStr, "</svg>", marks.String()+"</svg>", 1)
 }
