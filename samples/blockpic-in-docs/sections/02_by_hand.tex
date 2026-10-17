@@ -13,7 +13,8 @@ architecture.
 
 A \code{block} has a label, a kind, and its input and output pins. The kind
 picks the symbol: \code{ADD} draws an adder, \code{MUX} a multiplexer and
-\code{DFF} a flip-flop with a clock wedge. An \code{INPUT\_PIN} or
+\code{DFF} a flip-flop. A \code{name}, such as \code{+1}, is drawn in place
+of the label. An \code{INPUT\_PIN} or
 \code{OUTPUT\_PIN} block is a port of the design. A \code{wire} joins an
 output pin to an input pin. A wire with a \code{thickness} is drawn as a
 bus.
@@ -27,7 +28,10 @@ Listing~\ref{lst:blockpic}. The thick lines are the 4-bit buses.}
 \end{figure}
 
 Fig.~\ref{fig:architecture} is the result. Blockpic placed every block and
-routed every wire; the file gives no coordinates. The feedback from the
+routed every wire; the file gives no coordinates. The style is that of the
+figures in AMD's UG474 \cite{ug474}: a plain sans-serif face, thin lines
+without arrowheads, and pin names such as \code{D} and \code{CK} inside the
+box. The feedback from the
 register to the adder is routed around the outside, and the four 4-bit
 buses are drawn thick.
 

@@ -1,6 +1,8 @@
 load("@npm//:netlistsvg/package_json.bzl", "bin")
 
-def blockpic_diagram(name, src, out, **kwargs):
+_DEFAULT_SKIN = "//ai:skin_xilinx.svg"
+
+def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
     """
     Renders a Blockpic diagram to SVG using netlistsvg.
 
@@ -8,6 +10,10 @@ def blockpic_diagram(name, src, out, **kwargs):
       name: The name of the target that gives `out`.
       src: The `.blockpic` file to draw.
       out: The SVG file to write.
+      skin: The netlistsvg skin to draw with. The default,
+        `//ai:skin_xilinx.svg`, is in the style of AMD's UG474 figures.
+        `//ai:skin_with_arrows.svg` is the earlier look: a bold monospace
+        face, and arrowheads on the nets.
       **kwargs: Passed to the target that gives `out`, such as
         `visibility` or `tags`.
     """
@@ -27,9 +33,9 @@ def blockpic_diagram(name, src, out, **kwargs):
     intermediate_svg = name + "_raw.svg"
     native.genrule(
         name = name + "_raw",
-        srcs = [json_out, "//ai:skin_with_arrows.svg"],
+        srcs = [json_out, skin],
         outs = [intermediate_svg],
-        cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $(location " + json_out + ") --skin $(location //ai:skin_with_arrows.svg) -o $@",
+        cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $(location " + json_out + ") --skin $(location " + skin + ") -o $@",
         tools = [":" + name + "_tool"],
     )
 
@@ -42,7 +48,7 @@ def blockpic_diagram(name, src, out, **kwargs):
         **kwargs
     )
 
-def blockpic_netlist_diagram(name, netlist, out, top = "", **kwargs):
+def blockpic_netlist_diagram(name, netlist, out, top = "", skin = _DEFAULT_SKIN, **kwargs):
     """Draws a Yosys JSON netlist as an SVG.
 
     The netlist is imported with `blockpic import` into
@@ -68,6 +74,7 @@ def blockpic_netlist_diagram(name, netlist, out, top = "", **kwargs):
       out: The SVG file to write.
       top: The module to draw. When empty, the module that Yosys marked
         as the top is drawn.
+      skin: The netlistsvg skin to draw with, as for `blockpic_diagram`.
       **kwargs: Passed to the target that gives `out`, such as
         `visibility` or `tags`.
     """
@@ -81,4 +88,4 @@ def blockpic_netlist_diagram(name, netlist, out, top = "", **kwargs):
         tools = ["//cmd/blockpic"],
         visibility = kwargs.get("visibility"),
     )
-    blockpic_diagram(name = name, src = src, out = out, **kwargs)
+    blockpic_diagram(name = name, src = src, out = out, skin = skin, **kwargs)

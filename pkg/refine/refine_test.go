@@ -35,6 +35,7 @@ func TestDrawNames(t *testing.T) {
 			{Label: "count_3", Name: "count[3]", Kind: "FDRE"},
 			{Label: "plus", Name: "+1 & <b>", Kind: "ADD"},
 			{Label: "IBUF_1", Name: "IBUF", Kind: "IBUF"},
+			{Label: "led_0", Name: "led[0]", Kind: "OUTPUT_PIN"},
 		},
 	}
 	svg := `<svg>
@@ -45,6 +46,9 @@ func TestDrawNames(t *testing.T) {
   <g s:type="generic" transform="translate(0,0)" s:width="30" s:height="40" id="cell_IBUF_1">
     <text x="15" y="-4" class="nodelabel cell_IBUF_1" s:attribute="ref">IBUF</text>
     <rect width="30" height="20" s:generic="body" class="cell_IBUF_1"/>
+  </g>
+  <g s:type="outputExt" transform="translate(9,9)" s:width="20" s:height="10" id="cell_led_0">
+    <text x="23" y="8" class="pinIn cell_led_0" s:attribute="ref">led_0</text>
   </g>
   <g s:type="add" transform="translate(10,10)" s:width="25" s:height="25" id="cell_plus">
     <text x="15" y="-4" class="nodelabel cell_plus" s:attribute="ref">plus</text>
@@ -66,8 +70,36 @@ func TestDrawNames(t *testing.T) {
 	if !strings.Contains(got, `s:attribute="ref">+1 &amp; &lt;b&gt;</text>`) {
 		t.Errorf("the adder is not titled with its name:\n%s", got)
 	}
+	// Whatever class the skin gives the title.
+	if !strings.Contains(got, `s:attribute="ref">led[0]</text>`) {
+		t.Errorf("the port is not titled with its name:\n%s", got)
+	}
 	// A name equal to the kind is not drawn again.
 	if strings.Count(got, ">IBUF<") != 1 {
 		t.Errorf("IBUF drawn %d times, want 1:\n%s", strings.Count(got, ">IBUF<"), got)
+	}
+}
+
+func TestFitPortLabels(t *testing.T) {
+	// An output named beside its flag at the right edge, and an input
+	// named left of its flag at the left edge.
+	svg := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50">
+  <g s:type="outputExt" transform="translate(80,10)" s:width="20" s:height="10" id="cell_led">
+    <text x="23" y="8" class="pinIn cell_led" s:attribute="ref">led</text>
+  </g>
+  <g s:type="inputExt" transform="translate(0,10)" s:width="20" s:height="10" id="cell_clk">
+    <text x="-3" y="8" class="inputPortLabel cell_clk" s:attribute="ref">clk</text>
+  </g>
+</svg>`
+	got := fitPortLabels(svg)
+	// led ends at 80+23+3*5.5+2 = 121.5; clk starts at 0-3-16.5-2 = -21.5.
+	want := `<svg xmlns="http://www.w3.org/2000/svg" width="143" height="50" viewBox="-21.5 0 143 50"`
+	if !strings.Contains(got, want) {
+		t.Errorf("got %s, want it to start with %s", got, want)
+	}
+	// A drawing whose names fit is left alone.
+	fits := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"></svg>`
+	if got := fitPortLabels(fits); got != fits {
+		t.Errorf("fitPortLabels changed a drawing that fits: %s", got)
 	}
 }
