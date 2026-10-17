@@ -7,6 +7,7 @@ load(
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("//ai:diagram.bzl", "render_diagram")
 load("//samples:defs.bzl", "svg_to_pdf")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -37,7 +38,8 @@ exports_files([
 # would need Inkscape at build time, which the hermetic build has not.)
 # The PDFs are committed beside the SVGs, by //ai:update_book_pdfs, because
 # pandoc reads figures from the source tree; its tests fail when they fall
-# behind.
+# behind. `bazel run //:update_generated` refreshes these, the SVGs and the
+# README's figures together.
 _BOOK_FIGURES = [
     "shapes",
     "pins_buses",
@@ -56,10 +58,12 @@ _BOOK_FIGURES = [
     "figure_1_1",
 ]
 
+# From what blockpic draws now (the render_diagram targets below), not
+# from the committed SVGs, so the PDFs never lag a stale SVG.
 [
     svg_to_pdf(
         name = f + "_pdf",
-        src = f + ".svg",
+        src = ":" + f,
         out = f + "_gen.pdf",
     )
     for f in _BOOK_FIGURES
@@ -88,6 +92,15 @@ ebook_pdf(
     metadata_xml = "epub-metadata.xml",
     title_yaml = "title.yaml",
     deps = [":md"],
+)
+
+# pandoc only warns when it cannot find a figure, and leaves its
+# description in the PDF; the build still succeeds. This fails instead.
+sh_test(
+    name = "book_pdf_figures_test",
+    srcs = ["book_pdf_figures_test.sh"],
+    args = ["$(rootpaths :book_pdf)"],
+    data = [":book_pdf"],
 )
 
 pandoc_chunked_html(

@@ -29,6 +29,18 @@ buildifier(
     name = "buildifier",
 )
 
+# Every committed copy of what blockpic draws: the book's SVGs and PDFs,
+# and the README's figures. Run after any change to the drawing:
+#   bazel run //:update_generated
+write_source_files(
+    name = "update_generated",
+    additional_update_targets = [
+        "//ai:update_book_pdfs",
+        "//ai:update_diagrams",
+        ":update_readme_images",
+    ],
+)
+
 # The sample figures shown in README.md. Refresh them with
 #   bazel run //:update_readme_images
 # The generated test fails when they no longer match what blockpic draws.
