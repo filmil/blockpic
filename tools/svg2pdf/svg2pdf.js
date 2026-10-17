@@ -6,8 +6,8 @@
 //   svg2pdf <in.svg> <out.pdf>
 //
 // The page is the SVG's own width and height, a pixel taken as a point.
-// All text is set in DejaVu Sans Mono, embedded, since blockpic's skins
-// draw only in a monospace face. Exits with status 1 on a bad argument or
+// Text in a monospace face is set in DejaVu Sans Mono, and any other in
+// DejaVu Sans; both are embedded. Exits with status 1 on a bad argument or
 // an unreadable file.
 "use strict";
 
@@ -45,13 +45,18 @@ function main(argv) {
   const fonts = path.join(path.dirname(require.resolve("dejavu-fonts-ttf/package.json")), "ttf");
   doc.registerFont("mono", path.join(fonts, "DejaVuSansMono.ttf"));
   doc.registerFont("mono-bold", path.join(fonts, "DejaVuSansMono-Bold.ttf"));
+  doc.registerFont("sans", path.join(fonts, "DejaVuSans.ttf"));
+  doc.registerFont("sans-bold", path.join(fonts, "DejaVuSans-Bold.ttf"));
   const out = fs.createWriteStream(output);
   doc.pipe(out);
   SVGtoPDF(doc, svg, 0, 0, {
     width,
     height,
     assumePt: true,
-    fontCallback: (family, bold) => (bold ? "mono-bold" : "mono"),
+    fontCallback: (family, bold) => {
+      const face = /mono|courier/i.test(family) ? "mono" : "sans";
+      return bold ? `${face}-bold` : face;
+    },
   });
   doc.end();
   out.on("finish", () => process.exit(0));
