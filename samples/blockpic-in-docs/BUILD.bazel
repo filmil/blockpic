@@ -56,3 +56,21 @@ latex_document(
     visibility = ["//samples:__pkg__"],
     deps = glob(["sections/*.tex"]),
 )
+
+# The two figures again, for the README, with a white background: the
+# drawings are black on transparent, which disappears on GitHub's dark
+# theme. //:update_readme_images copies them to docs/images/, and its test
+# fails when the copies there are out of date.
+[
+    genrule(
+        name = name + "_readme",
+        srcs = [":" + name],
+        outs = [name + "_readme.svg"],
+        cmd = "sed '0,/<svg [^>]*>/s//&<rect width=\"100%\" height=\"100%\" style=\"fill:#fff;stroke:none\"\\/>/' $< > $@",
+        visibility = ["//:__pkg__"],
+    )
+    for name in [
+        "architecture",
+        "netlist",
+    ]
+]

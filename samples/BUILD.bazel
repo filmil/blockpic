@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # The sample documents. The release workflow builds :pdfs and publishes
-# them (.forgejo/workflows/release-samples.yml).
+# them: .github/workflows/release.yml with each release, and
+# .github/workflows/samples.yml to the rolling `samples` release.
 
 filegroup(
     name = "pdfs",

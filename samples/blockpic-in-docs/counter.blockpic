@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // The LED counter of counter.v, drawn by hand: a 4-bit register that
 // adds one on every clock edge. It has no group around the counter until
-// https://git.hdlfactory.com/HDL/blockpic/issues/8 is fixed: the group's
+// https://github.com/filmil/blockpic/issues/52 is fixed: the group's
 // label would cover the adder's.
 diagram LedCounter {
     block clk { kind: "INPUT_PIN"; outputs: out; }
