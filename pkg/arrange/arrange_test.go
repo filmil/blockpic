@@ -51,6 +51,22 @@ func TestMeasure(t *testing.T) {
 	}
 }
 
+func TestMeasureJoinsDriversAndCountsOverlaps(t *testing.T) {
+	g := &Graph{
+		Edges: []*Edge{
+			// Two drivers of one net, joined at netlistsvg's node $d_0:
+			// they meet, and do not cross.
+			wire("e0", "a.Y", "$d_0.p", pt(0, 10), pt(50, 10), pt(50, 30)),
+			wire("e1", "b.Y", "$d_0.p", pt(0, 40), pt(50, 40), pt(50, 20)),
+			// Another net along the first one's run at y=10.
+			wire("e2", "c.Y", "d.A", pt(20, 10), pt(80, 10)),
+		},
+	}
+	if got, want := Measure(g), (Score{Crossings: 1, Bends: 2}); got != want {
+		t.Errorf("Measure() = %v, want %v", got, want)
+	}
+}
+
 func TestScoreBetter(t *testing.T) {
 	for _, tc := range []struct {
 		a, b Score
@@ -114,6 +130,16 @@ func TestNest(t *testing.T) {
 	}
 	if !strings.Contains(box.LayoutOptions["org.eclipse.elk.padding"].(string), "top=30") {
 		t.Errorf("group padding = %v, want a row for the name at the top", box.LayoutOptions["org.eclipse.elk.padding"])
+	}
+}
+
+func TestNestBlockListedTwice(t *testing.T) {
+	g := &Graph{Children: []*Node{block("a", 0, 0, 10, 10, nil)}}
+	if nested := Nest(g, []ast.Group{{Name: "g", Blocks: []string{"a", "a"}}}); !reflect.DeepEqual(nested, []int{0}) {
+		t.Errorf("Nest() = %v, want the group nested once", nested)
+	}
+	if n := len(g.Children[0].Children); n != 1 {
+		t.Errorf("group holds %d blocks, want 1", n)
 	}
 }
 
@@ -331,5 +357,20 @@ func TestRoundTrip(t *testing.T) {
 	}
 	if r := g.Children[0].extent(); r.x0 != 1 || r.y0 != -8 || r.x1 != 16 || r.y1 != 6 {
 		t.Errorf("extent with a label above = %+v", r)
+	}
+}
+
+func TestExtentTakesTheLabelEitherWay(t *testing.T) {
+	// A title anchored at its middle, x=15, 30 wide, over a block 30 wide.
+	labels := []json.RawMessage{json.RawMessage(`{"id":"a.label.ref","text":"title","x":"15","y":-16,"width":30,"height":11}`)}
+	n := &Node{ID: "a", X: 100, Y: 100, Width: 30, Height: 20, Labels: &labels}
+	if r := n.extent(); r.x0 != 85 || r.x1 != 145 || r.y0 != 84 || r.y1 != 120 {
+		t.Errorf("extent = %+v, want from x=85 to 145 and y=84 to 120", r)
+	}
+	// A coordinate that is not a number leaves the label out.
+	bad := []json.RawMessage{json.RawMessage(`{"id":"a.label.ref","x":"left","y":-16,"width":30,"height":11}`)}
+	n.Labels = &bad
+	if r := n.extent(); r != (rect{100, 100, 130, 120}) {
+		t.Errorf("extent with an unreadable label = %+v, want the body alone", r)
 	}
 }

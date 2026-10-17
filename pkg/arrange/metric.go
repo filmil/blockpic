@@ -4,10 +4,11 @@ package arrange
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 // Score is how hard a drawing is to read: the places where the wires of
-// two nets cross, and the corners of the wires.
+// two nets cross or run along each other, and the corners of the wires.
 type Score struct {
 	Crossings int
 	Bends     int
@@ -40,9 +41,14 @@ type netRoutes struct {
 	bends      map[Point]bool
 }
 
-// Measure scores a laid-out, flat graph. The edges that leave one port are
-// one net: ELK routes them along a shared trunk, which is drawn once.
+// Measure scores a laid-out, flat graph. The edges joined through their
+// ports are one net: those that leave one port, which ELK routes along a
+// shared trunk that is drawn once, and those of a net with several
+// drivers, which netlistsvg joins at a node of its own. Where the wires of
+// two nets run along each other, the drawing cannot tell them apart; that
+// counts as a crossing too.
 func Measure(g *Graph) Score {
+	netOf := joinNets(g)
 	nets := make(map[string]*netRoutes)
 	var order []string
 	for _, e := range g.Edges {
@@ -50,7 +56,7 @@ func Measure(g *Graph) Score {
 		if len(pts) < 2 {
 			continue
 		}
-		key := e.SourcePortID()
+		key := netOf[e.ID]
 		n, ok := nets[key]
 		if !ok {
 			n = &netRoutes{bends: make(map[Point]bool)}
@@ -79,8 +85,8 @@ func Measure(g *Graph) Score {
 		n.vertical = merge(n.vertical)
 		s.Bends += len(n.bends)
 	}
-	for _, a := range order {
-		for _, b := range order {
+	for i, a := range order {
+		for j, b := range order {
 			if a == b {
 				continue
 			}
@@ -91,9 +97,58 @@ func Measure(g *Graph) Score {
 					}
 				}
 			}
+			if j <= i {
+				continue
+			}
+			s.Crossings += overlaps(nets[a].horizontal, nets[b].horizontal)
+			s.Crossings += overlaps(nets[a].vertical, nets[b].vertical)
 		}
 	}
 	return s
+}
+
+// overlaps counts the pairs of segments, one from each list, that run
+// along the same line for some length.
+func overlaps(p, q []segment) int {
+	n := 0
+	for _, s := range p {
+		for _, t := range q {
+			if s.at == t.at && s.a < t.b && t.a < s.b {
+				n++
+			}
+		}
+	}
+	return n
+}
+
+// joinNets names the net of each edge: the edges that share a port, or
+// a node of netlistsvg's own that joins several drivers, are one net.
+func joinNets(g *Graph) map[string]string {
+	parent := make(map[string]string)
+	var find func(string) string
+	find = func(x string) string {
+		if p, ok := parent[x]; ok && p != x {
+			r := find(p)
+			parent[x] = r
+			return r
+		}
+		parent[x] = x
+		return x
+	}
+	union := func(a, b string) { parent[find(a)] = find(b) }
+	for _, e := range g.Edges {
+		union("edge:"+e.ID, "port:"+e.SourcePortID())
+		// netlistsvg names the node that joins a net's drivers $d_N, and
+		// each driver's edge ends at it.
+		if dst := e.TargetPortID(); strings.HasPrefix(dst, "$d_") {
+			union("edge:"+e.ID, "port:"+dst)
+		}
+	}
+	nets := make(map[string]string, len(g.Edges))
+	for _, e := range g.Edges {
+		nets[e.ID] = find("edge:" + e.ID)
+	}
+	return nets
 }
 
 func ordered(at, a, b float64) segment {

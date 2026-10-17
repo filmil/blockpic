@@ -32,4 +32,9 @@ go_test(
     name = "blockpic_test",
     srcs = ["main_test.go"],
     embed = [":blockpic_lib"],
+    deps = [
+        "//pkg/arrange",
+        "//pkg/ast",
+        "//pkg/yosys",
+    ],
 )
