@@ -68,8 +68,32 @@ jobs:
           name: blockpic-${{ matrix.arch }}
           path: blockpic-${{ matrix.arch }}
 
+  # The sample documents under //samples, built by this release's code,
+  # so the release carries the figures that its blockpic draws.
+  samples:
+    needs: tag
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Bazel
+        uses: abhinavsingh/setup-bazel@v3
+        with:
+          version: 9.0.1
+      - name: Build the sample PDFs
+        run: |
+          bazel build //samples:pdfs
+          mkdir -p samples-out
+          cp $(bazel cquery --output=files //samples:pdfs 2>/dev/null) samples-out/
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samples
+          path: samples-out/*.pdf
+
   release:
-    needs: [tag, build]
+    needs: [tag, build, samples]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
