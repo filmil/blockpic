@@ -29,26 +29,26 @@
     fill:#000;
   }</style>
   <g s:type="generic" transform="translate(31,84)" s:width="60" s:height="40" id="cell_CTR4">
-    <text x="30" y="-4" class="nodelabel cell_CTR4" s:attribute="ref">COUNTER</text>
-    <rect width="60" height="54" s:generic="body" class="cell_CTR4"/>
+    <text x="30" y="-4" class="nodelabel cell_CTR4" s:attribute="ref" text-anchor="middle">COUNTER</text>
+    <rect fill="none" stroke="#000" width="60" height="54" s:generic="body" class="cell_CTR4"/>
     <g transform="translate(0,10)" s:x="0" s:y="10" s:pid="in0" id="port_CTR4~CLK">
-      <text x="3" y="3" class="pinIn cell_CTR4">CLK</text>
+      <text x="3" y="3" class="pinIn cell_CTR4" text-anchor="start">CLK</text>
     </g>
     <g transform="translate(0,24)" s:x="0" s:y="10" s:pid="in0" id="port_CTR4~EN">
-      <text x="3" y="3" class="pinIn cell_CTR4">EN</text>
+      <text x="3" y="3" class="pinIn cell_CTR4" text-anchor="start">EN</text>
     </g>
     <g transform="translate(0,38)" s:x="0" s:y="10" s:pid="in0" id="port_CTR4~R">
-      <text x="3" y="3" class="pinIn cell_CTR4">R</text>
+      <text x="3" y="3" class="pinIn cell_CTR4" text-anchor="start">R</text>
     </g>
     <g transform="translate(60,10)" s:x="60" s:y="10" s:pid="out0" id="port_CTR4~Q">
-      <text x="-3" y="3" class="pinOut cell_CTR4">Q</text>
+      <text x="-3" y="3" class="pinOut cell_CTR4" text-anchor="end">Q</text>
     </g>
     <g transform="translate(60,24)" s:x="60" s:y="10" s:pid="out0" id="port_CTR4~TC">
-      <text x="-3" y="3" class="pinOut cell_CTR4">TC</text>
+      <text x="-3" y="3" class="pinOut cell_CTR4" text-anchor="end">TC</text>
     </g>
   </g>
   <g s:type="dff" transform="translate(12,22)" s:width="40" s:height="40" id="cell_REG8">
-    <text x="20" y="-4" class="nodelabel cell_REG8" s:attribute="ref">REG8</text>
+    <text x="20" y="-4" class="nodelabel cell_REG8" s:attribute="ref" text-anchor="middle">REG8</text>
     <s:alias val="$dff"/>
     <s:alias val="$_DFF_"/>
     <s:alias val="$_DFF_P_"/>
@@ -58,10 +58,10 @@
     <s:alias val="$sdff"/>
     <s:alias val="$_DFF_"/>
     <s:alias val="$_DFF_P_"/>
-    <rect width="40" height="40" x="0" y="0" class="cell_REG8"/>
-    <text x="3" y="13" class="pinIn cell_REG8" s:attribute="">D</text>
-    <text x="3" y="33" class="pinIn cell_REG8" s:attribute="">CK</text>
-    <text x="37" y="13" class="pinOut cell_REG8" s:attribute="">Q</text>
+    <rect fill="none" stroke="#000" width="40" height="40" x="0" y="0" class="cell_REG8"/>
+    <text x="3" y="13" class="pinIn cell_REG8" s:attribute="" text-anchor="start">D</text>
+    <text x="3" y="33" class="pinIn cell_REG8" s:attribute="" text-anchor="start">CK</text>
+    <text x="37" y="13" class="pinOut cell_REG8" s:attribute="" text-anchor="end">Q</text>
     <g s:x="40" s:y="10" s:pid="Q"/>
     <g s:x="0" s:y="30" s:pid="CLK"/>
     <g s:x="0" s:y="30" s:pid="C"/>
