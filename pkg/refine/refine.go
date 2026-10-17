@@ -93,10 +93,17 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 		}
 	}
 
+	// Every wire from one pin is one net, so a net is thickened once
+	// however many thick wires leave the pin.
+	thickened := make(map[int]bool)
 	for _, w := range diag.Wires {
 		if w.Thickness > 1 {
 			srcKey := fmt.Sprintf("%s.%s", w.Source.Block, w.Source.Pin)
 			bit := sourceBits[srcKey]
+			if thickened[bit] {
+				continue
+			}
+			thickened[bit] = true
 			netClass := fmt.Sprintf("net_%d", bit)
 
 			// Find all <line ... class="netClass" /> and modify their stroke
