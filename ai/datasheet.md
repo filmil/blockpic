@@ -56,6 +56,10 @@ This document provides a hierarchical overview of the features implemented in th
         Lays a rendered netlist out with ELK and improves the layout, as
         described in section 3, for `//tools/netlistsvg:nsv` to draw.
         `blockpic_diagram` runs it between `render` and `refine`.
+    *   `blockpic refine <file.blockpic> -svg <drawn.svg> [-layout layout.json] [-o out.svg]`:
+        Finishes a drawing: thick buses with their width marks, the
+        blocks' names, and the groups' boxes, where `-layout` puts them or
+        else around their blocks.
     *   `blockpic import <netlist.json> [-top MODULE] [-o out.blockpic]`:
         Writes a Yosys JSON netlist, such as the one `rules_openxc7`'s
         `vivado_synthesis` gives, as blockpic source. Each cell becomes a

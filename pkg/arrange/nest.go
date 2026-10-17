@@ -33,8 +33,10 @@ func Nest(g *Graph, groups []ast.Group) []int {
 	}
 	owners := make(map[string][]int)
 	for i, gr := range groups {
+		seen := make(map[string]bool)
 		for _, b := range gr.Blocks {
-			if _, ok := byID[b]; ok {
+			if _, ok := byID[b]; ok && !seen[b] {
+				seen[b] = true
 				owners[b] = append(owners[b], i)
 			}
 		}

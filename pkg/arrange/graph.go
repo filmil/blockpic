@@ -207,8 +207,7 @@ func (n *number) UnmarshalJSON(b []byte) error {
 	case string:
 		f, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			*n = 0
-			return nil
+			return fmt.Errorf("arrange: a coordinate %q is not a number", v)
 		}
 		*n = number(f)
 	}
@@ -216,7 +215,10 @@ func (n *number) UnmarshalJSON(b []byte) error {
 }
 
 // extent is the space a block takes in the drawing: its body, any room
-// kept under it, and the labels netlistsvg sets around it.
+// kept under it, and the labels netlistsvg sets around it. A label's x is
+// where its text is anchored, which the skin may set at the text's start,
+// middle or end, so the label is taken to reach its width either way. A
+// label that cannot be read is left out.
 func (n *Node) extent() rect {
 	r := rect{n.X, n.Y, n.X + n.Width, n.Y + n.Height}
 	if n.Labels == nil {
@@ -227,8 +229,8 @@ func (n *Node) extent() rect {
 		if json.Unmarshal(raw, &l) != nil {
 			continue
 		}
-		x, y := n.X+float64(l.X), n.Y+float64(l.Y)
-		r = r.union(rect{x, y, x + float64(l.Width), y + float64(l.Height)})
+		x, y, w := n.X+float64(l.X), n.Y+float64(l.Y), float64(l.Width)
+		r = r.union(rect{x - w, y, x + w, y + float64(l.Height)})
 	}
 	return r
 }
