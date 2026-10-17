@@ -1,0 +1,683 @@
+{
+  "creator": "Yosys 0.69+154 (git sha1 30d62572e-dirty, Release, Clang /usr/bin/clang++ 21.1.8)",
+  "modules": {
+    "up_counter": {
+      "attributes": {
+        "top": "00000000000000000000000000000001"
+      },
+      "cells": {
+        "$abc$20826$lut$not$aiger20825$13": {
+          "attributes": {
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "I": [
+              5
+            ],
+            "O": [
+              6
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "I": "input",
+            "O": "output"
+          },
+          "type": "INV"
+        },
+        "$auto$alumacc.cc:576:replace_alu$1108.genblk1.slice[0].genblk1.carry4": {
+          "attributes": {
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "CI": [
+              "0"
+            ],
+            "CO": [
+              7,
+              8,
+              9,
+              10
+            ],
+            "CYINIT": [
+              "0"
+            ],
+            "DI": [
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            "O": [
+              11,
+              12,
+              13,
+              14
+            ],
+            "S": [
+              6,
+              15,
+              16,
+              17
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "CI": "input",
+            "CO": "output",
+            "CYINIT": "input",
+            "DI": "input",
+            "O": "output",
+            "S": "input"
+          },
+          "type": "CARRY4"
+        },
+        "$auto$alumacc.cc:576:replace_alu$1108.genblk1.slice[1].genblk1.carry4": {
+          "attributes": {
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "CI": [
+              10
+            ],
+            "CO": [
+              18,
+              19,
+              20,
+              21
+            ],
+            "CYINIT": [
+              "0"
+            ],
+            "DI": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "O": [
+              22,
+              23,
+              24,
+              25
+            ],
+            "S": [
+              26,
+              27,
+              28,
+              29
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "CI": "input",
+            "CO": "output",
+            "CYINIT": "input",
+            "DI": "input",
+            "O": "output",
+            "S": "input"
+          },
+          "type": "CARRY4"
+        },
+        "$auto$clkbufmap.cc:261:execute$20832": {
+          "attributes": {},
+          "connections": {
+            "I": [
+              30
+            ],
+            "O": [
+              31
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "I": "input",
+            "O": "output"
+          },
+          "type": "BUFG"
+        },
+        "$auto$ff.cc:337:slice$1525": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              6
+            ],
+            "Q": [
+              5
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1526": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              12
+            ],
+            "Q": [
+              15
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1527": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              13
+            ],
+            "Q": [
+              16
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1528": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              14
+            ],
+            "Q": [
+              17
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1529": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              22
+            ],
+            "Q": [
+              26
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1530": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              23
+            ],
+            "Q": [
+              27
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1531": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              24
+            ],
+            "Q": [
+              28
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$auto$ff.cc:337:slice$1532": {
+          "attributes": {
+            "always_ff": "00000000000000000000000000000001",
+            "module_not_derived": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "C": [
+              31
+            ],
+            "CE": [
+              "1"
+            ],
+            "D": [
+              25
+            ],
+            "Q": [
+              29
+            ],
+            "R": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {
+            "INIT": "x"
+          },
+          "port_directions": {
+            "C": "input",
+            "CE": "input",
+            "D": "input",
+            "Q": "output",
+            "R": "input"
+          },
+          "type": "FDRE"
+        },
+        "$iopadmap$up_counter.clk": {
+          "attributes": {
+            "keep": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "I": [
+              3
+            ],
+            "O": [
+              30
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "I": "input",
+            "O": "output"
+          },
+          "type": "IBUF"
+        },
+        "$iopadmap$up_counter.out": {
+          "attributes": {
+            "keep": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "I": [
+              29
+            ],
+            "O": [
+              2
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "I": "input",
+            "O": "output"
+          },
+          "type": "OBUF"
+        },
+        "$iopadmap$up_counter.reset": {
+          "attributes": {
+            "keep": "00000000000000000000000000000001"
+          },
+          "connections": {
+            "I": [
+              4
+            ],
+            "O": [
+              32
+            ]
+          },
+          "hide_name": 1,
+          "parameters": {},
+          "port_directions": {
+            "I": "input",
+            "O": "output"
+          },
+          "type": "IBUF"
+        }
+      },
+      "netnames": {
+        "$abc$20826$aiger$i14": {
+          "attributes": {},
+          "bits": [
+            11
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i18": {
+          "attributes": {},
+          "bits": [
+            7
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i19": {
+          "attributes": {},
+          "bits": [
+            8
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i20": {
+          "attributes": {},
+          "bits": [
+            9
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i21": {
+          "attributes": {},
+          "bits": [
+            10
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i26": {
+          "attributes": {},
+          "bits": [
+            18
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i27": {
+          "attributes": {},
+          "bits": [
+            19
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i28": {
+          "attributes": {},
+          "bits": [
+            20
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$i29": {
+          "attributes": {},
+          "bits": [
+            21
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o20": {
+          "attributes": {},
+          "bits": [
+            32
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o21": {
+          "attributes": {},
+          "bits": [
+            31
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o22": {
+          "attributes": {},
+          "bits": [
+            24
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o25": {
+          "attributes": {},
+          "bits": [
+            25
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o28": {
+          "attributes": {},
+          "bits": [
+            23
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o31": {
+          "attributes": {},
+          "bits": [
+            22
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o34": {
+          "attributes": {},
+          "bits": [
+            12
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o37": {
+          "attributes": {},
+          "bits": [
+            13
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o40": {
+          "attributes": {},
+          "bits": [
+            14
+          ],
+          "hide_name": 1
+        },
+        "$abc$20826$aiger$o46": {
+          "attributes": {},
+          "bits": [
+            6
+          ],
+          "hide_name": 1
+        },
+        "$auto$clkbufmap.cc:262:execute$20833": {
+          "attributes": {},
+          "bits": [
+            30
+          ],
+          "hide_name": 1
+        },
+        "clk": {
+          "attributes": {},
+          "bits": [
+            3
+          ],
+          "hide_name": 0
+        },
+        "count": {
+          "attributes": {},
+          "bits": [
+            5,
+            15,
+            16,
+            17,
+            26,
+            27,
+            28,
+            29
+          ],
+          "hide_name": 0
+        },
+        "out": {
+          "attributes": {},
+          "bits": [
+            2
+          ],
+          "hide_name": 0
+        },
+        "reset": {
+          "attributes": {},
+          "bits": [
+            4
+          ],
+          "hide_name": 0
+        }
+      },
+      "ports": {
+        "clk": {
+          "bits": [
+            3
+          ],
+          "direction": "input"
+        },
+        "out": {
+          "bits": [
+            2
+          ],
+          "direction": "output"
+        },
+        "reset": {
+          "bits": [
+            4
+          ],
+          "direction": "input"
+        }
+      }
+    }
+  }
+}
