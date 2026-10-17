@@ -47,6 +47,9 @@ This document provides a hierarchical overview of the features implemented in th
 *   **Straight single wires**: A block with one wire, such as a constant or
     a port, moves up or down until its wire runs straight to the pin at
     the other end, where it has room to.
+*   **No jogs**: A middle run of a wire that steps aside and back, as ELK
+    leaves one that crosses a group's border, slides into line with the
+    run before or after it, where it then runs through no block or label.
 
 ## 4. Tooling
 *   **CLI Application**: `blockpic` binary.

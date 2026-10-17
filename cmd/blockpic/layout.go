@@ -125,6 +125,9 @@ func runLayout(in, src, skin, nsv, out, netOut string, verbose bool) error {
 	if verbose && len(moved) > 0 {
 		fmt.Printf("straightened %v: %v\n", moved, arrange.Measure(g))
 	}
+	if n := arrange.Unjog(g); verbose && n > 0 {
+		fmt.Printf("unjogged %d runs: %v\n", n, arrange.Measure(g))
+	}
 
 	laid, err := g.Marshal()
 	if err != nil {

@@ -374,3 +374,80 @@ func TestExtentTakesTheLabelEitherWay(t *testing.T) {
 		t.Errorf("extent with an unreadable label = %+v, want the body alone", r)
 	}
 }
+
+// jogged is a graph with one wire that steps down 2.5 pixels before its
+// pin, as ELK routes a wire into a group, and the blocks given.
+func jogged(blocks ...*Node) *Graph {
+	g := &Graph{Width: 300, Height: 200, Children: blocks}
+	g.Children = append(g.Children,
+		block("a", 0, 75, 10, 10, map[string]Point{"Y": pt(10, 5)}),
+		block("b", 151, 104, 20, 20, map[string]Point{"B": pt(0, 10)}))
+	g.Edges = []*Edge{wire("e0", "a.Y", "b.B",
+		pt(10, 80), pt(20, 80), pt(20, 116.5), pt(126, 116.5), pt(126, 114), pt(151, 114))}
+	return g
+}
+
+func TestUnjog(t *testing.T) {
+	for _, tc := range []struct {
+		desc   string
+		blocks []*Node
+		want   []Point
+	}{
+		{"the middle run joins the first", nil,
+			[]Point{pt(10, 80), pt(126, 80), pt(126, 114), pt(151, 114)}},
+		{"a block on the first run's line: the middle run joins the last",
+			[]*Node{block("x", 40, 70, 60, 20, nil)},
+			[]Point{pt(10, 80), pt(20, 80), pt(20, 114), pt(151, 114)}},
+	} {
+		g := jogged(tc.blocks...)
+		if n := Unjog(g); n != 1 {
+			t.Errorf("%s: Unjog() = %d, want 1", tc.desc, n)
+		}
+		if got := g.Edges[0].Points(); !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("%s: wire = %v, want %v", tc.desc, got, tc.want)
+		}
+	}
+}
+
+func TestUnjogLeaves(t *testing.T) {
+	for _, tc := range []struct {
+		desc   string
+		change func(g *Graph)
+	}{
+		{"blocks on both lines", func(g *Graph) {
+			g.Children = append(g.Children, block("x", 40, 70, 60, 20, nil), block("y", 40, 108, 60, 12, nil))
+		}},
+		{"a wire that shares its net", func(g *Graph) {
+			g.Children = append(g.Children, block("c", 151, 150, 20, 20, map[string]Point{"A": pt(0, 10)}))
+			g.Edges = append(g.Edges, wire("e1", "a.Y", "c.A", pt(10, 80), pt(20, 80), pt(20, 160), pt(151, 160)))
+		}},
+	} {
+		g := jogged()
+		tc.change(g)
+		before := g.Edges[0].Points()
+		if n := Unjog(g); n != 0 {
+			t.Errorf("%s: Unjog() = %d, want 0", tc.desc, n)
+		}
+		if got := g.Edges[0].Points(); !reflect.DeepEqual(got, before) {
+			t.Errorf("%s: wire = %v, want it unchanged", tc.desc, got)
+		}
+	}
+}
+
+func TestSide(t *testing.T) {
+	for _, tc := range []struct {
+		desc string
+		n    *Node
+		want byte
+	}{
+		{"an adder's input, 2 px inside its circle", block("plus", 0, 0, 25, 25, map[string]Point{"B": pt(2, 20)}), 'L'},
+		{"an input port's pin", block("in", 0, 0, 20, 10, map[string]Point{"Y": pt(20, 5)}), 'R'},
+		{"a buffer's enable", block("buf", 0, 0, 30, 30, map[string]Point{"EN": pt(15, 0)}), 'T'},
+		{"a multiplexer's select", block("mux", 0, 0, 20, 40, map[string]Point{"S": pt(10, 40)}), 'B'},
+	} {
+		p := portAt{tc.n, tc.n.Ports[0]}
+		if got := p.side(); got != tc.want {
+			t.Errorf("%s: side() = %c, want %c", tc.desc, got, tc.want)
+		}
+	}
+}
