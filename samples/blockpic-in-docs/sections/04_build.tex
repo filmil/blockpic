@@ -7,15 +7,16 @@ The figures stay current because nobody draws them. Bazel \cite{bazel}
 builds them from their sources, like any other output. Fig.~\ref{fig:graph}
 shows the build graph behind this document.
 
-\begin{figure}[t]
+\begin{figure}[!tb]
 \centering
-\begin{tikzpicture}[node distance=4.5mm and 3mm]
+\begin{tikzpicture}[node distance=3mm and 3mm,
+  every node/.append style={font=\scriptsize,minimum height=5mm}]
   \node[src] (v) {\code{counter.v}};
   \node[act, below=of v] (syn) {\code{vivado\_synthesis}\\Yosys};
   \node[art, below=of syn] (json) {JSON netlist};
   \node[act, below=of json] (imp) {\code{blockpic import}};
   \node[src, right=12mm of v] (bp) {\code{counter.blockpic}};
-  \node[act, below=19mm of bp] (draw) {render, netlistsvg,\\refine};
+  \node[act, below=15mm of bp] (draw) {render, netlistsvg,\\refine};
   \node[art, below=of draw] (svg) {SVG};
   \node[act, below=of svg] (pdf) {\code{svg2pdf}};
   \node[act, below=of pdf] (tex) {\code{latex\_document}};
@@ -78,7 +79,7 @@ three results from its cache.
 
 pdflatex cannot include an SVG. \code{svg2pdf} converts each drawing into a
 one-page PDF of the same size, a pixel taken as a point. It embeds its font,
-DejaVu Sans Mono, because a PDF for print must carry every font it uses.
+DejaVu Sans, because a PDF for print must carry every font it uses.
 The converter is a short Node.js script, built from pinned npm packages, so
 the conversion is the same on every machine.
 

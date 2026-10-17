@@ -44,20 +44,21 @@ Any other constant & A \code{CONST} block with its value \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.82\columnwidth]{netlist.pdf}
+\includegraphics[width=0.72\textwidth]{netlist.pdf}
 \caption{The counter after synthesis for the xc7a200t, drawn by blockpic
 from the netlist that Yosys wrote.}
 \label{fig:netlist}
-\end{figure}
+\end{figure*}
 
 \subsection{Reading the drawing}
 
 Fig.~\ref{fig:netlist} is the counter as Yosys built it. Each part of
 Listing~\ref{lst:counter} can be found in it:
 \begin{itemize}
-\item The register is four \code{FDRE} flip-flops, one per bit. Their
+\item The register is four \code{FDRE} flip-flops, one per bit. Each is
+  drawn as a box with its pin names inside, as UG474 draws one. Their
   \code{R} pins are the synchronous reset, and \code{CE} is tied to
   \code{VCC}.
 \item The adder became one \code{CARRY4}, the carry chain of a 7-series

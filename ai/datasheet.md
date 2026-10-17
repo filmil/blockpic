@@ -11,7 +11,13 @@ This document provides a hierarchical overview of the features implemented in th
 
 ## 2. Rendering Engine
 *   **Base Graphics**: Integration with `draw2d` for vector rendering.
-*   **Aesthetics**: Default Xilinx UG474 styling (Light Blue blocks, Dark Grey outlines).
+*   **Aesthetics**: The default netlistsvg skin, `ai/skin_xilinx.svg`, follows
+    the figures of AMD's UG474: Helvetica or Arial of regular weight, thin
+    lines without arrowheads, pin names inside generic blocks and
+    flip-flops (`D`, `CE`, `CK`, `Q`), small port flags, and plain
+    multiplexer trapezoids. `ai/skin_with_arrows.svg`, the earlier bold
+    monospace look with arrowheads, is chosen with the `skin` argument of
+    `blockpic_diagram`.
 *   **Shapes Library**:
     *   Basic Logic: `AND`, `OR`, `NOT` (IEEE standard geometry).
     *   Sequential: `DFF` (D-Flip-Flop with clock tick).
