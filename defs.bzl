@@ -1,12 +1,18 @@
 # Label(), not a string: in a macro a string label is read in the package
 # that calls it, which for a module using blockpic is not this repository.
 _BLOCKPIC = Label("//cmd/blockpic")
-_NETLISTSVG = Label("//:netlistsvg")
+_NSV = Label("//tools/netlistsvg:nsv")
 _DEFAULT_SKIN = Label("//skins:skin_xilinx.svg")
 
 def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
     """
     Renders a Blockpic diagram to SVG using netlistsvg.
+
+    ELK lays the diagram out, `blockpic layout` improves the layout, and
+    netlistsvg draws it: each group as a box that no other block enters,
+    the inputs of a commutative block such as an adder in the order their
+    wires arrive, and a block with a single wire, such as a constant, in
+    line with the pin at the wire's other end.
 
     Args:
       name: The name of the target that gives `out`.
@@ -30,27 +36,49 @@ def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
         tools = [_BLOCKPIC],
     )
 
+    layout = name + "_layout.json"
+    arranged = name + "_arranged.json"
+    native.genrule(
+        name = name + "_layout",
+        srcs = [src, json_out, skin],
+        outs = [layout, arranged],
+        cmd = ("BAZEL_BINDIR=. $(location {blockpic}) layout $(location {json}) " +
+               "-src $(location {src}) -skin $(location {skin}) -nsv $(location {nsv}) " +
+               "-o $(location {layout}) -netlist $(location {arranged})").format(
+            blockpic = _BLOCKPIC,
+            json = json_out,
+            src = src,
+            skin = skin,
+            nsv = _NSV,
+            layout = layout,
+            arranged = arranged,
+        ),
+        tools = [_BLOCKPIC, _NSV],
+    )
+
     intermediate_svg = name + "_raw.svg"
     native.genrule(
         name = name + "_raw",
-        srcs = [json_out, skin],
+        srcs = [arranged, skin, layout],
         outs = [intermediate_svg],
-        cmd = "BAZEL_BINDIR=. $(location {}) $(location {}) --skin $(location {}) -o $@".format(
-            _NETLISTSVG,
-            json_out,
+        cmd = "BAZEL_BINDIR=. $(location {}) draw $(location {}) $(location {}) $(location {}) $@".format(
+            _NSV,
+            arranged,
             skin,
+            layout,
         ),
-        tools = [_NETLISTSVG],
+        tools = [_NSV],
     )
 
     native.genrule(
         name = name,
-        srcs = [src, intermediate_svg],
+        srcs = [src, intermediate_svg, layout],
         outs = [out],
-        cmd = "$(location {}) refine $(location {}) -svg $(location {}) -o $@".format(
+        cmd = "$(location {}) refine $(location {}) -svg $(location {}) -layout $(location {}) -o $@".format(
             _BLOCKPIC,
             src,
             intermediate_svg,
+            layout,
         ),
         tools = [_BLOCKPIC],
         **kwargs

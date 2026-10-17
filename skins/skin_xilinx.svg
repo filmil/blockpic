@@ -469,6 +469,31 @@ line {
     <g s:x="31" s:y="10" s:pid="Y" />
   </g>
 
+  <!-- Tie-offs: a constant at the pin it drives, as its value and a short
+       stub, so that it lines up with the pin. blockpic import draws a
+       constant 0 or 1 as GND or VCC, and any other as CONST, named by its
+       value. -->
+  <g s:type="GND" transform="translate(650,250)" s:width="40" s:height="10">
+    <text x="22" y="8" class="pinOut $cell_id" text-anchor="end">GND</text>
+    <s:alias val="GND" />
+    <path fill="none" stroke="#000" d="M24,5 L40,5" class="$cell_id" />
+    <g s:x="40" s:y="5" s:pid="G" />
+  </g>
+
+  <g s:type="VCC" transform="translate(650,280)" s:width="40" s:height="10">
+    <text x="22" y="8" class="pinOut $cell_id" text-anchor="end">VCC</text>
+    <s:alias val="VCC" />
+    <path fill="none" stroke="#000" d="M24,5 L40,5" class="$cell_id" />
+    <g s:x="40" s:y="5" s:pid="P" />
+  </g>
+
+  <g s:type="CONST" transform="translate(650,310)" s:width="60" s:height="10">
+    <text x="42" y="8" class="pinOut $cell_id" s:attribute="ref" text-anchor="end">const</text>
+    <s:alias val="CONST" />
+    <path fill="none" stroke="#000" d="M44,5 L60,5" class="$cell_id" />
+    <g s:x="60" s:y="5" s:pid="O" />
+  </g>
+
   <g s:type="outputExt" transform="translate(250,250)" s:width="20" s:height="10">
     <text x="23" y="8" class="pinIn $cell_id" s:attribute="ref" text-anchor="start">output</text>
     <s:alias val="$_outputExt_" />

@@ -4,19 +4,21 @@ go_library(
     name = "blockpic_lib",
     srcs = [
         "import.go",
+        "layout.go",
         "main.go",
         "refine.go",
     ],
     importpath = "github.com/filmil/blockpic/cmd/blockpic",
     visibility = ["//visibility:private"],
     deps = [
+        "//pkg/arrange",
         "//pkg/ast",
         "//pkg/format",
         "//pkg/parser",
+        "//pkg/refine",
         "//pkg/scanner",
         "//pkg/validation",
         "//pkg/yosys",
-        "//pkg/refine",
     ],
 )
 

@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "arrange",
+    srcs = [
+        "graph.go",
+        "metric.go",
+        "nest.go",
+        "permute.go",
+        "straighten.go",
+    ],
+    importpath = "github.com/filmil/blockpic/pkg/arrange",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/ast",
+        "//pkg/yosys",
+    ],
+)
+
+go_test(
+    name = "arrange_test",
+    srcs = ["arrange_test.go"],
+    embed = [":arrange"],
+    deps = [
+        "//pkg/ast",
+        "//pkg/yosys",
+    ],
+)

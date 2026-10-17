@@ -36,18 +36,34 @@ This document provides a hierarchical overview of the features implemented in th
 
 ## 3. Layout Engine
 *   **Auto-Layout**: Basic flow-based coordinate assignment for unmapped blocks.
+*   **Groups**: ELK lays each `group` out as one box, so no other block
+    falls inside its dashed outline.
+*   **Commutative inputs**: The inputs of an `AND`, `NAND`, `OR`, `NOR`,
+    `XOR`, `XNOR`, `ADD`, `MUL`, `EQ` or `NE` block go to their wires in
+    the order the wires arrive, the topmost input to the wire from
+    highest, so that the wires do not cross on their way in. A change is
+    kept only when the drawing has fewer crossings, or as many and fewer
+    bends.
+*   **Straight single wires**: A block with one wire, such as a constant or
+    a port, moves up or down until its wire runs straight to the pin at
+    the other end, where it has room to.
 
 ## 4. Tooling
 *   **CLI Application**: `blockpic` binary.
     *   `blockpic compile <file>`: Validates DSL syntax.
     *   `blockpic render <file> [-format png] [-o output]`: Generates diagram images.
+    *   `blockpic layout <netlist.json> -src <file.blockpic> -skin <skin.svg> -nsv <nsv>`:
+        Lays a rendered netlist out with ELK and improves the layout, as
+        described in section 3, for `//tools/netlistsvg:nsv` to draw.
+        `blockpic_diagram` runs it between `render` and `refine`.
     *   `blockpic import <netlist.json> [-top MODULE] [-o out.blockpic]`:
         Writes a Yosys JSON netlist, such as the one `rules_openxc7`'s
         `vivado_synthesis` gives, as blockpic source. Each cell becomes a
         block of its type, and each module port an `INPUT_PIN` or
         `OUTPUT_PIN` block. A bus is one thick wire when all its bits go
         to one pin, and one pin per bit (`PORT_i`) when they do not.
-        Constants are drawn as `GND`, `VCC` or `CONST` blocks.
+        Constants become `GND`, `VCC` or `CONST` blocks, which the skins
+        draw as tie-offs: the value beside a short stub at the pin.
 
 ## 5. Continuous Delivery
 *   **Automated Releases**: GitHub Workflow for multi-arch binary releases (Linux, macOS).
@@ -60,7 +76,7 @@ Blockpic provides a comprehensive library of digital logic blocks based on IEEE 
 *   **Logic Gates**: `AND`, `OR`, `NOT`, `XOR`.
 *   **Sequential Logic**: `DFF`, `JKFF`, `TFF`, `SRFF`.
 *   **Routing**: `MUX`, `DEMUX`.
-*   **Power/Signal**: `VCC`, `GND`, `CLOCK`.
+*   **Power/Signal**: `VCC`, `GND` (drawn as tie-offs), `CLOCK`.
 
 ### 6.2 Visual Reference and Source Code
 <table>

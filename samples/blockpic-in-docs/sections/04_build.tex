@@ -16,7 +16,7 @@ shows the build graph behind this document.
   \node[art, below=of syn] (json) {JSON netlist};
   \node[act, below=of json] (imp) {\code{blockpic import}};
   \node[src, right=12mm of v] (bp) {\code{counter.blockpic}};
-  \node[act, below=15mm of bp] (draw) {render, netlistsvg,\\refine};
+  \node[act, below=15mm of bp] (draw) {render, layout,\\netlistsvg, refine};
   \node[art, below=of draw] (svg) {SVG};
   \node[act, below=of svg] (pdf) {\code{svg2pdf}};
   \node[act, below=of pdf] (tex) {\code{latex\_document}};

@@ -224,6 +224,13 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 				if idx == 1 { return "B" }
 				if idx == 2 { return "C" }
 				if idx == 3 { return "D" }
+			case "GND", "VCC", "CONST":
+				// A tie-off. The skins draw its one output under the
+				// name the Xilinx primitive gives it, whatever the
+				// block calls it.
+				if isOutput && len(b.Inputs) == 0 && len(b.Outputs) == 1 {
+					return tieOffPins[cell.Type]
+				}
 			}
 			return pinName
 		}
@@ -259,6 +266,11 @@ func Convert(diag *ast.Diagram) ([]byte, error) {
 
 	return json.MarshalIndent(netlist, "", "  ")
 }
+
+// tieOffPins are the output pins of the skins' tie-offs: the pins of the
+// Xilinx GND and VCC primitives, and of the CONST cell that blockpic
+// import draws any other constant with.
+var tieOffPins = map[string]string{"GND": "G", "VCC": "P", "CONST": "O"}
 
 func mapKindToYosysType(kind string) string {
 	k := strings.ToLower(kind)

@@ -16,9 +16,10 @@ exports_files([
 
 npm_link_all_packages(name = "node_modules")
 
-# netlistsvg, which blockpic_diagram (//:defs.bzl) runs. One target here,
-# in blockpic's own repository, so that a module using blockpic does not
-# need netlistsvg in its own node_modules.
+# netlistsvg's own command line. blockpic_diagram (//:defs.bzl) draws with
+# //tools/netlistsvg:nsv instead, which runs the same package a step at a
+# time. One target here, in blockpic's own repository, so that a module
+# using blockpic does not need netlistsvg in its own node_modules.
 netlistsvg_bin.netlistsvg_binary(
     name = "netlistsvg",
     visibility = ["//visibility:public"],
