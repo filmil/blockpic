@@ -68,7 +68,10 @@ latex_document(
         outs = [name + "_readme.svg"],
         # blockpic writes the <svg> element on the first line. POSIX sed:
         # the GNU-only 0,/re/ address would break the build on macOS.
-        cmd = "sed '1s/<svg [^>]*>/&<rect width=\"100%\" height=\"100%\" style=\"fill:#fff;stroke:none\"\\/>/' $< > $@",
+        # The rect reaches past the origin, because a drawing whose labels
+        # or group boxes cross its left or top edge starts its viewBox
+        # below zero.
+        cmd = "sed '1s/<svg [^>]*>/&<rect x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\" style=\"fill:#fff;stroke:none\"\\/>/' $< > $@",
         visibility = ["//:__pkg__"],
     )
     for name in [
