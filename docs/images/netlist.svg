@@ -309,99 +309,99 @@
     <path d="M0,0 L0,10 L14,10 L20,5 L14,0 Z" class="cell_reset"/>
     <g s:x="20" s:y="5" s:pid="Y"/>
   </g>
-  <line x1="135" x2="230.5" y1="141.5" y2="141.5" class="net_14"/>
-  <line x1="133" x2="239" y1="354.5" y2="354.5" class="net_7"/>
-  <line x1="133" x2="152" y1="425.5" y2="425.5" class="net_8"/>
-  <line x1="152" x2="152" y1="425.5" y2="368.5" class="net_8"/>
-  <line x1="152" x2="239" y1="368.5" y2="368.5" class="net_8"/>
+  <line x1="135" x2="230.5" y1="141.5" y2="141.5" class="net_14" stroke="#000"/>
+  <line x1="133" x2="239" y1="354.5" y2="354.5" class="net_7" stroke="#000"/>
+  <line x1="133" x2="152" y1="425.5" y2="425.5" class="net_8" stroke="#000"/>
+  <line x1="152" x2="152" y1="425.5" y2="368.5" class="net_8" stroke="#000"/>
+  <line x1="152" x2="239" y1="368.5" y2="368.5" class="net_8" stroke="#000"/>
   <line x1="133" x2="162" y1="496.5" y2="496.5" class="net_9" stroke="#000" stroke-width="3" />
   <line x1="162" x2="162" y1="496.5" y2="382.5" class="net_9" stroke="#000" stroke-width="3" />
   <line x1="162" x2="239" y1="382.5" y2="382.5" class="net_9" stroke="#000" stroke-width="3" />
-  <line x1="135" x2="172" y1="70.5" y2="70.5" class="net_10"/>
-  <line x1="172" x2="172" y1="70.5" y2="396.5" class="net_10"/>
+  <line x1="135" x2="172" y1="70.5" y2="70.5" class="net_10" stroke="#000"/>
+  <line x1="172" x2="172" y1="70.5" y2="396.5" class="net_10" stroke="#000"/>
   <circle cx="172" cy="70.5" r="2" style="fill:#000" class="net_10"/>
-  <line x1="172" x2="239" y1="396.5" y2="396.5" class="net_10"/>
-  <line x1="135" x2="392" y1="70.5" y2="70.5" class="net_10"/>
-  <line x1="453" x2="470" y1="198.5" y2="198.5" class="net_11"/>
-  <line x1="470" x2="470" y1="198.5" y2="464" class="net_11"/>
-  <line x1="470" x2="182" y1="464" y2="464" class="net_11"/>
-  <line x1="182" x2="182" y1="464" y2="410.5" class="net_11"/>
+  <line x1="172" x2="239" y1="396.5" y2="396.5" class="net_10" stroke="#000"/>
+  <line x1="135" x2="392" y1="70.5" y2="70.5" class="net_10" stroke="#000"/>
+  <line x1="453" x2="470" y1="198.5" y2="198.5" class="net_11" stroke="#000"/>
+  <line x1="470" x2="470" y1="198.5" y2="464" class="net_11" stroke="#000"/>
+  <line x1="470" x2="182" y1="464" y2="464" class="net_11" stroke="#000"/>
+  <line x1="182" x2="182" y1="464" y2="410.5" class="net_11" stroke="#000"/>
   <circle cx="470" cy="198.5" r="2" style="fill:#000" class="net_11"/>
-  <line x1="182" x2="239" y1="410.5" y2="410.5" class="net_11"/>
-  <line x1="453" x2="502" y1="198.5" y2="198.5" class="net_11"/>
-  <line x1="453" x2="480" y1="494.5" y2="494.5" class="net_12"/>
-  <line x1="480" x2="480" y1="494.5" y2="685" class="net_12"/>
-  <line x1="480" x2="172" y1="685" y2="685" class="net_12"/>
-  <line x1="172" x2="172" y1="685" y2="424.5" class="net_12"/>
+  <line x1="182" x2="239" y1="410.5" y2="410.5" class="net_11" stroke="#000"/>
+  <line x1="453" x2="502" y1="198.5" y2="198.5" class="net_11" stroke="#000"/>
+  <line x1="453" x2="480" y1="494.5" y2="494.5" class="net_12" stroke="#000"/>
+  <line x1="480" x2="480" y1="494.5" y2="685" class="net_12" stroke="#000"/>
+  <line x1="480" x2="172" y1="685" y2="685" class="net_12" stroke="#000"/>
+  <line x1="172" x2="172" y1="685" y2="424.5" class="net_12" stroke="#000"/>
   <circle cx="480" cy="494.5" r="2" style="fill:#000" class="net_12"/>
-  <line x1="172" x2="239" y1="424.5" y2="424.5" class="net_12"/>
-  <line x1="453" x2="502" y1="494.5" y2="494.5" class="net_12"/>
-  <line x1="453" x2="470" y1="607.5" y2="607.5" class="net_13"/>
-  <line x1="470" x2="470" y1="607.5" y2="675" class="net_13"/>
-  <line x1="470" x2="192" y1="675" y2="675" class="net_13"/>
-  <line x1="192" x2="192" y1="675" y2="438.5" class="net_13"/>
+  <line x1="172" x2="239" y1="424.5" y2="424.5" class="net_12" stroke="#000"/>
+  <line x1="453" x2="502" y1="494.5" y2="494.5" class="net_12" stroke="#000"/>
+  <line x1="453" x2="470" y1="607.5" y2="607.5" class="net_13" stroke="#000"/>
+  <line x1="470" x2="470" y1="607.5" y2="675" class="net_13" stroke="#000"/>
+  <line x1="470" x2="192" y1="675" y2="675" class="net_13" stroke="#000"/>
+  <line x1="192" x2="192" y1="675" y2="438.5" class="net_13" stroke="#000"/>
   <circle cx="470" cy="607.5" r="2" style="fill:#000" class="net_13"/>
-  <line x1="192" x2="239" y1="438.5" y2="438.5" class="net_13"/>
-  <line x1="453" x2="502" y1="607.5" y2="607.5" class="net_13"/>
-  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15"/>
-  <line x1="359" x2="359" y1="141.5" y2="42.5" class="net_15"/>
+  <line x1="192" x2="239" y1="438.5" y2="438.5" class="net_13" stroke="#000"/>
+  <line x1="453" x2="502" y1="607.5" y2="607.5" class="net_13" stroke="#000"/>
+  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15" stroke="#000"/>
+  <line x1="359" x2="359" y1="141.5" y2="42.5" class="net_15" stroke="#000"/>
   <circle cx="359" cy="141.5" r="2" style="fill:#000" class="net_15"/>
-  <line x1="359" x2="392" y1="42.5" y2="42.5" class="net_15"/>
-  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15"/>
-  <line x1="359" x2="359" y1="141.5" y2="198.5" class="net_15"/>
+  <line x1="359" x2="392" y1="42.5" y2="42.5" class="net_15" stroke="#000"/>
+  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15" stroke="#000"/>
+  <line x1="359" x2="359" y1="141.5" y2="198.5" class="net_15" stroke="#000"/>
   <circle cx="359" cy="198.5" r="2" style="fill:#000" class="net_15"/>
-  <line x1="359" x2="392" y1="198.5" y2="198.5" class="net_15"/>
-  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15"/>
-  <line x1="359" x2="359" y1="141.5" y2="494.5" class="net_15"/>
+  <line x1="359" x2="392" y1="198.5" y2="198.5" class="net_15" stroke="#000"/>
+  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15" stroke="#000"/>
+  <line x1="359" x2="359" y1="141.5" y2="494.5" class="net_15" stroke="#000"/>
   <circle cx="359" cy="494.5" r="2" style="fill:#000" class="net_15"/>
-  <line x1="359" x2="392" y1="494.5" y2="494.5" class="net_15"/>
-  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15"/>
-  <line x1="359" x2="359" y1="141.5" y2="607.5" class="net_15"/>
-  <line x1="359" x2="392" y1="607.5" y2="607.5" class="net_15"/>
-  <line x1="300" x2="369" y1="45" y2="45" class="net_16"/>
-  <line x1="369" x2="369" y1="45" y2="56.5" class="net_16"/>
-  <line x1="369" x2="392" y1="56.5" y2="56.5" class="net_16"/>
-  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17"/>
-  <line x1="349" x2="349" y1="283.5" y2="84.5" class="net_17"/>
+  <line x1="359" x2="392" y1="494.5" y2="494.5" class="net_15" stroke="#000"/>
+  <line x1="291.5" x2="359" y1="141.5" y2="141.5" class="net_15" stroke="#000"/>
+  <line x1="359" x2="359" y1="141.5" y2="607.5" class="net_15" stroke="#000"/>
+  <line x1="359" x2="392" y1="607.5" y2="607.5" class="net_15" stroke="#000"/>
+  <line x1="300" x2="369" y1="45" y2="45" class="net_16" stroke="#000"/>
+  <line x1="369" x2="369" y1="45" y2="56.5" class="net_16" stroke="#000"/>
+  <line x1="369" x2="392" y1="56.5" y2="56.5" class="net_16" stroke="#000"/>
+  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17" stroke="#000"/>
+  <line x1="349" x2="349" y1="283.5" y2="84.5" class="net_17" stroke="#000"/>
   <circle cx="349" cy="283.5" r="2" style="fill:#000" class="net_17"/>
-  <line x1="349" x2="392" y1="84.5" y2="84.5" class="net_17"/>
-  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17"/>
-  <line x1="349" x2="349" y1="283.5" y2="240.5" class="net_17"/>
+  <line x1="349" x2="392" y1="84.5" y2="84.5" class="net_17" stroke="#000"/>
+  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17" stroke="#000"/>
+  <line x1="349" x2="349" y1="283.5" y2="240.5" class="net_17" stroke="#000"/>
   <circle cx="349" cy="240.5" r="2" style="fill:#000" class="net_17"/>
-  <line x1="349" x2="392" y1="240.5" y2="240.5" class="net_17"/>
-  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17"/>
-  <line x1="349" x2="349" y1="283.5" y2="536.5" class="net_17"/>
+  <line x1="349" x2="392" y1="240.5" y2="240.5" class="net_17" stroke="#000"/>
+  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17" stroke="#000"/>
+  <line x1="349" x2="349" y1="283.5" y2="536.5" class="net_17" stroke="#000"/>
   <circle cx="349" cy="536.5" r="2" style="fill:#000" class="net_17"/>
-  <line x1="349" x2="392" y1="536.5" y2="536.5" class="net_17"/>
-  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17"/>
-  <line x1="349" x2="349" y1="283.5" y2="649.5" class="net_17"/>
-  <line x1="349" x2="392" y1="649.5" y2="649.5" class="net_17"/>
-  <line x1="300" x2="392" y1="212.5" y2="212.5" class="net_18"/>
-  <line x1="300" x2="329" y1="382.5" y2="382.5" class="net_19"/>
-  <line x1="329" x2="329" y1="382.5" y2="226.5" class="net_19"/>
-  <line x1="329" x2="392" y1="226.5" y2="226.5" class="net_19"/>
-  <line x1="300" x2="392" y1="508.5" y2="508.5" class="net_20"/>
-  <line x1="300" x2="339" y1="396.5" y2="396.5" class="net_21"/>
-  <line x1="339" x2="339" y1="396.5" y2="522.5" class="net_21"/>
-  <line x1="339" x2="392" y1="522.5" y2="522.5" class="net_21"/>
-  <line x1="300" x2="392" y1="621.5" y2="621.5" class="net_22"/>
-  <line x1="300" x2="329" y1="410.5" y2="410.5" class="net_23"/>
-  <line x1="329" x2="329" y1="410.5" y2="635.5" class="net_23"/>
-  <line x1="329" x2="392" y1="635.5" y2="635.5" class="net_23"/>
-  <line x1="32" x2="74" y1="141.5" y2="141.5" class="net_24"/>
-  <line x1="132" x2="230.5" y1="283.5" y2="283.5" class="net_25"/>
-  <line x1="453" x2="470" y1="42.5" y2="42.5" class="net_6"/>
-  <line x1="470" x2="470" y1="42.5" y2="12" class="net_6"/>
-  <line x1="470" x2="42" y1="12" y2="12" class="net_6"/>
-  <line x1="42" x2="42" y1="12" y2="70.5" class="net_6"/>
+  <line x1="349" x2="392" y1="536.5" y2="536.5" class="net_17" stroke="#000"/>
+  <line x1="291.5" x2="349" y1="283.5" y2="283.5" class="net_17" stroke="#000"/>
+  <line x1="349" x2="349" y1="283.5" y2="649.5" class="net_17" stroke="#000"/>
+  <line x1="349" x2="392" y1="649.5" y2="649.5" class="net_17" stroke="#000"/>
+  <line x1="300" x2="392" y1="212.5" y2="212.5" class="net_18" stroke="#000"/>
+  <line x1="300" x2="329" y1="382.5" y2="382.5" class="net_19" stroke="#000"/>
+  <line x1="329" x2="329" y1="382.5" y2="226.5" class="net_19" stroke="#000"/>
+  <line x1="329" x2="392" y1="226.5" y2="226.5" class="net_19" stroke="#000"/>
+  <line x1="300" x2="392" y1="508.5" y2="508.5" class="net_20" stroke="#000"/>
+  <line x1="300" x2="339" y1="396.5" y2="396.5" class="net_21" stroke="#000"/>
+  <line x1="339" x2="339" y1="396.5" y2="522.5" class="net_21" stroke="#000"/>
+  <line x1="339" x2="392" y1="522.5" y2="522.5" class="net_21" stroke="#000"/>
+  <line x1="300" x2="392" y1="621.5" y2="621.5" class="net_22" stroke="#000"/>
+  <line x1="300" x2="329" y1="410.5" y2="410.5" class="net_23" stroke="#000"/>
+  <line x1="329" x2="329" y1="410.5" y2="635.5" class="net_23" stroke="#000"/>
+  <line x1="329" x2="392" y1="635.5" y2="635.5" class="net_23" stroke="#000"/>
+  <line x1="32" x2="74" y1="141.5" y2="141.5" class="net_24" stroke="#000"/>
+  <line x1="132" x2="230.5" y1="283.5" y2="283.5" class="net_25" stroke="#000"/>
+  <line x1="453" x2="470" y1="42.5" y2="42.5" class="net_6" stroke="#000"/>
+  <line x1="470" x2="470" y1="42.5" y2="12" class="net_6" stroke="#000"/>
+  <line x1="470" x2="42" y1="12" y2="12" class="net_6" stroke="#000"/>
+  <line x1="42" x2="42" y1="12" y2="70.5" class="net_6" stroke="#000"/>
   <circle cx="470" cy="42.5" r="2" style="fill:#000" class="net_6"/>
-  <line x1="42" x2="74" y1="70.5" y2="70.5" class="net_6"/>
-  <line x1="453" x2="502" y1="42.5" y2="42.5" class="net_6"/>
-  <line x1="563" x2="605" y1="42.5" y2="42.5" class="net_2"/>
-  <line x1="563" x2="605" y1="198.5" y2="198.5" class="net_3"/>
-  <line x1="563" x2="605" y1="494.5" y2="494.5" class="net_4"/>
-  <line x1="563" x2="605" y1="607.5" y2="607.5" class="net_5"/>
-  <line x1="197.5" x2="203.5" y1="387.5" y2="377.5" class="busWidth"/>
+  <line x1="42" x2="74" y1="70.5" y2="70.5" class="net_6" stroke="#000"/>
+  <line x1="453" x2="502" y1="42.5" y2="42.5" class="net_6" stroke="#000"/>
+  <line x1="563" x2="605" y1="42.5" y2="42.5" class="net_2" stroke="#000"/>
+  <line x1="563" x2="605" y1="198.5" y2="198.5" class="net_3" stroke="#000"/>
+  <line x1="563" x2="605" y1="494.5" y2="494.5" class="net_4" stroke="#000"/>
+  <line x1="563" x2="605" y1="607.5" y2="607.5" class="net_5" stroke="#000"/>
+  <line x1="197.5" x2="203.5" y1="387.5" y2="377.5" class="busWidth" stroke="#000"/>
   <text x="204.5" y="378.5" class="busWidth" style="font-size:7px">4</text>
   <text x="102.0" y="523.0" class="nodelabel cell_CONST_1" text-anchor="middle">4'b0001</text>
 </svg>

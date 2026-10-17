@@ -121,6 +121,7 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 	svgStr = drawBusWidths(diag, svgStr, sourceBits)
 	svgStr = drawNames(diag, svgStr)
 	svgStr = fitPortLabels(svgStr)
+	svgStr = strokeLines(svgStr)
 
 	return []byte(svgStr), nil
 }
@@ -131,7 +132,7 @@ var cellTitle = `(<text[^>]*class="[^"]*\bcell_%s"[^>]*s:attribute="ref"[^>]*>)[
 
 // genericCell finds a generic cell's group and its body, whose height
 // netlistsvg sets by the number of ports.
-var genericCell = `<g s:type="generic" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*id="cell_%s">\s*<text[^>]*>[^<]*</text>\s*<rect width="([-\d.]+)" height="([-\d.]+)"`
+var genericCell = `<g s:type="generic" transform="translate\(([-\d.]+),\s*([-\d.]+)\)"[^>]*id="cell_%s">\s*<text[^>]*>[^<]*</text>\s*<rect\b[^>]*?\swidth="([-\d.]+)" height="([-\d.]+)"`
 
 // drawNames shows each block's name, when it has one other than its kind.
 // netlistsvg titles a skinned cell with its label, so the title is
@@ -281,4 +282,22 @@ func drawBusWidths(diag *ast.Diagram, svgStr string, sourceBits map[string]int) 
 		return svgStr
 	}
 	return strings.Replace(svgStr, "</svg>", marks.String()+"</svg>", 1)
+}
+
+// bareLine finds a line, with its attributes.
+var bareLine = regexp.MustCompile(`<line\b([^>]*?)\s*/>`)
+
+// strokeLines gives every line without a stroke attribute a black one.
+// netlistsvg draws the nets as lines that its stylesheet strokes, and a
+// line has no stroke by default, so a renderer that ignores the stylesheet
+// would draw no nets at all. The stylesheet outranks the attribute
+// wherever it is read.
+func strokeLines(svgStr string) string {
+	return bareLine.ReplaceAllStringFunc(svgStr, func(line string) string {
+		if strings.Contains(line, " stroke=") {
+			return line
+		}
+		m := bareLine.FindStringSubmatch(line)
+		return `<line` + m[1] + ` stroke="#000"/>`
+	})
 }
