@@ -49,6 +49,33 @@ Without `-top`, the module that Yosys marked as the top is drawn.
 Hidden cell names, such as `$abc$123$lut`, are replaced by the cell type and
 a number, or by the name of the register bit that the cell holds.
 
+### 5. Draw a Netlist with Bazel
+In a Bazel build, `blockpic_netlist_diagram` in `//:defs.bzl` does steps 2
+to 4 in one target. It takes any target whose only output is a Yosys JSON
+netlist. A `vivado_synthesis` target of rules_openxc7 is one:
+```python
+load("@rules_openxc7//openxc7:defs.bzl", "vivado_project", "vivado_synthesis")
+load("//:defs.bzl", "blockpic_netlist_diagram")
+
+vivado_project(
+    name = "counter",
+    srcs = ["counter.v"],
+    part = "xc7a200tfbg484-2",
+    top_level = "counter",
+)
+
+vivado_synthesis(name = "counter_synth", project = ":counter")
+
+blockpic_netlist_diagram(
+    name = "counter_diagram",
+    netlist = ":counter_synth",
+    out = "counter.svg",
+)
+```
+`bazel build //:counter_diagram` gives `counter.svg`. The imported
+source is kept, as `counter_diagram.blockpic` from `//:counter_diagram_src`.
+`tests/openxc7` is this example, with a test.
+
 ## Documentation
 
 The project documentation is generated using Bazel and is available in PDF and HTML formats.
