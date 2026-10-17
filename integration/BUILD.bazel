@@ -1,18 +1,45 @@
 # SPDX-License-Identifier: Apache-2.0
 # Uses blockpic the way a consumer would: through @blockpic//:defs.bzl, with
 # nothing but the Bazel Central Registry to resolve it from.
-load("@blockpic//:defs.bzl", "blockpic_diagram")
+load("@blockpic//:defs.bzl", "blockpic_diagram", "blockpic_netlist_diagram")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
+# A hand-written diagram, with the default skin.
 blockpic_diagram(
     name = "example",
     src = "example.blockpic",
     out = "example.svg",
 )
 
+# The same diagram, with a skin named from this module.
+blockpic_diagram(
+    name = "example_arrows",
+    src = "example.blockpic",
+    out = "example_arrows.svg",
+    skin = "@blockpic//skins:skin_with_arrows.svg",
+)
+
+# A Yosys JSON netlist: the counter of blockpic's tests/openxc7, as
+# rules_openxc7 synthesises it, cut down to its top module (the library
+# cell models are not needed to draw it).
+blockpic_netlist_diagram(
+    name = "counter",
+    netlist = "counter_netlist.json",
+    out = "counter.svg",
+    top = "counter",
+)
+
 sh_test(
     name = "example_test",
     srcs = ["example_test.sh"],
-    args = ["$(rootpath :example)"],
-    data = [":example"],
+    args = [
+        "$(rootpath :example)",
+        "$(rootpath :example_arrows)",
+        "$(rootpath :counter)",
+    ],
+    data = [
+        ":counter",
+        ":example",
+        ":example_arrows",
+    ],
 )
