@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "yosys",
-    srcs = ["yosys.go"],
+    srcs = [
+        "import.go",
+        "yosys.go",
+    ],
     importpath = "github.com/filmil/blockpic/pkg/yosys",
     visibility = ["//visibility:public"],
     deps = ["//pkg/ast"],
@@ -10,7 +13,17 @@ go_library(
 
 go_test(
     name = "yosys_test",
-    srcs = ["yosys_test.go"],
+    srcs = [
+        "import_test.go",
+        "yosys_test.go",
+    ],
+    data = glob(["testdata/**"]),
     embed = [":yosys"],
-    deps = ["//pkg/ast"],
+    deps = [
+        "//pkg/ast",
+        "//pkg/format",
+        "//pkg/parser",
+        "//pkg/scanner",
+        "//pkg/validation",
+    ],
 )
