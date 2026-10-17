@@ -37,6 +37,18 @@ Use the `render` command to generate an image (PNG is currently supported). Auto
 bazel run //cmd/blockpic -- render example.blockpic -format png -o output.png
 ```
 
+### 4. Draw a Synthesized Netlist
+The `import` command reads a Yosys JSON netlist and writes it as a
+`.blockpic` file, which the steps above then render and refine. It reads,
+for example, the netlist that `vivado_synthesis` in
+[rules_openxc7](https://github.com/filmil/bazel_rules_openxc7) writes.
+```bash
+bazel run //cmd/blockpic -- import netlist.json -o design.blockpic
+```
+Without `-top`, the module that Yosys marked as the top is drawn.
+Hidden cell names, such as `$abc$123$lut`, are replaced by the cell type and
+a number, or by the name of the register bit that the cell holds.
+
 ## Documentation
 
 The project documentation is generated using Bazel and is available in PDF and HTML formats.

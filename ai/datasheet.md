@@ -29,6 +29,13 @@ This document provides a hierarchical overview of the features implemented in th
 *   **CLI Application**: `blockpic` binary.
     *   `blockpic compile <file>`: Validates DSL syntax.
     *   `blockpic render <file> [-format png] [-o output]`: Generates diagram images.
+    *   `blockpic import <netlist.json> [-top MODULE] [-o out.blockpic]`:
+        Writes a Yosys JSON netlist, such as the one `rules_openxc7`'s
+        `vivado_synthesis` gives, as blockpic source. Each cell becomes a
+        block of its type, and each module port an `INPUT_PIN` or
+        `OUTPUT_PIN` block. A bus is one thick wire when all its bits go
+        to one pin, and one pin per bit (`PORT_i`) when they do not.
+        Constants are drawn as `GND`, `VCC` or `CONST` blocks.
 
 ## 5. Continuous Delivery
 *   **Automated Releases**: GitHub Workflow for multi-arch binary releases (Linux, macOS).
