@@ -1,0 +1,96 @@
+% SPDX-License-Identifier: Apache-2.0
+% 04_build.tex: One build from HDL to PDF
+\section{One Build from HDL to PDF}
+\label{sec:build}
+
+The figures stay current because nobody draws them. Bazel \cite{bazel}
+builds them from their sources, like any other output. Fig.~\ref{fig:graph}
+shows the build graph behind this document.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=4.5mm and 3mm]
+  \node[src] (v) {\code{counter.v}};
+  \node[act, below=of v] (syn) {\code{vivado\_synthesis}\\Yosys};
+  \node[art, below=of syn] (json) {JSON netlist};
+  \node[act, below=of json] (imp) {\code{blockpic import}};
+  \node[src, right=12mm of v] (bp) {\code{counter.blockpic}};
+  \node[act, below=19mm of bp] (draw) {render, netlistsvg,\\refine};
+  \node[art, below=of draw] (svg) {SVG};
+  \node[act, below=of svg] (pdf) {\code{svg2pdf}};
+  \node[act, below=of pdf] (tex) {\code{latex\_document}};
+  \node[art, below=of tex] (out) {this PDF};
+  \draw[fl] (v) -- (syn);
+  \draw[fl] (syn) -- (json);
+  \draw[fl] (json) -- (imp);
+  \draw[fl] (imp.east) -- (draw.west);
+  \draw[fl] (bp) -- (draw);
+  \draw[fl] (draw) -- (svg);
+  \draw[fl] (svg) -- (pdf);
+  \draw[fl] (pdf) -- (tex);
+  \draw[fl] (tex) -- (out);
+\end{tikzpicture}
+\caption{The build graph of this document. Blue boxes are sources, green
+boxes are build steps, and orange boxes are their outputs. Both figures
+take the right-hand path.}
+\label{fig:graph}
+\end{figure}
+
+Each box in the figure is one target, or one step inside a target.
+Listing~\ref{lst:build} shows the targets in this document's
+\code{BUILD.bazel} that draw the netlist figure.
+\code{blockpic\_netlist\_diagram} takes any target whose only output is a
+Yosys JSON netlist. \code{vivado\_synthesis} is one such target.
+
+\begin{lstlisting}[style=bzl,float=t,caption={The targets that draw
+Fig.~\ref{fig:netlist}.},label={lst:build}]
+vivado_project(
+    name = "counter",
+    srcs = ["counter.v"],
+    part = "xc7a200tfbg484-2",
+    top_level = "counter",
+)
+
+vivado_synthesis(
+    name = "counter_synth",
+    project = ":counter",
+)
+
+blockpic_netlist_diagram(
+    name = "netlist",
+    netlist = ":counter_synth",
+    out = "netlist.svg",
+)
+
+svg_to_pdf(
+    name = "netlist_pdf",
+    src = ":netlist",
+    out = "netlist.pdf",
+)
+\end{lstlisting}
+
+The document target lists \code{:netlist\_pdf} among its inputs. So when
+\code{counter.v} changes, Bazel synthesizes the design again, redraws the
+figure and typesets the PDF again. When nothing changed, Bazel reuses all
+three results from its cache.
+
+\subsection{Turning SVG into PDF}
+
+pdflatex cannot include an SVG. \code{svg2pdf} converts each drawing into a
+one-page PDF of the same size, a pixel taken as a point. It embeds its font,
+DejaVu Sans Mono, because a PDF for print must carry every font it uses.
+The converter is a short Node.js script, built from pinned npm packages, so
+the conversion is the same on every machine.
+
+\subsection{Publishing}
+
+A scheduled workflow builds this document and publishes it on the
+repository's release page. The same workflow attaches it to every tagged
+release of blockpic. A reader of a release therefore gets the figures drawn
+by that release's code.
+
+\begin{guideline}[Let the build own the figures]
+Never commit a generated figure. Commit its source, the \code{.blockpic}
+file or the HDL, and let the build draw it. A committed image is one more
+file that can fall behind.
+\end{guideline}

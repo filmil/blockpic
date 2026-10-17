@@ -1,0 +1,82 @@
+% SPDX-License-Identifier: Apache-2.0
+% 03_from_netlist.tex: Drawing the netlist that synthesis writes
+\section{Drawing the Netlist}
+\label{sec:from-netlist}
+
+A hand-drawn diagram shows the intent. The netlist shows what the tools
+actually built. The two can differ in ways that matter: a register that
+synthesis removed, a bus that got wider, or a carry chain where an adder was
+expected. A drawing of the netlist shows those differences directly.
+
+\subsection{From HDL to a JSON netlist}
+
+The counter is synthesized by rules\_openxc7 \cite{rulesopenxc7}, which runs
+the open flow for AMD 7-series parts. Yosys \cite{yosys} maps the design to
+the part's primitives with \code{synth\_xilinx}. nextpnr \cite{openxc7} and
+Project X-Ray \cite{prjxray} then place and route it, but the drawing needs
+only the synthesis step. Its output is a JSON netlist: every cell, every
+port, and the nets between them, numbered bit by bit.
+
+\subsection{From the netlist to a drawing}
+
+The command \code{blockpic import} reads the netlist and writes a
+\code{.blockpic} file. From there, the netlist is drawn in exactly the same
+way as Fig.~\ref{fig:architecture}. Table~\ref{tab:mapping} lists how each
+part of the netlist is drawn.
+
+\begin{table}[t]
+\centering
+\caption{How \code{blockpic import} draws a netlist.}
+\label{tab:mapping}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright}p{0.38\columnwidth}
+                >{\raggedright\arraybackslash}p{0.54\columnwidth}@{}}
+\toprule
+In the netlist & In the drawing \\
+\midrule
+A cell, such as \code{FDRE} & A block of that kind \\
+A module port & An input or output port block \\
+A bus that goes whole to one pin & One thick wire \\
+A bus whose bits go apart & A pin per bit, such as \code{O\_1} \\
+A constant 0 or 1 & A \code{GND} or \code{VCC} block \\
+Any other constant & A \code{CONST} block with its value \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\columnwidth]{netlist.pdf}
+\caption{The counter after synthesis for the xc7a200t, drawn by blockpic
+from the netlist that Yosys wrote.}
+\label{fig:netlist}
+\end{figure}
+
+\subsection{Reading the drawing}
+
+Fig.~\ref{fig:netlist} is the counter as Yosys built it. Each part of
+Listing~\ref{lst:counter} can be found in it:
+\begin{itemize}
+\item The register is four \code{FDRE} flip-flops, one per bit. Their
+  \code{R} pins are the synchronous reset, and \code{CE} is tied to
+  \code{VCC}.
+\item The adder became one \code{CARRY4}, the carry chain of a 7-series
+  slice \cite{ug474}. Its \code{O\_1} to \code{O\_3} outputs feed the upper
+  three flip-flops. Bit 0 needs no adder: an \code{INV} toggles it.
+\item Every port went through a buffer: \code{IBUF} on \code{clk} and
+  \code{reset}, \code{OBUF} on each LED. The clock also goes through a
+  \code{BUFG} onto the global clock network.
+\item The bus \code{led} was split into \code{led\_0} to \code{led\_3},
+  because each bit leaves through its own buffer.
+\end{itemize}
+
+None of this is in the hand-drawn Fig.~\ref{fig:architecture}, and none of it
+should be. The two figures answer different questions. The architecture
+says what the counter does. The netlist says what the FPGA will run.
+
+\begin{pitfall}
+A netlist drawing grows with the design. A counter fits a column, but a
+processor gives thousands of cells and an unreadable picture. Synthesis for
+the FPGA also flattens the design into one module. To draw one part of a
+large design, synthesize that part on its own, with it as the top level.
+\end{pitfall}

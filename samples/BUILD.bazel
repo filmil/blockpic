@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# The sample documents. The release workflow builds :pdfs and publishes
+# them (.forgejo/workflows/release-samples.yml).
+
+filegroup(
+    name = "pdfs",
+    srcs = ["//samples/blockpic-in-docs:blockpic_in_docs"],
+)

@@ -1,0 +1,14 @@
+% SPDX-License-Identifier: Apache-2.0
+% 06_conclusion.tex: Conclusion
+\section{Conclusion}
+\label{sec:conclusion}
+
+A figure that the build draws cannot fall behind the design. This document
+showed two kinds. An architecture diagram is written by hand in a few lines
+of text and kept beside the HDL. A netlist drawing needs no source of its
+own, because synthesis writes it. Bazel ties both to the document, so a
+change to \code{counter.v} reaches Fig.~\ref{fig:netlist} in the next build.
+
+To start, write a \code{.blockpic} file for one block diagram in an
+existing document, and add the targets of Listing~\ref{lst:build} to its
+build. The figure then stays correct for as long as the build passes.

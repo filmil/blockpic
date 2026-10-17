@@ -1,0 +1,42 @@
+% SPDX-License-Identifier: Apache-2.0
+% 01_intro.tex: Introduction
+\section{Introduction}
+\label{sec:intro}
+
+\IEEEPARstart{E}{very} design document needs pictures. A reader takes in a
+block diagram faster than three paragraphs that say the same thing. The
+trouble is that a picture is usually drawn once, in a drawing program, and
+saved as an image. The design keeps changing after that, and the picture
+does not. A year later, the figure shows a register that was removed and
+leaves out the one that replaced it.
+
+Blockpic takes a different approach. A diagram is a short text file, kept in
+the repository beside the HDL it describes. The build draws the picture from
+that file every time. Blockpic can also draw a picture from the netlist that
+synthesis writes, so there is no file to forget at all. When the HDL
+changes, the next build redraws the figure from the new netlist.
+
+This document is its own example. Both of its figures were drawn by the
+Bazel build that typeset it \cite{bazel}.
+
+\subsection{The running example}
+
+The example design is a 4-bit counter. It adds one to a register on every
+rising edge of \code{clk}, clears the register while \code{reset} is high,
+and shows the register on four LEDs. Listing~\ref{lst:counter} gives the
+whole design.
+
+\lstinputlisting[style=vlog,firstline=4,caption={The running example,
+\code{counter.v}.},label={lst:counter},float=t]{counter.v}
+
+The counter is small on purpose. Its schematic after synthesis still fits a
+column, and every cell in that schematic can be traced back to a line of the
+listing.
+
+\subsection{How to read this document}
+
+Section~\ref{sec:by-hand} draws the counter by hand, in the blockpic
+language. Section~\ref{sec:from-netlist} draws the same counter from the
+netlist that synthesis writes for an AMD 7-series part. The build that ties
+the two to this PDF comes next (\S\ref{sec:build}). The document ends with
+what blockpic does not yet do well (\S\ref{sec:limits}).

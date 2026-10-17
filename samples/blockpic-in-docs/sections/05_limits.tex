@@ -1,0 +1,22 @@
+% SPDX-License-Identifier: Apache-2.0
+% 05_limits.tex: What blockpic does not do yet
+\section{What Blockpic Does Not Do Yet}
+\label{sec:limits}
+
+Blockpic is young, and both figures in this document show where. Each
+limit below has an open issue in the blockpic repository.
+
+\begin{itemize}
+\item \textbf{Names of generic blocks.} A primitive without a symbol of its
+  own, such as \code{FDRE}, is titled with its kind. Its name, such as
+  \code{count[3]}, is in the \code{.blockpic} source but not in the drawing
+  (issue~4).
+\item \textbf{Group labels.} A \code{group} draws a dashed box around
+  blocks. Its label lands on the label of a block in the top row, so
+  Fig.~\ref{fig:architecture} leaves its group out (issue~8).
+\item \textbf{Layout.} netlistsvg places every block. It cannot be told to
+  line the four flip-flops up in a column, which a person drawing
+  Fig.~\ref{fig:netlist} would do.
+\item \textbf{Size.} A netlist of a few dozen cells is readable. One of a
+  few thousand is not, so draw small modules (\S\ref{sec:from-netlist}).
+\end{itemize}
