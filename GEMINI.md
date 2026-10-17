@@ -17,7 +17,7 @@ Read the following files and dirs:
 
 ## Preliminaries
 
-- Use at least bazel version `9.0.1`. Write that into file `.bazelversion`.
+- Use at least bazel version `9.3.0`. Write that into file `.bazelversion`.
   Create the file if not available, update it if it is.
 - add `bazel-*` to .gitignore if not already present.
 
