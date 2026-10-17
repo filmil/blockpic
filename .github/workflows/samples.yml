@@ -38,23 +38,36 @@ jobs:
         run: |
           set -eu
           bazel build //samples:pdfs
+          # An assignment, so that a failing cquery stops the step.
+          files="$(bazel cquery --output=files //samples:pdfs)"
+          test -n "$files" || { echo "//samples:pdfs lists no files" >&2; exit 1; }
           mkdir -p dist/samples
-          for f in $(bazel cquery --output=files //samples:pdfs 2>/dev/null); do
+          for f in $files; do
             test -s "$f" || { echo "empty PDF: $f" >&2; exit 1; }
             cp "$f" dist/samples/
           done
           ls -l dist/samples
 
-      # Recreated each time, so that the tag points at the commit the PDFs
-      # were built from.
+      # Only main's PDFs go to the rolling release; a run started by hand
+      # on another branch builds them and stops. The release is updated in
+      # place, never deleted, so its link keeps working: the tag moves to
+      # this commit, and the PDFs are replaced.
       - name: Publish to the rolling release
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          gh release delete samples --cleanup-tag --yes || true
-          gh release create samples dist/samples/*.pdf \
-            --prerelease \
-            --target "$GITHUB_SHA" \
-            --title "Sample documents (newest main)" \
-            --notes "The sample documents under samples/, built from $GITHUB_SHA by the samples workflow."
+          notes="The sample documents under samples/, built from $GITHUB_SHA by the samples workflow."
+          if gh release view samples >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/samples" \
+              -f sha="$GITHUB_SHA" -F force=true >/dev/null
+            gh release upload samples dist/samples/*.pdf --clobber
+            gh release edit samples --notes "$notes"
+          else
+            gh release create samples dist/samples/*.pdf \
+              --prerelease \
+              --target "$GITHUB_SHA" \
+              --title "Sample documents (newest main)" \
+              --notes "$notes"
+          fi
