@@ -87,7 +87,9 @@ def blockpic_netlist_diagram(name, netlist, out, top = "", skin = _DEFAULT_SKIN,
         `visibility` or `tags`.
     """
     src = name + ".blockpic"
-    top_flag = " -top " + top if top else ""
+    # Single-quoted for the shell: Yosys module names such as
+    # `$paramod\counter` hold `$` and `\`.
+    top_flag = " -top '" + top.replace("'", "'\\''") + "'" if top else ""
     native.genrule(
         name = name + "_src",
         srcs = [netlist],

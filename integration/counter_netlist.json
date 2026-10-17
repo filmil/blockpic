@@ -1,0 +1,532 @@
+{
+ "creator": "Yosys 0.69+154 (git sha1 30d62572e-dirty, Release, Clang /usr/bin/clang++ 21.1.8)",
+ "modules": {
+  "counter": {
+   "attributes": {
+    "src": "tests/openxc7/counter.v:4.1-15.10",
+    "top": "00000000000000000000000000000001"
+   },
+   "cells": {
+    "$abc$20772$lut$not$aiger20771$12": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/lut_map.v:36.13-36.48"
+     },
+     "connections": {
+      "I": [
+       8
+      ],
+      "O": [
+       9
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "INV"
+    },
+    "$auto$alumacc.cc:576:replace_alu$1106.genblk1.slice[0].genblk1.carry4": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "tests/openxc7/counter.v:13.20-13.30|/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/arith_map.v:176.11-184.5"
+     },
+     "connections": {
+      "CI": [
+       "0"
+      ],
+      "CO": [
+       10,
+       11,
+       12,
+       13
+      ],
+      "CYINIT": [
+       "0"
+      ],
+      "DI": [
+       "1",
+       "0",
+       "0",
+       "0"
+      ],
+      "O": [
+       14,
+       15,
+       16,
+       17
+      ],
+      "S": [
+       9,
+       18,
+       19,
+       20
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "CI": "input",
+      "CO": "output",
+      "CYINIT": "input",
+      "DI": "input",
+      "O": "output",
+      "S": "input"
+     },
+     "type": "CARRY4"
+    },
+    "$auto$clkbufmap.cc:261:execute$20778": {
+     "attributes": {},
+     "connections": {
+      "I": [
+       21
+      ],
+      "O": [
+       22
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "BUFG"
+    },
+    "$auto$ff.cc:337:slice$1523": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "tests/openxc7/counter.v:9.5-14.8|/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/ff_map.v:68.41-68.95"
+     },
+     "connections": {
+      "C": [
+       22
+      ],
+      "CE": [
+       "1"
+      ],
+      "D": [
+       9
+      ],
+      "Q": [
+       8
+      ],
+      "R": [
+       23
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {
+      "INIT": "x"
+     },
+     "port_directions": {
+      "C": "input",
+      "CE": "input",
+      "D": "input",
+      "Q": "output",
+      "R": "input"
+     },
+     "type": "FDRE"
+    },
+    "$auto$ff.cc:337:slice$1524": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "tests/openxc7/counter.v:9.5-14.8|/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/ff_map.v:68.41-68.95"
+     },
+     "connections": {
+      "C": [
+       22
+      ],
+      "CE": [
+       "1"
+      ],
+      "D": [
+       15
+      ],
+      "Q": [
+       18
+      ],
+      "R": [
+       23
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {
+      "INIT": "x"
+     },
+     "port_directions": {
+      "C": "input",
+      "CE": "input",
+      "D": "input",
+      "Q": "output",
+      "R": "input"
+     },
+     "type": "FDRE"
+    },
+    "$auto$ff.cc:337:slice$1525": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "tests/openxc7/counter.v:9.5-14.8|/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/ff_map.v:68.41-68.95"
+     },
+     "connections": {
+      "C": [
+       22
+      ],
+      "CE": [
+       "1"
+      ],
+      "D": [
+       16
+      ],
+      "Q": [
+       19
+      ],
+      "R": [
+       23
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {
+      "INIT": "x"
+     },
+     "port_directions": {
+      "C": "input",
+      "CE": "input",
+      "D": "input",
+      "Q": "output",
+      "R": "input"
+     },
+     "type": "FDRE"
+    },
+    "$auto$ff.cc:337:slice$1526": {
+     "attributes": {
+      "module_not_derived": "00000000000000000000000000000001",
+      "src": "tests/openxc7/counter.v:9.5-14.8|/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/ff_map.v:68.41-68.95"
+     },
+     "connections": {
+      "C": [
+       22
+      ],
+      "CE": [
+       "1"
+      ],
+      "D": [
+       17
+      ],
+      "Q": [
+       20
+      ],
+      "R": [
+       23
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {
+      "INIT": "x"
+     },
+     "port_directions": {
+      "C": "input",
+      "CE": "input",
+      "D": "input",
+      "Q": "output",
+      "R": "input"
+     },
+     "type": "FDRE"
+    },
+    "$iopadmap$counter.clk": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       2
+      ],
+      "O": [
+       21
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "IBUF"
+    },
+    "$iopadmap$counter.led": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       8
+      ],
+      "O": [
+       4
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "OBUF"
+    },
+    "$iopadmap$counter.led_1": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       18
+      ],
+      "O": [
+       5
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "OBUF"
+    },
+    "$iopadmap$counter.led_2": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       19
+      ],
+      "O": [
+       6
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "OBUF"
+    },
+    "$iopadmap$counter.led_3": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       20
+      ],
+      "O": [
+       7
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "OBUF"
+    },
+    "$iopadmap$counter.reset": {
+     "attributes": {
+      "keep": "00000000000000000000000000000001"
+     },
+     "connections": {
+      "I": [
+       3
+      ],
+      "O": [
+       23
+      ]
+     },
+     "hide_name": 1,
+     "parameters": {},
+     "port_directions": {
+      "I": "input",
+      "O": "output"
+     },
+     "type": "IBUF"
+    }
+   },
+   "netnames": {
+    "$abc$20772$aiger$i13": {
+     "attributes": {},
+     "bits": [
+      14
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$i17": {
+     "attributes": {},
+     "bits": [
+      10
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$i18": {
+     "attributes": {},
+     "bits": [
+      11
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$i19": {
+     "attributes": {},
+     "bits": [
+      12
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$i20": {
+     "attributes": {},
+     "bits": [
+      13
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o10": {
+     "attributes": {},
+     "bits": [
+      23
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o11": {
+     "attributes": {},
+     "bits": [
+      22
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o12": {
+     "attributes": {},
+     "bits": [
+      15
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o15": {
+     "attributes": {},
+     "bits": [
+      17
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o18": {
+     "attributes": {},
+     "bits": [
+      16
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o22": {
+     "attributes": {},
+     "bits": [
+      18
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o23": {
+     "attributes": {},
+     "bits": [
+      19
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o24": {
+     "attributes": {},
+     "bits": [
+      20
+     ],
+     "hide_name": 1
+    },
+    "$abc$20772$aiger$o27": {
+     "attributes": {},
+     "bits": [
+      9
+     ],
+     "hide_name": 1
+    },
+    "$auto$clkbufmap.cc:262:execute$20779": {
+     "attributes": {},
+     "bits": [
+      21
+     ],
+     "hide_name": 1
+    },
+    "$techmap20777$abc$20772$lut$not$aiger20771$12.A": {
+     "attributes": {
+      "force_downto": "00000000000000000000000000000001",
+      "single_bit_vector": "00000000000000000000000000000001",
+      "src": "/mnt/HC_Volume_106225287/filmil/.bazel/cache/repos/v1/contents/056a43ea179dd043a941b2e200f3aa8d106eee9b61453d7b39ff7785d640a8a1/4df42e13-7703-4f02-a9c9-4b33cd69d47a/lib/../share/yosys/xilinx/lut_map.v:30.21-30.22"
+     },
+     "bits": [
+      8
+     ],
+     "hide_name": 1
+    },
+    "clk": {
+     "attributes": {
+      "src": "tests/openxc7/counter.v:5.23-5.26"
+     },
+     "bits": [
+      2
+     ],
+     "hide_name": 0
+    },
+    "led": {
+     "attributes": {
+      "src": "tests/openxc7/counter.v:7.23-7.26"
+     },
+     "bits": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "hide_name": 0
+    },
+    "reset": {
+     "attributes": {
+      "src": "tests/openxc7/counter.v:6.23-6.28"
+     },
+     "bits": [
+      3
+     ],
+     "hide_name": 0
+    }
+   },
+   "ports": {
+    "clk": {
+     "bits": [
+      2
+     ],
+     "direction": "input"
+    },
+    "led": {
+     "bits": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "direction": "output"
+    },
+    "reset": {
+     "bits": [
+      3
+     ],
+     "direction": "input"
+    }
+   }
+  }
+ }
+}
