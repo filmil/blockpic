@@ -1,0 +1,4 @@
+# The integration module is an outside consumer of blockpic: it resolves
+# everything from the Bazel Central Registry alone, as BCR presubmit does.
+common --registry=https://bcr.bazel.build
+test --test_output=errors

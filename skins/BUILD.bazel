@@ -1,0 +1,10 @@
+# The netlistsvg skins that blockpic_diagram draws with (//:defs.bzl).
+# A package of their own, so that a module using blockpic can reach them
+# without loading //ai, whose book rules are a dev dependency.
+exports_files(
+    [
+        "skin_with_arrows.svg",
+        "skin_xilinx.svg",
+    ],
+    visibility = ["//visibility:public"],
+)

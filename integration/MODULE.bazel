@@ -1,0 +1,14 @@
+"""An outside consumer of blockpic, for BCR presubmit and for CI."""
+
+module(
+    name = "blockpic_integration",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "blockpic", version = "0.0.0")
+local_path_override(
+    module_name = "blockpic",
+    path = "..",
+)
+
+bazel_dep(name = "rules_shell", version = "0.8.0")

@@ -1,6 +1,8 @@
-load("@npm//:netlistsvg/package_json.bzl", "bin")
-
-_DEFAULT_SKIN = "//ai:skin_xilinx.svg"
+# Label(), not a string: in a macro a string label is read in the package
+# that calls it, which for a module using blockpic is not this repository.
+_BLOCKPIC = Label("//cmd/blockpic")
+_NETLISTSVG = Label("//:netlistsvg")
+_DEFAULT_SKIN = Label("//skins:skin_xilinx.svg")
 
 def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
     """
@@ -11,8 +13,9 @@ def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
       src: The `.blockpic` file to draw.
       out: The SVG file to write.
       skin: The netlistsvg skin to draw with. The default,
-        `//ai:skin_xilinx.svg`, is in the style of AMD's UG474 figures.
-        `//ai:skin_with_arrows.svg` is the earlier look: a bold monospace
+        `@blockpic//skins:skin_xilinx.svg`, is in the style of AMD's UG474
+        figures. `@blockpic//skins:skin_with_arrows.svg` is the earlier look:
+        a bold monospace
         face, and arrowheads on the nets.
       **kwargs: Passed to the target that gives `out`, such as
         `visibility` or `tags`.
@@ -23,28 +26,33 @@ def blockpic_diagram(name, src, out, skin = _DEFAULT_SKIN, **kwargs):
         name = name + "_json",
         srcs = [src],
         outs = [json_out],
-        cmd = "$(location //cmd/blockpic) render $< -format yosys-json -o $@",
-        tools = ["//cmd/blockpic"],
+        cmd = "$(location {}) render $< -format yosys-json -o $@".format(_BLOCKPIC),
+        tools = [_BLOCKPIC],
     )
 
-    bin.netlistsvg_binary(
-        name = name + "_tool",
-    )
     intermediate_svg = name + "_raw.svg"
     native.genrule(
         name = name + "_raw",
         srcs = [json_out, skin],
         outs = [intermediate_svg],
-        cmd = "BAZEL_BINDIR=. $(location :" + name + "_tool) $(location " + json_out + ") --skin $(location " + skin + ") -o $@",
-        tools = [":" + name + "_tool"],
+        cmd = "BAZEL_BINDIR=. $(location {}) $(location {}) --skin $(location {}) -o $@".format(
+            _NETLISTSVG,
+            json_out,
+            skin,
+        ),
+        tools = [_NETLISTSVG],
     )
 
     native.genrule(
         name = name,
         srcs = [src, intermediate_svg],
         outs = [out],
-        cmd = "$(location //cmd/blockpic) refine $(location " + src + ") -svg $(location " + intermediate_svg + ") -o $@",
-        tools = ["//cmd/blockpic"],
+        cmd = "$(location {}) refine $(location {}) -svg $(location {}) -o $@".format(
+            _BLOCKPIC,
+            src,
+            intermediate_svg,
+        ),
+        tools = [_BLOCKPIC],
         **kwargs
     )
 
@@ -84,8 +92,8 @@ def blockpic_netlist_diagram(name, netlist, out, top = "", skin = _DEFAULT_SKIN,
         name = name + "_src",
         srcs = [netlist],
         outs = [src],
-        cmd = "$(location //cmd/blockpic) import $(location " + netlist + ")" + top_flag + " -o $@",
-        tools = ["//cmd/blockpic"],
+        cmd = "$(location {}) import $(location {}){} -o $@".format(_BLOCKPIC, netlist, top_flag),
+        tools = [_BLOCKPIC],
         visibility = kwargs.get("visibility"),
     )
     blockpic_diagram(name = name, src = src, out = out, skin = skin, **kwargs)

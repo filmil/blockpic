@@ -95,6 +95,37 @@ blockpic_netlist_diagram(
 source is kept, as `counter_diagram.blockpic` from `//:counter_diagram_src`.
 `tests/openxc7` is this example, with a test.
 
+## Use it from your own Bazel module
+
+blockpic is a Bazel module, tested as a dependency of another module by
+[`integration/`](integration) with Bazel 8 and 9. Until it is in a
+registry, take it from git:
+
+```starlark
+bazel_dep(name = "blockpic", version = "0.0.1")
+git_override(
+    module_name = "blockpic",
+    remote = "https://github.com/filmil/blockpic.git",
+    commit = "<a commit on main>",
+)
+```
+
+Then draw a diagram, or a Yosys JSON netlist, in a `BUILD.bazel` file:
+
+```starlark
+load("@blockpic//:defs.bzl", "blockpic_diagram", "blockpic_netlist_diagram")
+
+blockpic_diagram(
+    name = "adder",
+    src = "adder.blockpic",
+    out = "adder.svg",
+)
+```
+
+The default skin is `@blockpic//skins:skin_xilinx.svg`, in the style of
+AMD's UG474 figures; pass `skin = "@blockpic//skins:skin_with_arrows.svg"`
+for the earlier look.
+
 ## Samples
 
 `samples/` holds documents whose figures blockpic draws during the build.

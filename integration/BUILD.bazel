@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Uses blockpic the way a consumer would: through @blockpic//:defs.bzl, with
+# nothing but the Bazel Central Registry to resolve it from.
+load("@blockpic//:defs.bzl", "blockpic_diagram")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+blockpic_diagram(
+    name = "example",
+    src = "example.blockpic",
+    out = "example.svg",
+)
+
+sh_test(
+    name = "example_test",
+    srcs = ["example_test.sh"],
+    args = ["$(rootpath :example)"],
+    data = [":example"],
+)
