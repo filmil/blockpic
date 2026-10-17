@@ -55,8 +55,17 @@
   keepspaces=true,
   breaklines=true,
   breakatwhitespace=true,
-  belowcaptionskip=9pt,
 }
+
+% IEEEtran's caption ignores the skips that listings sets, so the frame of
+% a listing touched the descenders of its caption above. Leave a gap after
+% every caption put on top of a listing.
+\makeatletter
+\let\blockpic@lstMakeCaption\lst@MakeCaption
+\def\lst@MakeCaption#1{%
+  \blockpic@lstMakeCaption{#1}%
+  \ifx t#1\ifx\lst@caption\@empty\else\vspace{6pt}\fi\fi}
+\makeatother
 
 \lstdefinelanguage{blockpic}{
   morekeywords={diagram,block,wire,group,layout,kind,name,inputs,outputs,
