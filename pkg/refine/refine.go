@@ -123,8 +123,8 @@ func Process(diag *ast.Diagram, svgBytes []byte) ([]byte, error) {
 }
 
 // cellTitle finds the title of a skinned cell: the text netlistsvg fills
-// with the cell's label.
-var cellTitle = `(<text[^>]*class="nodelabel cell_%s"[^>]*s:attribute="ref"[^>]*>)[^<]*(</text>)`
+// with the cell's label. A skin may give it any class besides the cell's.
+var cellTitle = `(<text[^>]*class="[^"]*\bcell_%s"[^>]*s:attribute="ref"[^>]*>)[^<]*(</text>)`
 
 // genericCell finds a generic cell's group and its body, whose height
 // netlistsvg sets by the number of ports.

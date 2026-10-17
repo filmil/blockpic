@@ -35,6 +35,7 @@ func TestDrawNames(t *testing.T) {
 			{Label: "count_3", Name: "count[3]", Kind: "FDRE"},
 			{Label: "plus", Name: "+1 & <b>", Kind: "ADD"},
 			{Label: "IBUF_1", Name: "IBUF", Kind: "IBUF"},
+			{Label: "led_0", Name: "led[0]", Kind: "OUTPUT_PIN"},
 		},
 	}
 	svg := `<svg>
@@ -45,6 +46,9 @@ func TestDrawNames(t *testing.T) {
   <g s:type="generic" transform="translate(0,0)" s:width="30" s:height="40" id="cell_IBUF_1">
     <text x="15" y="-4" class="nodelabel cell_IBUF_1" s:attribute="ref">IBUF</text>
     <rect width="30" height="20" s:generic="body" class="cell_IBUF_1"/>
+  </g>
+  <g s:type="outputExt" transform="translate(9,9)" s:width="20" s:height="10" id="cell_led_0">
+    <text x="23" y="8" class="pinIn cell_led_0" s:attribute="ref">led_0</text>
   </g>
   <g s:type="add" transform="translate(10,10)" s:width="25" s:height="25" id="cell_plus">
     <text x="15" y="-4" class="nodelabel cell_plus" s:attribute="ref">plus</text>
@@ -65,6 +69,10 @@ func TestDrawNames(t *testing.T) {
 	// A skinned cell is titled with its name, escaped.
 	if !strings.Contains(got, `s:attribute="ref">+1 &amp; &lt;b&gt;</text>`) {
 		t.Errorf("the adder is not titled with its name:\n%s", got)
+	}
+	// Whatever class the skin gives the title.
+	if !strings.Contains(got, `s:attribute="ref">led[0]</text>`) {
+		t.Errorf("the port is not titled with its name:\n%s", got)
 	}
 	// A name equal to the kind is not drawn again.
 	if strings.Count(got, ">IBUF<") != 1 {
