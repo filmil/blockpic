@@ -32,18 +32,25 @@ jobs:
         with:
           version: 9.3.0
 
+      # The runner image is part of the key: the cache holds the output
+      # base, whose autodetected C++ toolchain lists the host compiler's
+      # include directories. A cache saved on ubuntu-22.04 (gcc 11) and
+      # restored on 24.04 (gcc 13) fails every C compile with "absolute path
+      # inclusion(s) found".
       - name: Set up Bazel cache key
         id: cache-key
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "image=${ImageOS:-unknown}" >> $GITHUB_OUTPUT
 
       - name: Mount Bazel cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/bazel
           # Using the date in the key to ensure the cache "expires" (is not used) every 24 hours.
-          key: bazel-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          key: bazel-${{ steps.cache-key.outputs.image }}-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
           restore-keys: |
-            bazel-${{ steps.cache-key.outputs.date }}-
+            bazel-${{ steps.cache-key.outputs.image }}-${{ steps.cache-key.outputs.date }}-
 
       - name: Test
         run: bazel test --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //...
