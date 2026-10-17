@@ -17,13 +17,15 @@ picks the symbol: \code{ADD} draws an adder, \code{MUX} a multiplexer and
 of the label. An \code{INPUT\_PIN} or
 \code{OUTPUT\_PIN} block is a port of the design. A \code{wire} joins an
 output pin to an input pin. A wire with a \code{thickness} is drawn as a
-bus.
+bus: a thick line, crossed by a short slash with its width beside it. A
+wire can also name the type of the bus, as in \code{type: "nibble\_t"};
+the mark then shows the type in place of the width.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{architecture.pdf}
 \caption{The counter's architecture, drawn by blockpic from
-Listing~\ref{lst:blockpic}. The thick lines are the 4-bit buses.}
+Listing~\ref{lst:blockpic}. The thick lines, each marked 4, are the 4-bit buses.}
 \label{fig:architecture}
 \end{figure}
 
@@ -31,9 +33,8 @@ Fig.~\ref{fig:architecture} is the result. Blockpic placed every block and
 routed every wire; the file gives no coordinates. The style is that of the
 figures in AMD's UG474 \cite{ug474}: a plain sans-serif face, thin lines
 without arrowheads, and pin names such as \code{D} and \code{CK} inside the
-box. The feedback from the
-register to the adder is routed around the outside, and the four 4-bit
-buses are drawn thick.
+box. The feedback from the register to the adder is routed around the
+outside, and every 4-bit bus is drawn thick and marked with its width.
 
 \begin{guideline}[Keep the diagram beside the code]
 Put the \code{.blockpic} file in the same directory as the HDL it describes.
