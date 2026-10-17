@@ -15,7 +15,12 @@ concurrency:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    # 24.04, not 22.04: the book's TeX tools (bazel_ebook 3.0.2) come from a
+    # root filesystem with glibc 2.39, but start under the host's dynamic
+    # loader, and 22.04's glibc 2.35 cannot load that libc.so.6
+    # ("undefined symbol: __tunable_is_initialized, version GLIBC_PRIVATE").
+    # Back to any runner once bazel_ebook starts them with its own loader.
+    runs-on: ubuntu-24.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
