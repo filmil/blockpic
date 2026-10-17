@@ -98,16 +98,13 @@ source is kept, as `counter_diagram.blockpic` from `//:counter_diagram_src`.
 ## Use it from your own Bazel module
 
 blockpic is a Bazel module, tested as a dependency of another module by
-[`integration/`](integration) with Bazel 8 and 9. Until it is in a
-registry, take it from git:
+[`integration/`](integration) with Bazel 8 and 9. Each release is
+published to the Bazel Central Registry and to
+[filmil's registry](https://github.com/filmil/bazel-registry); the release
+notes give the line to use:
 
 ```starlark
-bazel_dep(name = "blockpic", version = "0.0.1")
-git_override(
-    module_name = "blockpic",
-    remote = "https://github.com/filmil/blockpic.git",
-    commit = "<a commit on main>",
-)
+bazel_dep(name = "blockpic", version = "<the newest release>")
 ```
 
 Then draw a diagram, or a Yosys JSON netlist, in a `BUILD.bazel` file:

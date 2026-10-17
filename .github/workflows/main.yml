@@ -51,8 +51,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # As BCR presubmit (.bcr/presubmit.yml), as far as GitHub's runners go.
+        os: ["ubuntu-22.04", "ubuntu-24.04", "macos-latest"]
         bazel: ["8.x", "9.x"]
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     env:
       USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
