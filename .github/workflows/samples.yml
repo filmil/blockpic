@@ -28,18 +28,21 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4
-
       # The `samples` tag points at the commit the published PDFs came
       # from. On the daily run, if that is already this commit, nothing has
-      # changed: skip the build. A run started by hand always builds.
+      # changed: skip the rest, the checkout included. A run started by hand
+      # always builds. The commits endpoint resolves the tag to its commit
+      # whether it is lightweight or annotated. An API error reads as "no
+      # tag", which builds: the safe side.
       - name: Has main changed since the last publish
         id: changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          last="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/samples" --jq .object.sha 2>/dev/null || true)"
+          # On an error, gh prints the error body to stdout: keep the answer
+          # only when the call succeeded.
+          last="$(gh api "repos/$GITHUB_REPOSITORY/commits/refs/tags/samples" --jq .sha 2>/dev/null)" || last=""
           if [ "$GITHUB_EVENT_NAME" = schedule ] && [ "$last" = "$GITHUB_SHA" ]; then
             echo "The samples release is already built from $GITHUB_SHA; nothing to do."
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -47,6 +50,9 @@ jobs:
             echo "Last published from ${last:-nothing}; building $GITHUB_SHA."
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - uses: actions/checkout@v4
+        if: steps.changed.outputs.changed == 'true'
 
       - name: Setup Bazel
         if: steps.changed.outputs.changed == 'true'
