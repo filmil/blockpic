@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "refine",
@@ -8,4 +8,11 @@ go_library(
     deps = [
         "//pkg/ast",
     ],
+)
+
+go_test(
+    name = "refine_test",
+    srcs = ["refine_test.go"],
+    embed = [":refine"],
+    deps = ["//pkg/ast"],
 )
