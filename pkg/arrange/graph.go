@@ -204,16 +204,22 @@ func (n *number) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &v); err != nil {
 		return err
 	}
+	var f float64
 	switch v := v.(type) {
 	case float64:
-		*n = number(v)
+		f = v
 	case string:
-		f, err := strconv.ParseFloat(v, 64)
-		if err != nil {
+		var err error
+		if f, err = strconv.ParseFloat(v, 64); err != nil {
 			return fmt.Errorf("arrange: a coordinate %q is not a number", v)
 		}
-		*n = number(f)
+	default:
+		return fmt.Errorf("arrange: a coordinate %s is not a number", b)
 	}
+	if math.IsNaN(f) || math.IsInf(f, 0) {
+		return fmt.Errorf("arrange: a coordinate %s is not finite", b)
+	}
+	*n = number(f)
 	return nil
 }
 

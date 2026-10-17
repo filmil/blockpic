@@ -37,7 +37,9 @@ This document provides a hierarchical overview of the features implemented in th
 ## 3. Layout Engine
 *   **Auto-Layout**: Basic flow-based coordinate assignment for unmapped blocks.
 *   **Groups**: ELK lays each `group` out as one box, so no other block
-    falls inside its dashed outline.
+    falls inside its dashed outline. Groups that share a block cannot each
+    be one box; their outlines are drawn around their blocks after the
+    layout, as before.
 *   **Commutative inputs**: The inputs of an `AND`, `NAND`, `OR`, `NOR`,
     `XOR`, `XNOR`, `ADD`, `MUL`, `EQ` or `NE` block go to their wires in
     the order the wires arrive, the topmost input to the wire from
@@ -55,10 +57,13 @@ This document provides a hierarchical overview of the features implemented in th
 *   **CLI Application**: `blockpic` binary.
     *   `blockpic compile <file>`: Validates DSL syntax.
     *   `blockpic render <file> [-format png] [-o output]`: Generates diagram images.
-    *   `blockpic layout <netlist.json> -src <file.blockpic> -skin <skin.svg> -nsv <nsv>`:
+    *   `blockpic layout <netlist.json> -src <file.blockpic> -skin <skin.svg> -nsv <nsv> [-o layout.json] [-netlist arranged.json] [-v]`:
         Lays a rendered netlist out with ELK and improves the layout, as
-        described in section 3, for `//tools/netlistsvg:nsv` to draw.
-        `blockpic_diagram` runs it between `render` and `refine`.
+        described in section 3, for `//tools/netlistsvg:nsv` to draw. It
+        writes the layout to `-o`, and to `-netlist` the netlist to draw
+        with it, whose commutative inputs may be reordered; `-v` says what
+        it changed. `blockpic_diagram` runs it between `render` and
+        `refine`.
     *   `blockpic refine <file.blockpic> -svg <drawn.svg> [-layout layout.json] [-o out.svg]`:
         Finishes a drawing: thick buses with their width marks, the
         blocks' names, and the groups' boxes, where `-layout` puts them or
