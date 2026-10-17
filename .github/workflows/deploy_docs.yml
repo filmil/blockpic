@@ -14,23 +14,29 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-22.04
+    # 24.04, as build-and-test in main.yml: the book's TeX tools need its
+    # glibc 2.39 (filmil/bazel-ebook#107).
+    runs-on: ubuntu-24.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
 
+      # Keyed by runner image, as in main.yml: the cached output base holds
+      # a C++ toolchain autodetected for that image's compiler.
       - name: Set up Bazel cache key
         id: cache-key
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "image=${ImageOS:-unknown}" >> $GITHUB_OUTPUT
 
       - name: Mount Bazel cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/bazel
-          key: bazel-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          key: bazel-${{ steps.cache-key.outputs.image }}-${{ steps.cache-key.outputs.date }}-${{ hashFiles('**/BUILD.bazel', 'MODULE.bazel', 'MODULE.bazel.lock') }}
           restore-keys: |
-            bazel-${{ steps.cache-key.outputs.date }}-
+            bazel-${{ steps.cache-key.outputs.image }}-${{ steps.cache-key.outputs.date }}-
 
       - name: Build PDF and HTML docs
         run: bazel build --disk_cache=~/.cache/bazel/disk_cache --repository_cache=~/.cache/bazel/repo_cache //ai:book_pdf //ai:html_chunked
