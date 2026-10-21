@@ -1,6 +1,6 @@
 module github.com/filmil/blockpic
 
-go 1.26.2
+go 1.26.10
 
 require (
 	github.com/itchyny/gojq v0.12.13 // indirect
