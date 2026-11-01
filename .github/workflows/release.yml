@@ -62,6 +62,16 @@ jobs:
       tag_name: ${{ needs.tag.outputs.tag_name }}
       release_files: blockpic-${{ needs.tag.outputs.tag_name }}.zip
       prerelease: false
+      # The shared workflow runs on ubuntu-latest, now 26.04, and has no
+      # input to pick the runner. There the book's TeX tools (bazel_ebook
+      # 3.0.2) cannot load: they start under the host's dynamic loader,
+      # which does not match their own libc.so.6 ("undefined symbol:
+      # __nptl_change_stack_perm, version GLIBC_PRIVATE"). So the release
+      # skips the targets tagged "tex" (//ai:book_pdf and its test); main
+      # CI, on ubuntu-24.04, still builds them. The workflow appends its
+      # cache flags to this line, so no "--" here. Back to plain
+      # `bazel test //...` once filmil/bazel-ebook#107 is fixed.
+      bazel_test_command: bazel test --build_tag_filters=-tex --test_tag_filters=-tex //...
 
   build:
     needs: [tag, source_release]

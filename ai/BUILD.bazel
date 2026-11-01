@@ -86,10 +86,16 @@ markdown_lib(
     ] + [f + ".svg" for f in _BOOK_FIGURES] + [f + ".pdf" for f in _BOOK_FIGURES],
 )
 
+# Tagged "tex": bazel_ebook 3.0.2 runs its TeX tools under the host's
+# dynamic loader, so they load only where the host glibc is 2.39
+# (ubuntu-24.04, eph1). The release, on ubuntu-latest, skips these by
+# tag (.github/workflows/release.yml); main CI still builds them.
+# Drop the tag once filmil/bazel-ebook#107 is fixed.
 ebook_pdf(
     name = "book_pdf",
     args = ["--default-image-extension=pdf"],
     metadata_xml = "epub-metadata.xml",
+    tags = ["tex"],
     title_yaml = "title.yaml",
     deps = [":md"],
 )
@@ -101,6 +107,7 @@ sh_test(
     srcs = ["book_pdf_figures_test.sh"],
     args = ["$(rootpaths :book_pdf)"],
     data = [":book_pdf"],
+    tags = ["tex"],
 )
 
 pandoc_chunked_html(
